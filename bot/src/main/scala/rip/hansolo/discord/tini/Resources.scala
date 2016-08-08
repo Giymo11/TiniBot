@@ -4,8 +4,14 @@ package rip.hansolo.discord.tini
   * Created by Giymo11 on 08.08.2016.
   */
 object Resources {
-  val token: String = "MjExOTkzMTMyNTI5NjE0ODQ5.ConPBg.DWm0K38wVa0G5cGZV8sDei-w-7Q" //System.getenv("TINI_TOKEN")
+  val token: String = "MjExOTkzMTMyNTI5NjE0ODQ5.ConxAw.BCTP_Ca_tO_OrfH4fP_LI3m3tY8" //System.getenv("TINI_TOKEN")
   val authorPassword: String = "troll123" //System.getenv("TINI_PASSWORD")
+
+
+  val catfacts = {
+    import ammonite.ops._
+    read.lines! resource / "catfacts.txt"
+  }
 
   object Permissions {
     val CREATE_INSTANT_INVITE	= 0x00000001	//Allows creation of instant invites
@@ -36,8 +42,6 @@ object Resources {
     val usedPermission = READ_MESSAGES ^ SEND_MESSAGES ^ CONNECT ^ SPEAK ^ SEND_TTS_MESSAGES
     // wanted = 3152896
     // https://discordapp.com/oauth2/authorize?client_id=211993132529614849&scope=bot&permissions=3152896
-
-
 
   }
 }

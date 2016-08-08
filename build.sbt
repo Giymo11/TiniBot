@@ -17,7 +17,8 @@ lazy val shared = project.in(file("shared"))
     libraryDependencies ++= Seq(
       "org.typelevel" %% "cats" % "0.6.1",
       "io.monix" %% "monix" % "2.0-RC9",
-      "io.monix" %% "monix-cats" % "2.0-RC9"
+      "io.monix" %% "monix-cats" % "2.0-RC9",
+      "org.scala-lang.modules" %% "scala-java8-compat" % "0.8.0-RC3"
     )
   )
 
@@ -27,7 +28,8 @@ lazy val bot = project.in(file("bot"))
     name := "bot",
     libraryDependencies ++= Seq(
       "com.github.austinv11" % "Discord4j" % "2.5.2",
-      "net.dv8tion" % "JDA" % "2.2.0_334"
+      "net.dv8tion" % "JDA" % "2.2.0_334",
+      "com.lihaoyi" %% "ammonite-ops" % "0.7.0"
     ),
 
     mainClass in assembly := Some("rip.hansolo.discord.tini.MainJDA"),
