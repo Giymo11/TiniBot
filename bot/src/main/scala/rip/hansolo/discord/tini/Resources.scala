@@ -4,8 +4,8 @@ package rip.hansolo.discord.tini
   * Created by Giymo11 on 08.08.2016.
   */
 object Resources {
-  val token: String = System.getenv("TINI_TOKEN")
-  val authorPassword: String = System.getenv("TINI_PASSWORD")
+  val token: String = "MjExOTkzMTMyNTI5NjE0ODQ5.ConPBg.DWm0K38wVa0G5cGZV8sDei-w-7Q" //System.getenv("TINI_TOKEN")
+  val authorPassword: String = "troll123" //System.getenv("TINI_PASSWORD")
 
   object Permissions {
     val CREATE_INSTANT_INVITE	= 0x00000001	//Allows creation of instant invites

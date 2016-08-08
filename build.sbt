@@ -6,10 +6,9 @@ version := "1.0-SNAPSHOT"
 
 resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/releases/"
 resolvers += "jitpack.io" at "https://jitpack.io"
+resolvers += Resolver.jcenterRepo
 
 val scalaV = "2.11.8"
-
-
 
 lazy val shared = project.in(file("shared"))
   .settings(
@@ -27,10 +26,18 @@ lazy val bot = project.in(file("bot"))
     scalaVersion := scalaV,
     name := "bot",
     libraryDependencies ++= Seq(
-      "com.github.austinv11" % "Discord4j" % "2.5.2"
+      "com.github.austinv11" % "Discord4j" % "2.5.2",
+      "net.dv8tion" % "JDA" % "2.2.0_334"
     ),
-    mainClass in assembly := Some("rip.hansolo.discord.tini.Main"),
-    assemblyJarName in assembly := "TiniBot.jar"
+
+    mainClass in assembly := Some("rip.hansolo.discord.tini.MainJDA"),
+    assemblyJarName in assembly := "TiniBot.jar",
+    assemblyMergeStrategy in assembly := {
+      case PathList(xs @ _*) if xs.contains("opuswrapper") || xs.contains("tritonus") => MergeStrategy.last // needed to have both JDA and D4J at the same time
+      case x =>
+        val oldStrategy = (assemblyMergeStrategy in assembly).value
+        oldStrategy(x)
+    }
   ).dependsOn(shared)
 
 lazy val web = project.in(file("web"))

@@ -10,8 +10,6 @@ import sx.blah.discord.api.{ClientBuilder, IDiscordClient}
 import sx.blah.discord.handle.impl.events.{MessageReceivedEvent, ReadyEvent}
 import sx.blah.discord.util.{DiscordException, MessageBuilder}
 
-import scala.concurrent.Promise
-
 
 /**
   * Created by Giymo11 on 08.08.2016.
@@ -43,8 +41,7 @@ object MainD4J extends TaskApp {
     }
   }.memoize
 
-
-  val register = for(client <- readyClientTask) yield {
+  val work = for(client <- readyClientTask) yield {
 
     val dispatch = client.getDispatcher
 
@@ -74,7 +71,7 @@ object MainD4J extends TaskApp {
     })
   }
 
-  override def runc: Task[Unit] = register
+  override def runc: Task[Unit] = work
 }
 
 
