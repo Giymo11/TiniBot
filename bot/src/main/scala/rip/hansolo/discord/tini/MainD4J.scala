@@ -16,7 +16,7 @@ import scala.concurrent.Promise
 /**
   * Created by Giymo11 on 08.08.2016.
   */
-object Main extends TaskApp {
+object MainD4J extends TaskApp {
 
   import monix.execution.Scheduler.Implicits.global
 

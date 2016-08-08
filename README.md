@@ -16,6 +16,23 @@ or
 1. Simply use IntelliJ to import the project from SBT source model. I just wanted to give activator a try.
 
 
+Credentials
+-----------------
+
+Create two environment variables:
+* TINI_TOKEN - the bot token from your discord authorization site.
+* TINI_PASSWORD - the password with which you want to kill the bot.
+
+
+Usage
+-----------------
+
+To make the bot join, click [here](https://discordapp.com/oauth2/authorize?client_id=211993132529614849&scope=bot&permissions=3152896)
+Until now, Tini can:
+* respond to everything with agreement.
+* commit seppuku when you PM it `!kill <password>` where you substitute the <password> with the one in your `TINI_PASSWORD` environment variable.
+
+
 Libraries used
 -----------------
 
