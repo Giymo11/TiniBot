@@ -4,8 +4,8 @@ package rip.hansolo.discord.tini
   * Created by Giymo11 on 08.08.2016.
   */
 object Resources {
-  val token: String = "MjExOTkzMTMyNTI5NjE0ODQ5.ConxAw.BCTP_Ca_tO_OrfH4fP_LI3m3tY8" //System.getenv("TINI_TOKEN")
-  val authorPassword: String = "troll123" //System.getenv("TINI_PASSWORD")
+  val token: String = System.getenv("TINI_TOKEN")
+  val authorPassword: String = System.getenv("TINI_PASSWORD")
 
 
   val catfacts = {

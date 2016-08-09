@@ -4,7 +4,7 @@ Tini is back!
 This is a little discord Bot, aiming to be gimmicky and fun. No serious features allowed here!
 
 
-Setup
+Contribution Guide
 -----
 
 1. [Download Typesafe Activator](http://typesafe.com/platform/getstarted)
@@ -15,14 +15,17 @@ or
 
 1. Simply use IntelliJ to import the project from SBT source model. I just wanted to give activator a try.
 
-
-Credentials
------------------
+then:
 
 Create two environment variables:
 * TINI_TOKEN - the bot token from your discord authorization site.
 * TINI_PASSWORD - the password with which you want to kill the bot.
 
+To run it locally: `sbt bot/run`
+
+To assemble a jar-file: `sbt bot/assembly` and then `java -jar bot/target/scala-2.11/TiniBot.jar`
+
+To build a docker image: `sbt bot/docker` and then `docker run -d -e "TINI_TOKEN=xxx" -e "TINI_PASSWORD=xxx" giymo11/tinibot`
 
 Usage
 -----------------

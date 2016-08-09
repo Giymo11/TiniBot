@@ -2,6 +2,8 @@
 import sbt.Keys._
 import sbt.Project.projectToRef
 
+//enablePlugins(DockerPlugin)
+
 version := "1.0-SNAPSHOT"
 
 resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/releases/"
@@ -31,7 +33,7 @@ lazy val bot = project.in(file("bot"))
       "net.dv8tion" % "JDA" % "2.2.0_334",
       "com.lihaoyi" %% "ammonite-ops" % "0.7.0"
     ),
-
+    // TODO: add docker
     mainClass in assembly := Some("rip.hansolo.discord.tini.MainJDA"),
     assemblyJarName in assembly := "TiniBot.jar",
     assemblyMergeStrategy in assembly := {
@@ -40,7 +42,24 @@ lazy val bot = project.in(file("bot"))
         val oldStrategy = (assemblyMergeStrategy in assembly).value
         oldStrategy(x)
     }
-  ).dependsOn(shared)
+  )
+  .dependsOn(shared)
+  // a alternative to this would be the sbt-native plugin
+  .enablePlugins(DockerPlugin)
+  .settings(
+    dockerfile in docker := {
+      val artifact: File = assembly.value
+      val artifactTargetPath = s"/app/${artifact.name}"
+      new Dockerfile {
+        from("java:8")
+        add(artifact, artifactTargetPath)
+        entryPoint("java", "-jar", artifactTargetPath)
+      }
+    },
+    imageNames in docker := Seq(
+      ImageName("giymo11/tinibot:latest")
+    )
+  )
 
 lazy val web = project.in(file("web"))
   .settings(
