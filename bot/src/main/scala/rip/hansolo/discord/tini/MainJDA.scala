@@ -14,6 +14,7 @@ import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.hooks.ListenerAdapter
 
 import scala.concurrent.Promise
+import scala.util.Random
 
 
 /**
@@ -62,6 +63,8 @@ object MainJDA extends TaskApp{
                   channel.sendMessageAsync(ShitTiniSays.catfact, asJavaConsumer(timer))
                 case "!catfacts credits" =>
                   channel.sendMessageAsync(ShitTiniSays.credits, asJavaConsumer(timer))
+                case roll if roll.startsWith("!roll") =>
+                  channel.sendMessageAsync(ShitTiniSays.rollTheDice(roll), asJavaConsumer(timer))
                 case _ if isAsked.get =>
                   channel.sendMessageAsync(ShitTiniSays.agreement, asJavaConsumer(timer))
                 case _ => ()

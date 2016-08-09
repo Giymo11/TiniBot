@@ -1,5 +1,9 @@
 package rip.hansolo.discord.tini
 
+import cats.data.Xor
+
+import scala.util.Random
+
 /**
   * This is where all the static responses are
   */
@@ -37,5 +41,17 @@ object ShitTiniSays {
   def catfact = Util.oneOf(catfacts :_*)
 
   def shutupResponse = Util.oneOf(":unamused:", "Rude..", "But don't come crying afterwards!", ":middle_finger:")
+
+  private[this] def rollMessage = Util.oneOf("You rolled: ", ":game_die: says: ", "RNGesus says: ", "My Quantum Random Number Generator says: ", "")
+  def rollTheDice(command: String): String = {
+    val args = command.trim.split(" ")
+    val strings = if(args.size == 3) Xor.Right(args(1), args(2)) else Xor.Left(new IllegalArgumentException("Should have exactly two parameters"))
+    val ints = strings.flatMap { case (from, to) => Xor.catchNonFatal((from.toInt, to.toInt)) }
+    val result = ints.flatMap { case (from, to) => Xor.catchNonFatal(Random.nextInt(to - from) + from) }
+    result match {
+      case Xor.Right(value) => rollMessage + s"**$value**"
+      case Xor.Left(_) => "Usage: `!roll <lower-bound> <upper-bound>`"
+    }
+  }
 
 }
