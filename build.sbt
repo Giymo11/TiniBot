@@ -33,7 +33,7 @@ lazy val bot = project.in(file("bot"))
       "net.dv8tion" % "JDA" % "2.2.0_334",
       "com.lihaoyi" %% "ammonite-ops" % "0.7.0"
     ),
-    // TODO: add docker
+
     mainClass in assembly := Some("rip.hansolo.discord.tini.MainJDA"),
     assemblyJarName in assembly := "TiniBot.jar",
     assemblyMergeStrategy in assembly := {

@@ -4,8 +4,10 @@ Tini is back!
 This is a little discord Bot, aiming to be gimmicky and fun. No serious features allowed here!
 
 
+
+
 Contribution Guide
------
+-----------------
 
 1. [Download Typesafe Activator](http://typesafe.com/platform/getstarted)
 2. Extract the zip and run the `activator` or `activator.bat` script from a non-interactive shell
@@ -32,8 +34,38 @@ Usage
 
 To make the bot join, click [here](https://discordapp.com/oauth2/authorize?client_id=211993132529614849&scope=bot&permissions=3152896)
 Until now, Tini can:
-* respond to everything with agreement.
+* `!help` - Display help Dialog
+* `!catfacts` - Display a cat fact.
+* respond to everything with an opinion.
+* `!shutup` - not do that anymore.
+* `!whatdoyouthink` - do that again.
 * commit seppuku when you PM it `!kill <password>` where you substitute the <password> with the one in your `TINI_PASSWORD` environment variable.
+
+Wishlist
+-----------------
+
+* Subscribe to a MAL profiles for announcements of activity
+* Subscribe to a Subreddits for announcements of activity
+* Subscribe to Github profiles for announcemnets of activity
+* Subscribe to Youtube profiles for announcements of activity
+* Subscribe to ... you get the point.
+* Maybe implement minigames like !heist.
+* Display random files from my private EpicCollecshun(TM) (request by genre)
+* Scrape and safe the lewd pictures that get postet.
+* !roll, 8ball, etc
+* Check if a reddit thread exists for a given link, and post it.
+* Track the last time a given nick was in the channel, and the last time they spoke.
+* !russian-roulette
+* Play yandere simulator
+* Subscribe to RSS feeds?
+* Collect stats about the channels/guilds
+* insult/insult-add
+* sometimes just change its status to inappropriate stuff.
+* Play silly sounds (from collection?)
+* Linking discord and other profiles e.g. Steam and Batlle.net
+
+Also, most importantly, a Dashboard:
+* All kinds of awesome stuff.
 
 
 Libraries used

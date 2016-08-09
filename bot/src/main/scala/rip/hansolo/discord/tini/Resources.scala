@@ -7,12 +7,6 @@ object Resources {
   val token: String = System.getenv("TINI_TOKEN")
   val authorPassword: String = System.getenv("TINI_PASSWORD")
 
-
-  val catfacts = {
-    import ammonite.ops._
-    read.lines! resource / "catfacts.txt"
-  }
-
   object Permissions {
     val CREATE_INSTANT_INVITE	= 0x00000001	//Allows creation of instant invites
     val KICK_MEMBERS = 0x00000002  // *	Allows kicking members

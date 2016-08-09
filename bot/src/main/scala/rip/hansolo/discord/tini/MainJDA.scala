@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit
 import cats.data.Xor
 import monix.eval.{Task, TaskApp}
 import monix.execution.Cancelable
+import monix.execution.atomic.Atomic
 import net.dv8tion.jda.entities.Message
 import net.dv8tion.jda.{JDA, JDABuilder}
 import net.dv8tion.jda.events.ReadyEvent
@@ -12,9 +13,7 @@ import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.hooks.ListenerAdapter
 
-import scala.compat.java8.FunctionConverters.enrichAsJavaDoubleConsumer
 import scala.concurrent.Promise
-import scala.util.Random
 
 
 /**
@@ -25,6 +24,8 @@ object MainJDA extends TaskApp{
   import monix.execution.Scheduler.Implicits.global
 
   val done = Promise[Unit]
+
+  val isAsked = Atomic(true)
 
   val clientReadyTask: Task[JDA] = Task.create[JDA] {
     (scheduler, callback) => {
@@ -47,20 +48,23 @@ object MainJDA extends TaskApp{
               val timer = (myMessage: Message) => println("Sent response at " + myMessage.getTime + ", after " + ChronoUnit.MILLIS.between(myMessage.getTime, message.getTime))
 
               // TODO: add error handling!
-              // TODO: clean up
+              // TODO: clean up and make dynamic
               message.getContent match {
+                case "!help" =>
+                  channel.sendMessageAsync(ShitTiniSays.help, asJavaConsumer(timer))
+                case "!shutup" =>
+                  isAsked.set(false)
+                  channel.sendMessageAsync(ShitTiniSays.shutupResponse, asJavaConsumer(timer))
+                case "!8ballmode" =>
+                  isAsked.set(true)
+                  channel.sendMessageAsync(ShitTiniSays.agreement, asJavaConsumer(timer))
                 case "!catfacts" =>
-                  val randomFact = Resources.catfacts(Random.nextInt(Resources.catfacts.size))
-                  message.getChannel.sendMessageAsync(randomFact, asJavaConsumer(timer))
+                  channel.sendMessageAsync(ShitTiniSays.catfact, asJavaConsumer(timer))
                 case "!catfacts credits" =>
-                  message.getChannel.sendMessageAsync(
-                    """Credits:
-                      |http://facts.randomhistory.com/interesting-facts-about-cats.html
-                      |https://www.buzzfeed.com/chelseamarshall/meows?utm_term=.dtmN8lOYZ#.pumZyapEG
-                      |https://www.reddit.com/r/funny/comments/oyokn/it_seems_to_be_catching_on/c3l5v8r""".stripMargin,
-                    asJavaConsumer(timer))
-                case _ =>
-                  channel.sendMessageAsync("I disagree :raised_hand:", asJavaConsumer(timer))
+                  channel.sendMessageAsync(ShitTiniSays.credits, asJavaConsumer(timer))
+                case _ if isAsked.get =>
+                  channel.sendMessageAsync(ShitTiniSays.agreement, asJavaConsumer(timer))
+                case _ => ()
               }
             } else println("sent myself")
           }
@@ -82,8 +86,11 @@ object MainJDA extends TaskApp{
   // the stuff you want to initiate yourself
   val work: Task[Unit] = for(client <- clientReadyTask) yield {
     import scala.collection.JavaConversions._
-    for(guild <- client.getGuilds)
+    for(guild <- client.getGuilds) {
       println("I am in guild " + guild.getName)
+      val channel = guild.getPublicChannel
+      channel.sendMessageAsync(ShitTiniSays.selfAnnouncement, null)
+    }
   }
 
   override def runc: Task[Unit] = work.flatMap((_) => Task.fromFuture(done.future)) // weird hack, but so be it.
