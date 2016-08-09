@@ -2,7 +2,7 @@ package rip.hansolo.discord.tini
 
 import cats.data.Xor
 
-import scala.util.Random
+import scala.util.{Random, Try}
 
 /**
   * This is where all the static responses are
@@ -43,43 +43,47 @@ object ShitTiniSays {
 
   def shutupResponse = Util.oneOf(":unamused:", "Rude..", "But don't come crying afterwards!", ":middle_finger:")
 
-  private[this] def rollMessage = Util.oneOf("You rolled: ", ":game_die: says: ", "RNGesus says: ", "My Quantum Random Number Generator says: ", "")
+  private[this] def rollMessage = Util.oneOf(
+    "You rolled: ",
+    ":game_die: says: ",
+    "RNGesus says: ",
+    "My Quantum Random Number Generator says: ",
+    ""
+  )
+
+  private[this] val rollUsage = """
+                                  |Usage:
+                                  |`!roll <lower-bound> <upper-bound>`, example: `!roll 1 10`
+                                  |`!roll <count>d<sides>`, example: `!roll 2d6`
+                                """.stripMargin
+
   def rollTheDice(command: String): String = {
-    val args = command.trim.split(" ")
-    val message = Xor.catchNonFatal {
-      if(args.size == 2) {  // !roll 2d6
-        val dice = args(1)
-        if(dice.contains("d")) {
-          val parts = dice.split("d")
-          val results =
-            if(parts.size == 2) { // 2, 6
-              val count = parts(0).toInt
-              val sides = parts(1).toInt
-              if(count <= 0 || sides <= 0) throw new IllegalArgumentException("I need ma counts")
-              for(i <- 1 to count) yield Random.nextInt(sides) + 1
-            } else Seq()
-          if(results.size == 1) results.head.toString
-          else s"( ${results.mkString(" + ")} ) = **${results.sum}**"
-        } else {
-          val upper = args(1).toInt
-          s"**${Util.oneOf(1 to upper: _*)}**"
-        }
-      } else if (args.size == 3) { // !roll 2 20
-      val args = command.trim.split(" ")
-        val lower = args(1).toInt
-        val upper = args(2).toInt
-        s"**${Util.oneOf(lower to upper: _*)}**"
-      } else throw new IllegalArgumentException("Needs better arguments!")
+    val args = command.trim.split(" ").toList
+
+    object ExtractInt {
+      def unapply(arg: String): Option[Int] = Xor.catchNonFatal(arg.toInt).toOption
     }
 
-    message match {
-      case Xor.Right(value) => rollMessage + value
-      case Xor.Left(_) =>
-        """
-          |Usage:
-          |`!roll <lower-bound> <upper-bound>`, example: `!roll 1 10`
-          |`!roll <count>d<sides>`, example: `!roll 2d6`
-        """.stripMargin
+    def getResultsForDice(dice: String): Seq[Int] = dice.split("d").toList match {
+      case ExtractInt(count) :: ExtractInt(sides) :: Nil => for(i <- 1 to count) yield Random.nextInt(sides) + 1
+      case _ => Seq()
+    }
+
+    val result = args match {
+      case _ :: dice :: Nil if dice.contains("d") =>
+        val results = getResultsForDice(dice)
+        Some(s"( ${results.mkString(" + ")} ) = **${results.sum}**")
+      case _ :: ExtractInt(upper) :: Nil =>
+        Some(s"**${Util.oneOf(1 to upper: _*)}**")
+      case _ :: ExtractInt(lower) :: ExtractInt(upper) :: Nil =>
+        Some(s"**${Util.oneOf(lower to upper: _*)}**")
+      case _ =>
+        None
+    }
+
+    result match {
+      case Some(value) => rollMessage + value
+      case None => rollUsage
     }
   }
 }
