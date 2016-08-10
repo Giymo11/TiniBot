@@ -29,12 +29,11 @@ lazy val bot = project.in(file("bot"))
     scalaVersion := scalaV,
     name := "bot",
     libraryDependencies ++= Seq(
-      "com.github.austinv11" % "Discord4j" % "2.5.2",
       "net.dv8tion" % "JDA" % "2.2.0_334",
       "com.lihaoyi" %% "ammonite-ops" % "0.7.0"
     ),
 
-    mainClass in assembly := Some("rip.hansolo.discord.tini.MainJDA"),
+    mainClass in assembly := Some("rip.hansolo.discord.tini.Main"),
     assemblyJarName in assembly := "TiniBot.jar",
     assemblyMergeStrategy in assembly := {
       case PathList(xs @ _*) if xs.contains("opuswrapper") || xs.contains("tritonus") => MergeStrategy.last // needed to have both JDA and D4J at the same time

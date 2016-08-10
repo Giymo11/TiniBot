@@ -1,4 +1,4 @@
-package rip.hansolo.discord.tini
+package rip.hansolo.discord.tini.resources
 
 /**
   * Created by Giymo11 on 08.08.2016.

@@ -4,8 +4,6 @@ Tini is back!
 This is a little discord Bot, aiming to be gimmicky and fun. No serious features allowed here!
 
 
-
-
 Contribution Guide
 -----------------
 
@@ -38,7 +36,9 @@ Until now, Tini can:
 * `!catfacts` - Display a cat fact.
 * respond to everything with an opinion.
 * `!shutup` - not do that anymore.
-* `!whatdoyouthink` - do that again.
+* `!8ballmode` - do that again.
+* `!roll <lower> <upper>`, example: `!roll 1 10`
+* `!roll <count>d<sides>`, example: `!roll 2d6`
 * commit seppuku when you PM it `!kill <password>` where you substitute the <password> with the one in your `TINI_PASSWORD` environment variable.
 
 Wishlist
@@ -64,14 +64,17 @@ Wishlist
 * Play silly sounds (from collection?)
 * Linking discord and other profiles e.g. Steam and Batlle.net
 
-Also, most importantly, a Dashboard:
-* All kinds of awesome stuff.
+Version 2.0:
+* A web dashboard with all kinds of awesome stuff.
+* Like, I don't even want to start writing all this stuff down.
 
+Moonshot:
+* Replace the firebase database backend with a Postgres & Kafka setup.
 
 Libraries used
 -----------------
 
-* [Discord4J](https://github.com/austinv11/Discord4J) // will probably be swapped for [JDA](https://github.com/DV8FromTheWorld/JDA) asap.
+* [JDA](https://github.com/DV8FromTheWorld/JDA). Way better than Discord4J.
 * [monix](https://github.com/monixio/monix) // amazing!
 * [cats](https://github.com/typelevel/cats/) // not much used yet.
 
