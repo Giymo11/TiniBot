@@ -16,44 +16,42 @@ object Roll {
     * @return Some(result) of the roll if the argument was for a roll, or None if the argument was not for a roll
     */
   def unapply(arg: String): Option[String] = arg match {
-    case rollCommand if rollCommand.startsWith("!roll") =>
-      Some(rollTheDice(rollCommand))
+    case rollCommand if rollCommand.startsWith("!roll ") =>
+      val args = rollCommand.trim.split(" ").toList.tail
+      Some(format(rollTheDice(args)))
     case _ => None
   }
 
-  def rollTheDice(command: String): String = {
-    val args = command.trim.split(" ").toList
-
-    val result = args match {
-      case _ :: dice :: Nil if dice.contains("d") =>
-        getResultsForDiceSyntax(dice)
-      case _ :: StringInt(upper) :: Nil =>
-        Some(s"**${oneOf(1 to upper: _*)}**")
-      case _ :: StringInt(lower) :: StringInt(upper) :: Nil =>
-        Some(s"**${oneOf(lower to upper: _*)}**")
-      case _ =>
-        None
-    }
-
-    result match {
-      case Some(value) => ShitTiniSays.rollAnnouncement + value
-      case None => ShitTiniSays.rollUsage
-    }
+  /**
+    * @param args The arguments to rolling the dice (without the command)
+    * @return The list of results
+    */
+  def rollTheDice(args: List[String]): List[Int] = args match {
+    case dice :: Nil if dice.contains("d") =>
+      rollDndDice(dice)
+    case StringInt(upper) :: Nil =>
+      List(oneOf(1 to upper: _*))
+    case StringInt(lower) :: StringInt(upper) :: Nil =>
+      List(oneOf(lower to upper: _*))
+    case _ =>
+      Nil
   }
 
   /**
     * @param dice A string of the form <count>d<sides>, for example `2d6`
-    * @return The resulting String
+    * @return The results of rolling them
     */
-  private[this] def getResultsForDiceSyntax(dice: String) = {
-    val rolls = dice.split("d").toList match {
-      case StringInt(count) :: StringInt(sides) :: Nil => for(i <- 1 to count) yield Random.nextInt(sides) + 1
-      case _ => Seq.empty
-    }
-    rolls match{
-      case Nil => None
-      case roll :: Nil => Some(s"**$roll**")
-      case _ => Some(s"( ${rolls.mkString(" + ")} ) = **${rolls.sum}**")
-    }
+  private def rollDndDice(dice: String): List[Int] = dice.split("d").toList match {
+    case StringInt(count) :: StringInt(sides) :: Nil => for(i <- (1 to count).toList) yield Random.nextInt(sides) + 1
+    case _ => Nil
+  }
+
+  /**
+    * Formats the List of dice rolls
+    */
+  private def format(rolls: List[Int]): String = rolls match{
+    case Nil => ShitTiniSays.rollUsage
+    case roll :: Nil => s"**$roll**"
+    case _ => s"( ${rolls.mkString(" + ")} ) = **${rolls.sum}**"
   }
 }

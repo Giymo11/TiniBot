@@ -12,7 +12,7 @@ resolvers += Resolver.jcenterRepo
 
 val scalaV = "2.11.8"
 
-lazy val shared = project.in(file("shared"))
+lazy val sharedJVM = project.in(file("shared"))
   .settings(
     scalaVersion := scalaV,
     name := "shared",
@@ -20,7 +20,9 @@ lazy val shared = project.in(file("shared"))
       "org.typelevel" %% "cats" % "0.6.1",
       "io.monix" %% "monix" % "2.0-RC9",
       "io.monix" %% "monix-cats" % "2.0-RC9",
-      "org.scala-lang.modules" %% "scala-java8-compat" % "0.8.0-RC3"
+      "org.scala-lang.modules" %% "scala-java8-compat" % "0.8.0-RC3",
+      "com.google.firebase" % "firebase-server-sdk" % "3.0.1",
+      "org.scalactic" %% "scalactic" % "3.0.0"
     )
   )
 
@@ -30,7 +32,8 @@ lazy val bot = project.in(file("bot"))
     name := "bot",
     libraryDependencies ++= Seq(
       "net.dv8tion" % "JDA" % "2.2.0_334",
-      "com.lihaoyi" %% "ammonite-ops" % "0.7.0"
+      "com.lihaoyi" %% "ammonite-ops" % "0.7.0",
+      "org.scalatest" %% "scalatest" % "3.0.0" % Test
     ),
 
     mainClass in assembly := Some("rip.hansolo.discord.tini.Main"),
@@ -42,7 +45,7 @@ lazy val bot = project.in(file("bot"))
         oldStrategy(x)
     }
   )
-  .dependsOn(shared)
+  .dependsOn(sharedJVM)
   // a alternative to this would be the sbt-native plugin
   .enablePlugins(DockerPlugin)
   .settings(
@@ -64,10 +67,10 @@ lazy val web = project.in(file("web"))
   .settings(
     scalaVersion := scalaV,
     name := "web"
-  ).dependsOn(shared)
+  ).dependsOn(sharedJVM)
 
 lazy val root = project.in(file("."))
-  .aggregate(shared, bot, web)
+  .aggregate(sharedJVM, bot, web)
   .settings(
     scalaVersion := scalaV,
     name := "root"
