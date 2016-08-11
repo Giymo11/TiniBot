@@ -1,7 +1,15 @@
 Tini is back!
 ==================
 
-This is a little discord Bot, aiming to be gimmicky and fun. No serious features allowed here!
+This is a little discord Bot, aiming to be gimmicky and fun. Maybe even a bit useful!
+
+Features not considered (at least for now) are:
+* Anything that can be done faster the "proper" way
+  - Yes, this means google search
+* Anything that has no long term use
+  - Funny gimmicks that wear off after a very short time are just not worth it
+* Music playing 
+  - there are special bots for this
 
 
 Contribution Guide
@@ -44,15 +52,18 @@ Until now, Tini can:
 Wishlist
 -----------------
 
-* Subscribe to a MAL profiles for announcements of activity
-* Subscribe to a Subreddits for announcements of activity
+* Repeat a command (every x minutes, etc)! <-- amazing technology!
+* Subscribe to MAL profiles for announcements of activity
+* Subscribe to Subreddits for announcements of activity
 * Subscribe to Github profiles for announcemnets of activity
 * Subscribe to Youtube profiles for announcements of activity
 * Subscribe to ... you get the point.
-* Maybe implement minigames like !heist.
+* Maybe implement minigames like 
+  - !heist.
+  - 8ball
+  - etc
 * Display random files from my private EpicCollecshun(TM) (request by genre)
-* Scrape and safe the lewd pictures that get postet.
-* !roll, 8ball, etc
+* Scrape and save the lewd pictures that get posted.
 * Check if a reddit thread exists for a given link, and post it.
 * Track the last time a given nick was in the channel, and the last time they spoke.
 * !russian-roulette
@@ -63,6 +74,37 @@ Wishlist
 * sometimes just change its status to inappropriate stuff.
 * Play silly sounds (from collection?)
 * Linking discord and other profiles e.g. Steam and Batlle.net
+
+Afterthoughts:
+* custom "choose one of a list" commands using gist or pastebin (like catfacts, insult, etc) and access them via `!tell add <name> <url>` and then  `!tell <name>`
+  - maybe even over-engineer it an do "tell add" and "tell set" to differentiating adding e.g. additional car facts. This could also be done via just message, i guess.
+* setting to change the bot-escape-char for one channel, e.g. `!setchar *` to now require `*command` all the time.
+* add points like NadekoFlowers to gamble in minigames
+  - heist!
+  - trivia game
+  - and more like that
+* at every command: notify users via PM if permissions are missing
+* instead of always typing the admin PW, be able to tell the bot that you are admin and then do your stuff
+* enable settings for if the bot should repspond via PM, via @mention, or just normally
+
+From Nadekobot issues:
+* google calendar integration
+* give members a group based on which game they are currently playing
+  - could then be used to have channels only for one game
+* macro commands
+  - to have custom command "scripts"
+* bridge functionality
+  - to IRC
+  - to channels between servers
+  - to Slack or even hangouts
+* !remindme
+  - email?
+  - pm?
+  - default = in current channel
+* CARDS AGAINS HUMANITY! 
+  - you get PMs for your white cards
+  - the result is always shown in the text channel where it started
+
 
 Version 2.0:
 * A web dashboard with all kinds of awesome stuff.
