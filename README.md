@@ -54,6 +54,9 @@ Wishlist
 
 * Repeat a command (every x minutes, etc)! <-- amazing technology!
 * Subscribe to MAL profiles for announcements of activity
+  - should only updates been shown? i guess so
+  - but then i have to store the already-known state. in DB? in memory?
+  - can i re-use the repeat command for this? how to differentiate?
 * Subscribe to Subreddits for announcements of activity
 * Subscribe to Github profiles for announcemnets of activity
 * Subscribe to Youtube profiles for announcements of activity
@@ -116,9 +119,10 @@ Moonshot:
 Libraries used
 -----------------
 
-* [JDA](https://github.com/DV8FromTheWorld/JDA). Way better than Discord4J.
-* [monix](https://github.com/monixio/monix) // amazing!
-* [cats](https://github.com/typelevel/cats/) // not much used yet.
+* [JDA](https://github.com/DV8FromTheWorld/JDA) // Way better than Discord4J. TODO: investigate multithreading efficiency.
+* [monix](https://github.com/monixio/monix) // amazing! 
+* [cats](https://github.com/typelevel/cats/) // Not used much yet. The Xor is nice I guess.
+* [scalatest](https://github.com/scalatest/scalatest) // My favourite testing lib. Not that I write many, tho.
 
 
 Plugins used
@@ -126,4 +130,4 @@ Plugins used
 
 * [sbt-updates](https://github.com/rtimush/sbt-updates)
 * [sbt-assembly](https://github.com/sbt/sbt-assembly)
-* [sbt-docker](https://github.com/marcuslonnberg/sbt-docker) // not used yet.
+* [sbt-docker](https://github.com/marcuslonnberg/sbt-docker)
