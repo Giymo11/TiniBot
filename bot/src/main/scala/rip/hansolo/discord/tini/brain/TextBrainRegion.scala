@@ -1,13 +1,17 @@
 package rip.hansolo.discord.tini.brain
 
+import java.io.File
 import java.time.temporal.ChronoUnit
 import java.util.function.Predicate
-import scala.collection.JavaConverters._
 
+import net.dv8tion.jda.MessageBuilder
+
+import scala.collection.JavaConverters._
 import net.dv8tion.jda.entities._
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.hooks.ListenerAdapter
+import net.dv8tion.jda.utils.AvatarUtil
 import rip.hansolo.discord.tini.resources._
 
 /**
@@ -31,10 +35,16 @@ class TextBrainRegion extends ListenerAdapter {
   override def onPrivateMessageReceived(event: PrivateMessageReceivedEvent): Unit = {
     val client = event.getJDA
     val content = event.getMessage.getContent.trim
+
+    println(content)
     content match {
-      case command if content.contains("!kill") && content.contains(Resources.authorPassword) =>
+      case command if command.contains("!kill") && command.contains(Resources.authorPassword) =>
         client.shutdown(true)
         TiniBrain.killYourself()
+      case command if command.contains("!botstatus") && command.contains(Resources.authorPassword) =>
+        val status = command.replace("!botstatus", "").replace(Resources.authorPassword, "").trim
+        client.getAccountManager.setGame(status)
+        event.getMessage.getChannel.sendMessageAsync("status set", null)
       case _ =>
         ()
     }
@@ -82,7 +92,8 @@ class TextBrainRegion extends ListenerAdapter {
       case "!catfacts credits" =>
         channel.sendMessageAsync(ShitTiniSays.credits, timer)
       case _ if TiniBrain.is8ball.get =>
-        channel.sendMessageAsync(ShitTiniSays.agreement, timer)
+        val response = new MessageBuilder().appendString(ShitTiniSays.agreement).setTTS(true).build()
+        channel.sendMessageAsync(response, timer)
       case _ => ()
     }
   }

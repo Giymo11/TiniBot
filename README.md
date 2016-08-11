@@ -54,6 +54,7 @@ Until now, Tini can:
 * `!roll <lower> <upper>`, example: `!roll 1 10`
 * `!roll <count>d<sides>`, example: `!roll 2d6`
 * `!bio` - to set your, and display other biographies
+* set the status when you PM her `!botstatus <password> <text>`
 * commit seppuku when you PM it `!kill <password>` where you substitute the <password> with the one in your `TINI_PASSWORD` environment variable.
 
 Wishlist
@@ -96,6 +97,8 @@ Afterthoughts:
 * at every command: notify users via PM if permissions are missing
 * instead of always typing the admin PW, be able to tell the bot that you are admin and then do your stuff
 * enable settings for if the bot should repspond via PM, via @mention, or just normally
+* have a general command to save stuff on a user / channel etc.
+* have a command to tag others with sth like "not to be trusted" etc.
 
 From Nadekobot issues:
 * google calendar integration
