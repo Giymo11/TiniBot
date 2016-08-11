@@ -17,7 +17,7 @@ object Roll {
     */
   def unapply(arg: String): Option[String] = arg match {
     case rollCommand if rollCommand.startsWith("!roll ") =>
-      val args = rollCommand.trim.split(" ").toList.tail
+      val args = rollCommand.split(" ").toList.tail
       Some(format(rollTheDice(args)))
     case _ => None
   }

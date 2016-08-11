@@ -41,6 +41,7 @@ object ShitTiniSays {
     |!shutup - I will not respond to every message anymore.
     |!8ballmode - I will start responding again. Default mode :stuck_out_tongue_winking_eye:
     |!roll <lower-bound> <upper-bound> - Returns a number between those numbers
+    |!bio - to set your and display other biographies
   """.stripMargin
 
   def shutupResponse = oneOf(
@@ -64,5 +65,9 @@ object ShitTiniSays {
     |`!roll <count>d<sides>`, example: `!roll 2d6`
   """.stripMargin
 
-
+  val bioUsage ="""
+    |Usage:
+    |`!bio set <text>` to set your biography
+    |`!bio <@mention>` to display someones biography
+  """.stripMargin
 }

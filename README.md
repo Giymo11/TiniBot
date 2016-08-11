@@ -21,19 +21,25 @@ Contribution Guide
 
 or
 
-1. Simply use IntelliJ to import the project from SBT source model. I just wanted to give activator a try.
+1. Download sbt
+2. (Optional) Open the project in IntelliJ using `File > New > Project from Existing Sources > Model: SBT`
 
 then:
+
+Create a new application in your discord developer console (only the Name is needed).
+Make this a Bot user.
 
 Create two environment variables:
 * TINI_TOKEN - the bot token from your discord authorization site.
 * TINI_PASSWORD - the password with which you want to kill the bot.
 
-To run it locally: `sbt bot/run`
+You can use the following ways to run the bot:
+* To run it locally: `sbt bot/run`
+* To assemble a jar-file: `sbt bot/assembly` and then `java -jar bot/target/scala-2.11/TiniBot.jar`
+* To build a docker image: `sbt bot/docker` and then `docker run -d -e "TINI_TOKEN=xxx" -e "TINI_PASSWORD=xxx" giymo11/tinibot`
 
-To assemble a jar-file: `sbt bot/assembly` and then `java -jar bot/target/scala-2.11/TiniBot.jar`
-
-To build a docker image: `sbt bot/docker` and then `docker run -d -e "TINI_TOKEN=xxx" -e "TINI_PASSWORD=xxx" giymo11/tinibot`
+Finally, to make your bot join, modify and then open this link: `https://discordapp.com/oauth2/authorize?client_id=<CLIENT_ID from discord>&scope=bot&permissions=3152896`
+Example: `https://discordapp.com/oauth2/authorize?client_id=211993132529614849&scope=bot&permissions=3152896`
 
 Usage
 -----------------

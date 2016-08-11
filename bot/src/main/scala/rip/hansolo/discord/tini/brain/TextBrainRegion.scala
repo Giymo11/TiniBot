@@ -29,16 +29,18 @@ class TextBrainRegion extends ListenerAdapter {
 
   override def onPrivateMessageReceived(event: PrivateMessageReceivedEvent): Unit = {
     val client = event.getJDA
-    val content = event.getMessage.getContent
-    if(content.contains("!kill") && content.contains(Resources.authorPassword)) {
-      client.shutdown(true)
-      TiniBrain.killYourself()
+    val content = event.getMessage.getContent.trim
+    content match {
+      case command if content.contains("!kill") && content.contains(Resources.authorPassword) =>
+        client.shutdown(true)
+        TiniBrain.killYourself()
+      case _ =>
+        ()
     }
   }
 
   /**
     *
-    * @param message
     * @param channel The TextChannel the conversation takes place. Because of this, we are in Guild territory
     */
   private[this] def handleMessage(message: Message, channel: TextChannel) = {
@@ -46,13 +48,22 @@ class TextBrainRegion extends ListenerAdapter {
     // TODO: Use a logger
     val timer = (myMessage: Message) => println("Sent response at " + myMessage.getTime + ", after " + ChronoUnit.MILLIS.between(myMessage.getTime, message.getTime))
 
-    implicit def functionToConsumer[T](func: T => Unit): java.util.function.Consumer[T] =
-      scala.compat.java8.FunctionConverters.asJavaConsumer(func)
-
     import rip.hansolo.discord.tini.commands._
+    import rip.hansolo.discord.tini.Util._
+
+    val command = message.getContent.trim
 
     // TODO: make more dynamic (as in, allow for later defined commands)
-    message.getContent match {
+    command match {
+      case Bio.Set(arg) =>
+        Bio.Set.setBio(arg.trim, message.getAuthor, message.getChannel)
+      case Bio.Get(_) =>
+        if(message.getMentionedUsers.size == 1)
+          Bio.Get.tellBio(message.getMentionedUsers.get(0), message.getChannel)
+        else
+          channel.sendMessageAsync(ShitTiniSays.bioUsage, null)
+      case Roll(result) =>
+        channel.sendMessageAsync(result, timer)
       case "!help" =>
         channel.sendMessageAsync(ShitTiniSays.help, timer)
       case "!shutup" =>
@@ -65,8 +76,6 @@ class TextBrainRegion extends ListenerAdapter {
         channel.sendMessageAsync(ShitTiniSays.catfact, timer)
       case "!catfacts credits" =>
         channel.sendMessageAsync(ShitTiniSays.credits, timer)
-      case Roll(result) =>
-        channel.sendMessageAsync(result, timer)
       case _ if TiniBrain.is8ball.get =>
         channel.sendMessageAsync(ShitTiniSays.agreement, timer)
       case _ => ()
