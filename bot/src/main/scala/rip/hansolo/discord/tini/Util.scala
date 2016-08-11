@@ -28,4 +28,7 @@ object Util {
 
   implicit def functionToConsumer[T](func: T => Unit): java.util.function.Consumer[T] =
     scala.compat.java8.FunctionConverters.asJavaConsumer(func)
+
+  implicit def functionToPredicate[T](func: T => Boolean): java.util.function.Predicate[T] =
+    scala.compat.java8.FunctionConverters.asJavaPredicate(func)
 }

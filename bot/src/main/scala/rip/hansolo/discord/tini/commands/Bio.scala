@@ -11,11 +11,18 @@ import rip.hansolo.discord.tini.brain.TiniBrain
 
 object Bio {
 
+  def unapply(arg: String): Option[String] = arg match {
+    case bioCommand if bioCommand.startsWith("!bio") =>
+      Some( arg.drop("!bio".length).trim )
+    case _ =>
+      None
+  }
+
   object Set {
 
     def unapply(command: String): Option[String] = command match {
-      case bioaddCommand if bioaddCommand.startsWith("!bio set ") =>
-        Some( bioaddCommand.drop("!bio set ".length) )
+      case bioaddCommand if bioaddCommand.startsWith("set ") =>
+        Some( bioaddCommand.drop("set ".length).trim )
       case _ =>
         None
     }
@@ -38,8 +45,8 @@ object Bio {
   object Get {
 
     def unapply(command: String): Option[String] = command match {
-      case bioaddCommand if bioaddCommand.startsWith("!bio") =>
-        Some( bioaddCommand.drop("!bio ".length) )
+      case bioaddCommand if bioaddCommand.startsWith("@") =>
+        Some( bioaddCommand )
       case _ =>
         None
     }

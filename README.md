@@ -53,6 +53,7 @@ Until now, Tini can:
 * `!8ballmode` - do that again.
 * `!roll <lower> <upper>`, example: `!roll 1 10`
 * `!roll <count>d<sides>`, example: `!roll 2d6`
+* `!bio` - to set your, and display other biographies
 * commit seppuku when you PM it `!kill <password>` where you substitute the <password> with the one in your `TINI_PASSWORD` environment variable.
 
 Wishlist
