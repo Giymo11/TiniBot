@@ -2,58 +2,81 @@ package rip.hansolo.discord.tini.commands
 
 import com.google.firebase.database.DatabaseReference.CompletionListener
 import com.google.firebase.database.{DataSnapshot, DatabaseError, DatabaseReference, ValueEventListener}
-import net.dv8tion.jda.entities.{MessageChannel, User}
+import net.dv8tion.jda.entities.{Message, MessageChannel, User}
 import rip.hansolo.discord.tini.brain.TiniBrain
+import rip.hansolo.discord.tini.resources.ShitTiniSays
+
+import rip.hansolo.discord.tini.Util._
 
 /**
   * Created by Giymo11 on 11.08.2016.
   */
 
-object Bio {
+object Bio extends Command {
 
-  def unapply(arg: String): Option[String] = arg match {
-    case bioCommand if bioCommand.startsWith("!bio") =>
-      Some( arg.drop("!bio".length).trim )
+  override def prefix: String = "!bio"
+
+  override def exec(args: String, message: Message): Unit = args match {
+    case Bio.Set(arg) =>
+      Bio.Set.exec(arg, message)
+    case Bio.Get(_) =>
+      Bio.Get.exec(null, message)
     case _ =>
-      None
+      sendUsage(message.getChannel)
   }
 
-  object Set {
+  def sendUsage(channel: MessageChannel): Unit = channel.sendMessageAsync(ShitTiniSays.bioUsage, null)
 
-    def unapply(command: String): Option[String] = command match {
-      case bioaddCommand if bioaddCommand.startsWith("set ") =>
-        Some( bioaddCommand.drop("set ".length).trim )
-      case _ =>
-        None
-    }
+  def bioOf(user: User): DatabaseReference = TiniBrain.users.child(user.getId + "/bio")
 
-    def setBio(arg: String, author: User, channel: MessageChannel): Unit = {
-      val users = TiniBrain.firebaseDatabase.getReference("users")
-      val id = author.getId
 
-      import rip.hansolo.discord.tini.Util._
+  object Set extends Command {
+
+    def prefix = "set"
+
+    override def exec(args: String, message: Message): Unit = {
+      val author = message.getAuthor
+      val channel = message.getChannel
+
       val errorCallback: CompletionListener = (dbError: DatabaseError, dbRef: DatabaseReference) =>
         Option(dbError) match {
-          case Some(error) => channel.sendMessageAsync("There was an error setting your Bio! :( \n" + dbError.getMessage + "\n" + dbError.getDetails, null)
-          case None => channel.sendMessageAsync("Bio updated successfully!", null)
+          case Some(error) =>
+            channel.sendMessageAsync(
+              s"""There was an error setting your Bio! :(
+                 |${dbError.getMessage}
+                 |${dbError.getDetails}""".stripMargin, null)
+          case None =>
+            channel.sendMessageAsync("Bio updated successfully!", null)
         }
 
-      users.child(id).child("bio").setValue(arg, errorCallback)
+      bioOf(author).setValue(args, errorCallback)
     }
   }
 
-  object Get {
+  object Get extends Command{
 
-    def unapply(command: String): Option[String] = command match {
-      case bioaddCommand if bioaddCommand.startsWith("@") =>
-        Some( bioaddCommand )
-      case _ =>
-        None
-    }
+    override def prefix: String = "@"
 
-    def tellBio(user: User, channel: MessageChannel): Unit = {
+    /**
+      *
+      * @param command the full command (excluding signal-character)
+      * @return Some(args) with args being the parameter for the exec method. None if it did not match this Command
+      */
+    override def unapply(command: String): Option[String] = matchesPrefix(command)
 
-      class BioEventListener() extends ValueEventListener {
+    override def exec(args: String, message: Message): Unit = {
+
+      val channel = message.getChannel
+
+      val otherMentions: List[User] = {
+        import scala.collection.JavaConverters._
+        val mentions = message.getMentionedUsers.asScala.toList
+
+        val isSelf = (user: User) => user.getId == message.getJDA.getSelfInfo.getId
+        mentions.filterNot(isSelf)
+      }
+
+      class BioEventListener(user: User) extends ValueEventListener {
         override def onDataChange(dataSnapshot: DataSnapshot) {
           println(dataSnapshot.getValue)
           channel.sendMessageAsync(s"Bio of ${user.getAsMention} is:\n" + dataSnapshot.getValue(classOf[String]), null)
@@ -63,7 +86,12 @@ object Bio {
         }
       }
 
-      TiniBrain.users.child(s"${user.getId}/bio").addListenerForSingleValueEvent(new BioEventListener)
+      otherMentions match {
+        case user :: Nil =>
+          bioOf(user).addListenerForSingleValueEvent(new BioEventListener(user))
+        case _ =>
+          sendUsage(channel)
+      }
     }
   }
 }

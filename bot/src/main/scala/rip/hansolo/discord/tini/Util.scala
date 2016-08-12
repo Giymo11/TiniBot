@@ -31,4 +31,6 @@ object Util {
 
   implicit def functionToPredicate[T](func: T => Boolean): java.util.function.Predicate[T] =
     scala.compat.java8.FunctionConverters.asJavaPredicate(func)
+
+  val isWhitespace = (char: Char) => char == ' ' || System.lineSeparator().contains(char) || char == '\n'
 }

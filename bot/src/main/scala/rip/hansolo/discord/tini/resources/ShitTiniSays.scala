@@ -10,6 +10,13 @@ import rip.hansolo.discord.tini.Util._
   * This is where all the static responses are
   */
 object ShitTiniSays {
+  val catUsage =
+    """
+      |Usage:
+      |`!catfacts` to get catfacts
+      |`!catfacts credits` to get those
+    """.stripMargin
+
 
   private[this] val catfacts = read.lines ! resource / "catfacts.txt"
   def catfact = oneOf(catfacts :_*)

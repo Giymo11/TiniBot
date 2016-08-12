@@ -1,8 +1,9 @@
 package rip.hansolo.discord.tini.commands
 
 
-import scala.util.Random
+import net.dv8tion.jda.entities.Message
 
+import scala.util.Random
 import rip.hansolo.discord.tini.Util._
 import rip.hansolo.discord.tini.resources.ShitTiniSays
 
@@ -10,16 +11,13 @@ import rip.hansolo.discord.tini.resources.ShitTiniSays
 /**
   * The class responsible for the `!roll` command.
   */
-object Roll {
-  /**
-    * Check if the command was a roll and returns the result if applicable
-    * @return Some(result) of the roll if the argument was for a roll, or None if the argument was not for a roll
-    */
-  def unapply(arg: String): Option[String] = arg match {
-    case rollCommand if rollCommand.startsWith("!roll ") =>
-      val args = rollCommand.split(" ").toList.tail
-      Some(format(rollTheDice(args)))
-    case _ => None
+object Roll extends Command {
+
+  override def prefix: String = "!roll"
+
+  override def exec(args: String, message: Message): Unit = {
+    val argList = args.split(" ").toList
+    message.getChannel.sendMessageAsync( format(rollTheDice(argList)), null)
   }
 
   /**

@@ -9,12 +9,15 @@ import com.google.firebase.{FirebaseApp, FirebaseOptions}
 
 import scala.concurrent.Promise
 import monix.execution.atomic.Atomic
+import rip.hansolo.discord.tini.commands.{Bio, Command}
 
 
 /**
   * Contains the state of Tini's Brain
   */
 object TiniBrain {
+  def register(command: Command) = println("command registered: " + command)
+
 
   /**
     * If this promise is fulfilled, Tini will kill itself and take the JVM with her
