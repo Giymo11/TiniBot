@@ -1,3 +1,4 @@
+  
 Tini is back!
 ==================
 
@@ -11,6 +12,7 @@ Features not considered (at least for now) are:
 * Music playing 
   - there are special bots for this
 
+Support of every kind: [Join the BotParty](https://discord.gg/xXGSbrs)
 
 Contribution Guide
 -----------------
@@ -24,7 +26,7 @@ or
 1. Download sbt
 2. (Optional) Open the project in IntelliJ using `File > New > Project from Existing Sources > Model: SBT`
 
-then:
+### To work on the Bot:
 
 Create a new application in your discord developer console (only the Name is needed).
 Make this a Bot user.
@@ -37,9 +39,19 @@ You can use the following ways to run the bot:
 * To run it locally: `sbt bot/run`
 * To assemble a jar-file: `sbt bot/assembly` and then `java -jar bot/target/scala-2.11/TiniBot.jar`
 * To build a docker image: `sbt bot/docker` and then `docker run -d -e "TINI_TOKEN=xxx" -e "TINI_PASSWORD=xxx" giymo11/tinibot`
-
+  - Of course you have to replace every `giymo11` with your own docker name (see build.sbt)
+  
 Finally, to make your bot join, modify and then open this link: `https://discordapp.com/oauth2/authorize?client_id=<CLIENT_ID from discord>&scope=bot&permissions=3152896`
 Example: `https://discordapp.com/oauth2/authorize?client_id=211993132529614849&scope=bot&permissions=3152896`
+
+### To work on the website:
+You can use the following ways to run the bot:
+* To run it locally: `sbt web/run`
+* To assemble a jar-file: `sbt web/assembly` and then `java -jar bot/target/scala-2.11/TiniWeb.jar`
+* To build a docker image: `sbt web/docker` and then `docker run -d giymo11/tiniweb`
+  - Of course you have to replace every `giymo11` with your own docker name (see build.sbt)
+  
+You can stop the server by navigating to `/shutdown?password=xxx`, where you replace `xxx` with the password set in the `Main` object.
 
 Usage
 -----------------
@@ -99,6 +111,7 @@ Afterthoughts:
 * enable settings for if the bot should repspond via PM, via @mention, or just normally
 * have a general command to save stuff on a user / channel etc.
 * have a command to tag others with sth like "not to be trusted" etc.
+* disable writing in a channel - delete all new messages
 
 From Nadekobot issues:
 * google calendar integration
