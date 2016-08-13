@@ -47,6 +47,7 @@ Example: `https://discordapp.com/oauth2/authorize?client_id=211993132529614849&s
 ### To work on the website:
 You can use the following ways to run the bot:
 * To run it locally: `sbt web/run`
+  - Or, even better, to have it automatically reload and display changes after you save a file: `sbt ~web/re-start`
 * To assemble a jar-file: `sbt web/assembly` and then `java -jar bot/target/scala-2.11/TiniWeb.jar`
 * To build a docker image: `sbt web/docker` and then `docker run -d giymo11/tiniweb`
   - Of course you have to replace every `giymo11` with your own docker name (see build.sbt)

@@ -19,9 +19,8 @@ object Main {
     Ok (
       Buf.Utf8(
         Content.fullPage(
-          title = "Awoo",
           include = Content.indexFrag)
-          .render
+        .render
       )
     )
   }
