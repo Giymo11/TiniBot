@@ -12,6 +12,7 @@ Features not considered (at least for now) are:
 * Music playing 
   - there are special bots for this
 
+The Website: [discord.hansolo.rip](https://discord.hansolo.rip)
 Support of every kind: [Join the BotParty](https://discord.gg/xXGSbrs)
 
 Contribution Guide
@@ -35,11 +36,19 @@ Create two environment variables:
 * TINI_TOKEN - the bot token from your discord authorization site.
 * TINI_PASSWORD - the password with which you want to kill the bot.
 
+Create a new firebase app. 
+Go to "Permissions" and add a Service Account. 
+Make sure to give it the role "Project Editor". 
+Generate and download the .json key file. 
+Rename it to "tinibot-firebase.json". 
+Drop it in the folder of your executable.
+
 You can use the following ways to run the bot:
 * To run it locally: `sbt bot/run`
 * To assemble a jar-file: `sbt bot/assembly` and then `java -jar bot/target/scala-2.11/TiniBot.jar`
 * To build a docker image: `sbt bot/docker` and then `docker run -d -e "TINI_TOKEN=xxx" -e "TINI_PASSWORD=xxx" giymo11/tinibot`
   - Of course you have to replace every `giymo11` with your own docker name (see build.sbt)
+  - Don't forget to mount your `tinbot-firebase.json` on the appropriate volume!
   
 Finally, to make your bot join, modify and then open this link: `https://discordapp.com/oauth2/authorize?client_id=<CLIENT_ID from discord>&scope=bot&permissions=3152896`
 Example: `https://discordapp.com/oauth2/authorize?client_id=211993132529614849&scope=bot&permissions=3152896`
