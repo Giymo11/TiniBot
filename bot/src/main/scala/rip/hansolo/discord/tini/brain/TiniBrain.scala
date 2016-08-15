@@ -10,6 +10,7 @@ import com.google.firebase.{FirebaseApp, FirebaseOptions}
 import scala.concurrent.Promise
 import monix.execution.atomic.Atomic
 import rip.hansolo.discord.tini.commands.{Bio, Command}
+import rip.hansolo.discord.tini.resources.TiniDriveImages
 
 
 /**
@@ -27,8 +28,7 @@ object TiniBrain {
 
   def killYourself() = prophecy.success()
 
-  val firebaseApp = {
-
+  lazy val firebaseApp = {
     val options = new FirebaseOptions.Builder()
       // if you want your own credentials here, follow the Guide at the firebase docs and then make sure to give the
       // ServiceAccount "Project -> Editor" permissions in the IAM settings (under Permissions in Firebase Console)
@@ -38,6 +38,7 @@ object TiniBrain {
 
     FirebaseApp.initializeApp(options)
   }
-  val firebaseDatabase = FirebaseDatabase.getInstance()
-  val users = firebaseDatabase.getReference("users")
+  lazy val firebaseDatabase = FirebaseDatabase.getInstance()
+  lazy val users = firebaseDatabase.getReference("users")
+
 }

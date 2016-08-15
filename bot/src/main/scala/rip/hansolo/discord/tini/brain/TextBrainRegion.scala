@@ -77,6 +77,7 @@ class TextBrainRegion extends ListenerAdapter {
       case "!8ballmode" =>
         TiniBrain.is8ball.set(true)
         channel.sendMessageAsync(ShitTiniSays.agreement, timer)
+      case DriveImage(args) => DriveImage.exec(args,message)
       case _ if TiniBrain.is8ball.get =>
         val response = new MessageBuilder().appendString(ShitTiniSays.agreement).setTTS(true).build()
         channel.sendMessageAsync(response, timer)

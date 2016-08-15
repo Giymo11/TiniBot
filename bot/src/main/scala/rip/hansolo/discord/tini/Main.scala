@@ -30,7 +30,7 @@ object Main extends TaskApp{
         })
         .addListener(new TextBrainRegion)
         .buildAsync()
-      
+
       Cancelable.empty
     }
   }.memoize
