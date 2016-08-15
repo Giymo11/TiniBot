@@ -5,9 +5,11 @@ import com.twitter.finagle.{Http, ListeningServer, Service}
 import com.twitter.finagle.http.{HeaderMap, Request, Response}
 import com.twitter.io.Buf
 import com.twitter.util.Await
+
 import io.finch.{body => _, head => _, _}
 import io.finch._
-import rip.hansolo.discord.tiniweb.content.Root
+
+import rip.hansolo.discord.tiniweb.content.IndexPage
 
 
 object Main {
@@ -18,8 +20,7 @@ object Main {
   val index: Endpoint[Buf] = get(/) {
     Ok (
       Buf.Utf8(
-        Root.pageSkeletonWith(
-          bodyFrag = Root.indexFrag)
+        IndexPage.rootPage
         .render
       )
     )
