@@ -33,4 +33,6 @@ object Util {
     scala.compat.java8.FunctionConverters.asJavaPredicate(func)
 
   val isWhitespace = (char: Char) => char == ' ' || System.lineSeparator().contains(char) || char == '\n'
+
+  def isEnvSet(name: String): Boolean = System.getenv(name) != null || !System.getenv(name).isEmpty
 }

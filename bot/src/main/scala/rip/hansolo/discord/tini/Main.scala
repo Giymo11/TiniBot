@@ -3,10 +3,9 @@ package rip.hansolo.discord.tini
 
 import monix.eval.{Task, TaskApp}
 import monix.execution.Cancelable
-import monix.execution.Scheduler.Implicits.global
-import net.dv8tion.jda.{JDA, JDABuilder}
 import net.dv8tion.jda.events.ReadyEvent
 import net.dv8tion.jda.hooks.ListenerAdapter
+import net.dv8tion.jda.{JDA, JDABuilder}
 import rip.hansolo.discord.tini.brain._
 import rip.hansolo.discord.tini.gdrive.TiniDriveImages
 import rip.hansolo.discord.tini.resources._
@@ -18,7 +17,7 @@ object Main extends TaskApp{
 
   val clientReadyTask: Task[JDA] = Task.create[JDA] {
     (scheduler, callback) => {
-      if( Resources.token.isEmpty || Resources.authorPassword.isEmpty )
+      if( !Util.isEnvSet("TINI_TOKEN") || !Util.isEnvSet("TINI_PASSWORD") )
         callback.onError(new RuntimeException("TINI_TOKEN or TINI_PASSWORD is not set!"))
 
       new JDABuilder()
