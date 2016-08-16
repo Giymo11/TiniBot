@@ -1,16 +1,16 @@
 package rip.hansolo.discord.tini
 
 
-import monix.eval.{Task, TaskApp}
+import monix.eval._
 import monix.execution.Cancelable
-import monix.execution.Scheduler.Implicits.global
 
-import net.dv8tion.jda.{JDA, JDABuilder}
 import net.dv8tion.jda.events.ReadyEvent
 import net.dv8tion.jda.hooks.ListenerAdapter
+import net.dv8tion.jda._
 
 import rip.hansolo.discord.tini.brain._
 import rip.hansolo.discord.tini.resources._
+
 
 /**
   * Created by Giymo11 on 08.08.2016.
@@ -19,7 +19,7 @@ object Main extends TaskApp{
 
   val clientReadyTask: Task[JDA] = Task.create[JDA] {
     (scheduler, callback) => {
-      if( Resources.token.isEmpty || Resources.authorPassword.isEmpty )
+      if( !Util.isEnvSet("TINI_TOKEN") || !Util.isEnvSet("TINI_PASSWORD") )
         callback.onError(new RuntimeException("TINI_TOKEN or TINI_PASSWORD is not set!"))
 
       new JDABuilder()
@@ -43,6 +43,9 @@ object Main extends TaskApp{
       val channel = guild.getPublicChannel
       channel.sendMessageAsync(ShitTiniSays.selfAnnouncement, null)
     }
+    TiniBrain.isLoadingImages.set(true)
+    println("MimeTypes: " + TiniBrain.files.map(_.getMimeType).toSet.mkString("\n"))
+    TiniBrain.isLoadingImages.set(false)
   }
 
   override def runc: Task[Unit] = work.flatMap((_) => Task.fromFuture(TiniBrain.prophecy.future)) // weird hack, but so be it.

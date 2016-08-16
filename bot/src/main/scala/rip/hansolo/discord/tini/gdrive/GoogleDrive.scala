@@ -1,12 +1,26 @@
 package rip.hansolo.discord.tini.gdrive
 
-import java.io.{IOException, InputStream}
 
-import com.google.api.client.http.GenericUrl
+import java.io.InputStream
+
+import scala.collection.JavaConverters._
+import scala.util.{Failure, Success, Try}
+
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.model.File
 
-import scala.collection.JavaConverters._
+
+object GoogleDrive {
+
+  val folderType = "application/vnd.google-apps.folder"
+  val fileType = "application/octet-stream"
+  val imageType = "image/"
+
+  def getImages(files: Seq[File]) = files.filter(file =>
+    file.getMimeType != null && file.getMimeType.contains(imageType)
+  )
+  def getFolders(files: Seq[File]) = files.filter(_.getMimeType == folderType)
+}
 
 /**
   * Created by: 
@@ -15,52 +29,81 @@ import scala.collection.JavaConverters._
   * @version 14.08.2016
   */
 class GoogleDrive(drive: Drive) {
-  val folderType = "application/vnd.google-apps.folder"
-  val fileType = "application/octet-stream"
-  val imageType = "image/"
 
-  def getRoot: File = drive.files.get("root").execute
+  def getFileFromPath(path: String): Option[File] = searchPathInParent(path.dropWhile(_ == '/').split("/"), "root").headOption
 
-
-  def getFolders(parent: File) = getDriveEntries(parent, folderType)
-
-  def getFiles(parent: File) = getDriveEntries(parent, fileType)
-
-  def getImages(parent: File) = getDriveEntries(parent, imageType)
-
-  def getDriveEntries(parent: File, mimeType: String = null, limit: Int = 10000): List[File] = {
-    if (mimeType == null) {
-      drive.files.list.setQ(s"'%s' in parents and trashed = false".format(parent.getId))
-        .setMaxResults(limit)
-        .execute.getItems.asScala.toList
-    } else {
-      drive.files.list.setQ(s"'%s' in parents and mimeType contains '%s' and trashed = false".format(parent.getId, mimeType))
-        .setMaxResults(limit)
-        .execute.getItems.asScala.toList
-    }
+  def searchPathInParent(pathElements: Seq[String], parentId: String): Seq[File] = pathElements.toList match {
+    case Nil =>
+      searchFolder(parentId)
+    case head :: Nil =>
+      searchFolder(parentId, head)
+    case head :: tail =>
+      val files = searchFolder(parentId, head, mimeType = GoogleDrive.folderType)
+      for (result <- files) {
+        val children = searchPathInParent(tail, result.getId)
+        if (children != null && children.nonEmpty) // eager!
+          return children
+      }
+      Seq()
   }
 
-  def getFileByPath(path: String): Option[File] = {
-    val pathElements = path.split("/")
-    var currentFile = getRoot
+  private def searchFolder(parentId: String, fileName: String = null, pageToken: String = null, mimeType: String = null): Seq[File] = {
 
-    for (file <- pathElements) {
-      val f = getDriveEntries(currentFile).find(_.getTitle == file)
+    val fields = "files(fullFileExtension,id,imageMediaMetadata(height,width),lastModifyingUser/displayName,sharingUser/displayName,mimeType,name,size,trashed,webContentLink),nextPageToken"
 
-      if (f.isEmpty) return None
-      else currentFile = f.get
-    }
+    val nameQuery = if(fileName == null) "" else s"name = '$fileName' and "
+    val mimeTypeQuery = if (mimeType != null) s" and mimeType contains '$mimeType'" else ""
 
-    Some(currentFile)
+    val para = nameQuery + s"'$parentId' in parents and trashed = false" + mimeTypeQuery
+
+    println(para)
+
+    val query = drive.files.list()
+      .setQ(para)
+      .setFields(fields)
+      .setPageSize(1000)
+
+    val files = if(pageToken == null)
+      query.execute()
+    else
+      query.setPageToken(pageToken).execute()
+
+    if(files.getNextPageToken == null)
+      files.getFiles.asScala
+    else
+      files.getFiles.asScala ++ searchFolder(parentId, fileName, files.getNextPageToken, mimeType)
   }
 
-  def getFileInputStream(file: File): Option[InputStream] = {
-    if (file.getDownloadUrl == null || file.getDownloadUrl.isEmpty) return None
+  def getFilesForParent(parentFile: File): Seq[File] = Try(searchFolder(parentFile.getId)) match {
+    case Success(someFiles) =>
+      val files = someFiles.filter(_ != null).filter(!_.getName.contains("TINI_NO"))
+      files ++ GoogleDrive.getFolders(files).flatMap(getFilesForParent)
+    case Failure(exception) =>
+      println(exception.getMessage + " for file " + parentFile.getName)
+      Seq()
+  }
 
-    try {
-      Some(drive.getRequestFactory.buildGetRequest(new GenericUrl(file.getDownloadUrl)).execute.getContent)
-    } catch {
-      case io: IOException => None
+  def getFileInputStreamAndName(file: File): Option[(InputStream, String)] = {
+    Try(
+      (drive.files().get(file.getId).executeMediaAsInputStream(),
+        file.getName)
+    ).toOption
+  }
+
+  def initializeFiles(folderPath: String): Vector[File] = {
+    if( folderPath == null || folderPath.isEmpty ) {
+      println("No Google Drive Path specified!")
+      Vector.empty
+    } else getFileFromPath(folderPath) match {
+      case Some(parentFile) =>
+        println("Master folder: " + parentFile.getName)
+        val files = getFilesForParent(parentFile)
+        println(s"Found ${files.size} Files in Google Drive Folder")
+        files.toVector
+      case None =>
+        println("no files found")
+        Vector.empty
     }
   }
 }
+

@@ -1,11 +1,15 @@
 package rip.hansolo.discord.tini
 
+
+import scala.util.Random
+
 import cats.data.Xor
+
 import com.google.firebase.database.DatabaseReference.CompletionListener
 import com.google.firebase.database.{DatabaseError, DatabaseReference}
 
 import scala.language.implicitConversions
-import scala.util.Random
+
 
 /**
   * Created by Giymo11 on 09.08.2016.
@@ -33,4 +37,6 @@ object Util {
     scala.compat.java8.FunctionConverters.asJavaPredicate(func)
 
   val isWhitespace = (char: Char) => char == ' ' || System.lineSeparator().contains(char) || char == '\n'
+
+  def isEnvSet(name: String): Boolean = System.getenv(name) != null || !System.getenv(name).isEmpty
 }

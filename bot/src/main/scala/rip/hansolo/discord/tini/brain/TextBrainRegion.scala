@@ -10,6 +10,9 @@ import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.hooks.ListenerAdapter
 
 import rip.hansolo.discord.tini.resources._
+import rip.hansolo.discord.tini.commands._
+import rip.hansolo.discord.tini.Util._
+
 
 /**
   * The brain region for responding to text messages
@@ -56,9 +59,6 @@ class TextBrainRegion extends ListenerAdapter {
     // TODO: Use a logger
     val timer = (myMessage: Message) => println("Sent response at " + myMessage.getTime + ", after " + ChronoUnit.MILLIS.between(myMessage.getTime, message.getTime))
 
-    import rip.hansolo.discord.tini.commands._
-    import rip.hansolo.discord.tini.Util._
-
     val command = message.getContent.trim
 
     // TODO: make more dynamic (as in, allow for later defined commands)
@@ -77,7 +77,8 @@ class TextBrainRegion extends ListenerAdapter {
       case "!8ballmode" =>
         TiniBrain.is8ball.set(true)
         channel.sendMessageAsync(ShitTiniSays.agreement, timer)
-      case DriveImage(args) => DriveImage.exec(args,message)
+      case DriveImage(args) =>
+        DriveImage.exec(args, message)
       case _ if TiniBrain.is8ball.get =>
         val response = new MessageBuilder().appendString(ShitTiniSays.agreement).setTTS(true).build()
         channel.sendMessageAsync(response, timer)

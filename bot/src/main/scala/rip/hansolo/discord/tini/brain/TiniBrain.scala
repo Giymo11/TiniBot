@@ -1,16 +1,16 @@
 package rip.hansolo.discord.tini.brain
 
 
-import java.io.{BufferedReader, FileInputStream, InputStreamReader}
+import java.io._
 
-import cats.data.Xor
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.{FirebaseApp, FirebaseOptions}
 
 import scala.concurrent.Promise
 import monix.execution.atomic.Atomic
-import rip.hansolo.discord.tini.commands.{Bio, Command}
-import rip.hansolo.discord.tini.resources.TiniDriveImages
+import rip.hansolo.discord.tini.commands._
+import rip.hansolo.discord.tini.gdrive.{GoogleDrive, GoogleDriveBuilder}
+import rip.hansolo.discord.tini.resources.Resources
 
 
 /**
@@ -19,16 +19,18 @@ import rip.hansolo.discord.tini.resources.TiniDriveImages
 object TiniBrain {
   def register(command: Command) = println("command registered: " + command)
 
-
   /**
     * If this promise is fulfilled, Tini will kill itself and take the JVM with her
     */
   val prophecy = Promise[Unit]
   val is8ball = Atomic(false)
 
+  val isLoadingImages = Atomic(true)
+
   def killYourself() = prophecy.success()
 
-  lazy val firebaseApp = {
+  // no lazy because we want to know about failures at startup!
+  val firebaseApp = {
     val options = new FirebaseOptions.Builder()
       // if you want your own credentials here, follow the Guide at the firebase docs and then make sure to give the
       // ServiceAccount "Project -> Editor" permissions in the IAM settings (under Permissions in Firebase Console)
@@ -38,7 +40,12 @@ object TiniBrain {
 
     FirebaseApp.initializeApp(options)
   }
-  lazy val firebaseDatabase = FirebaseDatabase.getInstance()
-  lazy val users = firebaseDatabase.getReference("users")
+  val firebaseDatabase = FirebaseDatabase.getInstance()
+  val users = firebaseDatabase.getReference("users")
 
+  val gDrive = new GoogleDrive(GoogleDriveBuilder.drive)
+
+  val files = gDrive.initializeFiles(Resources.gdriveFolderName)
+
+  val images = GoogleDrive.getImages(files)
 }
