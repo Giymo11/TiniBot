@@ -77,6 +77,8 @@ class TextBrainRegion extends ListenerAdapter {
         channel.sendMessageAsync(ShitTiniSays.help, timer)
       case "!shutup" =>
         TiniBrain.is8ball.set(false)
+        Repeat.shutup()
+
         channel.sendMessageAsync(ShitTiniSays.shutupResponse, timer)
       case "!8ballmode" =>
         TiniBrain.is8ball.set(true)
