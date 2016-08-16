@@ -58,7 +58,7 @@ class TextBrainRegion extends ListenerAdapter {
     *
     * @param channel The TextChannel the conversation takes place. Because of this, we are in Guild territory
     */
-  private[this] def handleMessage(message: Message, channel: TextChannel) = {
+  def handleMessage(message: Message, channel: TextChannel) = {
 
     // TODO: Use a logger
     val timer = (myMessage: Message) => println("Sent response at " + myMessage.getTime + ", after " + ChronoUnit.MILLIS.between(myMessage.getTime, message.getTime))
@@ -84,10 +84,12 @@ class TextBrainRegion extends ListenerAdapter {
       case Imitate(args) => Imitate.exec(args, message)
       case DriveImage(args) =>
         DriveImage.exec(args, message)
+      case Repeat(args) => Repeat.exec(args,message)
       case _ if TiniBrain.is8ball.get =>
         val response = new MessageBuilder().appendString(ShitTiniSays.agreement).setTTS(true).build()
         channel.sendMessageAsync(response, timer)
       case _ => logMessage(message)
+      //case _ =>
     }
   }
 }
