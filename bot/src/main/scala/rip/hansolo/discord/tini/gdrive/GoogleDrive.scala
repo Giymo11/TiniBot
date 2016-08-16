@@ -67,10 +67,10 @@ class GoogleDrive(drive: Drive) {
 
     val fields = "files(fullFileExtension,id,imageMediaMetadata(height,width),lastModifyingUser/displayName,sharingUser/displayName,mimeType,name,size,trashed,webContentLink),nextPageToken"
 
-    val nameQuery = if(fileName == null) "" else "name = \"" + fileName + "\" and "
-    val mimeTypeQuery = if (mimeType != null) s" and mimeType contains $mimeType" else ""
+    val nameQuery = if(fileName == null) "" else "name = '" + fileName + "' and "
+    val mimeTypeQuery = if (mimeType != null) s" and mimeType contains '$mimeType'" else ""
 
-    val para = nameQuery + "\"" + parentId + "\"" + " in parents and trashed = false" + mimeTypeQuery
+    val para = nameQuery + "'" + parentId + "'" + " in parents and trashed = false" + mimeTypeQuery
 
     println(para)
 
