@@ -37,7 +37,8 @@ lazy val bot = project.in(file("bot"))
       "net.dv8tion" % "JDA" % "2.2.0_334",
       "com.lihaoyi" %% "ammonite-ops" % "0.7.0",
       "com.google.apis" % "google-api-services-drive" % "v2-rev232-1.22.0",
-      "org.scalatest" %% "scalatest" % "3.0.0" % Test
+      "org.scalatest" %% "scalatest" % "3.0.0" % Test,
+      "com.mashape.unirest" % "unirest-java" % "unirest-java"
     ),
 
     mainClass in assembly := Some("rip.hansolo.discord.tini.Main"),

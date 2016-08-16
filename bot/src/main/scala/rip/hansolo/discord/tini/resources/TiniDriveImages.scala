@@ -3,7 +3,8 @@ package rip.hansolo.discord.tini.resources
 import java.nio.file.{Files, StandardCopyOption}
 
 import com.google.api.services.drive.model.File
-import rip.hansolo.discord.tini.gdrive.{GoogleDrive, GoogleDriveBuilder}
+import rip.hansolo.discord.tini.gdrive._
+import rip.hansolo.discord.tini.Util._
 
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
@@ -20,7 +21,7 @@ object TiniDriveImages {
   val gDrive = new GoogleDrive(GoogleDriveBuilder.getDrive)
   val images = loadAllImages()
 
-  def driveImage = downloadFile( getRandom( images ) )
+  def driveImage = downloadFile( oneOf(images: _*) )
 
   def loadAllImages(): List[File] = {
     if( driveFolder == null || driveFolder.isEmpty ) {
@@ -38,6 +39,8 @@ object TiniDriveImages {
     images.toList
   }
 
+  def driveImageStream = gDrive.getFileInputStream( oneOf(images: _*))
+
   def downloadFile(file: File): Option[java.io.File] = {
     val in = gDrive.getFileInputStream(file)
     if( in.isEmpty ) return None
@@ -48,7 +51,5 @@ object TiniDriveImages {
     Files.copy(in.get,tmp.toPath,StandardCopyOption.REPLACE_EXISTING)
     Some(tmp)
   }
-
-  def getRandom(list: List[File]) = list(Random.nextInt(list.size))
 
 }
