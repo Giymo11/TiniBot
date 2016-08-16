@@ -36,7 +36,7 @@ object TiniDriveImages {
   def getFolders(files: Seq[File]) = files.filter(_.getMimeType == folderType)
 
   def initializeFiles(): Vector[File] = {
-    if( Util.isEnvSet("TINI_GOOGLE_DRIVE") ) {
+    if( !Util.isEnvSet("TINI_GOOGLE_DRIVE") ) {
       println("No Google Drive Path specified!")
       return Vector.empty
     }
@@ -75,15 +75,13 @@ object TiniDriveImages {
         Seq()
     }*/
 
-    //println(s"Found ${images.size} Images in Google Drive Folder")
-    println(s"Found ${images2.size} Images in Google Drive Folder")
-
-    images2.toVector
+    //Limit files to file size
+    images2.filter(_.size() < (8 << 20) ).toVector
   }
 
   def driveImageStream(maxSize: Long): Option[(InputStream, String)] = {
-
     val smalls = images //.filter(_.getSize <= maxSize)
+
 
     val file = oneOf(
       smalls: _*

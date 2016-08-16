@@ -36,6 +36,7 @@ object DriveImage extends Command {
     * @param message The message which
     */
   override def exec(args: String, message: Message): Unit = {
+
     Task.create[Unit] { (_, _) =>
       if(TiniBrain.isLoadingImages.get) {
         message.getChannel.sendMessage("I am still loading...")

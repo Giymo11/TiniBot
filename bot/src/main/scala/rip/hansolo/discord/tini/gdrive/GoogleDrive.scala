@@ -71,7 +71,6 @@ class GoogleDrive(drive: Drive) {
     val mimeTypeQuery = if (mimeType != null) s" and mimeType contains '$mimeType'" else ""
 
     val para = nameQuery + "'" + parentId + "'" + " in parents and trashed = false" + mimeTypeQuery
-
     println(para)
 
     val query = drive.files.list()
