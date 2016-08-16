@@ -1,9 +1,10 @@
 package rip.hansolo.discord.tini.commands
 
 
+import scala.util.Random
+
 import net.dv8tion.jda.entities.Message
 
-import scala.util.Random
 import rip.hansolo.discord.tini.Util._
 import rip.hansolo.discord.tini.resources.ShitTiniSays
 

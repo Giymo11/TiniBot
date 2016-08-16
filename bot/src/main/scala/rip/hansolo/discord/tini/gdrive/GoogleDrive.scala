@@ -16,10 +16,8 @@ object GoogleDrive {
   val fileType = "application/octet-stream"
   val imageType = "image/"
 
-  def getImages(files: Seq[File]) = files.filter(file =>
-    file.getMimeType != null && file.getMimeType.contains(imageType)
-  )
-  def getFolders(files: Seq[File]) = files.filter(_.getMimeType == folderType)
+  def isImage(file: File) = file.getMimeType != null && file.getMimeType.contains(imageType)
+  def isFolder(file: File) = file.getMimeType == folderType
 }
 
 /**
@@ -74,10 +72,12 @@ class GoogleDrive(drive: Drive) {
       files.getFiles.asScala ++ searchFolder(parentId, fileName, files.getNextPageToken, mimeType)
   }
 
-  def getFilesForParent(parentFile: File): Seq[File] = Try(searchFolder(parentFile.getId)) match {
+  def getFilesForParent(parentFile: File, parents: Seq[String]): Seq[(File, Seq[String])] = Try(searchFolder(parentFile.getId)) match {
     case Success(someFiles) =>
       val files = someFiles.filter(_ != null).filter(!_.getName.contains("TINI_NO"))
-      files ++ GoogleDrive.getFolders(files).flatMap(getFilesForParent)
+      val allParents = parentFile.getName +: parents
+      val zipped = files.zip(Stream.continually(allParents))
+      zipped ++ files.filter(GoogleDrive.isFolder).flatMap(getFilesForParent(_, allParents))
     case Failure(exception) =>
       println(exception.getMessage + " for file " + parentFile.getName)
       Seq()
@@ -95,14 +95,14 @@ class GoogleDrive(drive: Drive) {
     else file.getName
   }
 
-  def initializeFiles(folderPath: String): Vector[File] = {
+  def initializeFiles(folderPath: String): Vector[(File, Seq[String])] = {
     if( folderPath == null || folderPath.isEmpty ) {
       println("No Google Drive Path specified!")
       Vector.empty
     } else getFileFromPath(folderPath) match {
       case Some(parentFile) =>
         println("Master folder: " + parentFile.getName)
-        val files = getFilesForParent(parentFile)
+        val files = getFilesForParent(parentFile, Seq.empty)
         println(s"Found ${files.size} Files in Google Drive Folder")
         files.toVector
       case None =>

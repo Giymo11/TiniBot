@@ -49,38 +49,71 @@ object DriveImage extends Command {
       if(TiniBrain.isLoadingImages.get) {
         message.getChannel.sendMessage("I am still loading...")
       } else {
-
         message.getChannel.sendTyping()
 
-        println("gimme img plz")
-        val maybe = driveImageStream(maxSize = 8 << 20,args)
-        if(maybe.isDefined) {
-          val (fileStream, name) = maybe.get
-          message.getChannel.sendMessage("Sending " + name)
-          sendFile(message.getChannel, fileStream, null, name)
-          fileStream.close()
-        } else {
-          message.getChannel.sendMessage("Error opening the File :( ")
-          println("Error opening the File :( ")
+        println("args: " + args)
+
+        val streamWithName = args.split(" ").toList match {
+          case none if none.isEmpty =>
+            driveImageStream(maxSize = 8 << 20)
+          case mimeType :: Nil =>
+            driveImageStream(maxSize = 8 << 20, mimeType)
+          case mimeType :: tags =>
+            val filteredTags = argsToTags(tags.mkString(" "))
+            println(filteredTags.mkString(", "))
+            driveImageStream(maxSize = 8 << 20, mimeType, filteredTags)
+        }
+
+        streamWithName match {
+          case Some( (fileStream, name) ) =>
+            sendFile(message.getChannel, fileStream, null, name)
+            fileStream.close()
+          case None =>
+            message.getChannel.sendMessage("Error opening the Files :(")
+            println("Error opening the Files :(")
         }
       }
       Cancelable.empty
     }.runAsync
   }
 
-  def driveImageStream(maxSize: Long,mimeType: String = ""): Option[(InputStream, String)] = {
+  def argsToTags(args: String) = {
+    val parts = args.split("\"")
+    println(parts.mkString(", "))
+    parts
+      .zipWithIndex
+      .flatMap{
+        case (part, index) =>
+          if(index % 2 == 1)
+            Seq(part)
+          else
+            part.split(" ").filter(!_.isEmpty)
+      }
+  }
+
+  def driveImageStream(maxSize: Long, mimeType: String = "", tags: Seq[String] = Seq()): Option[(InputStream, String)] = {
+
+    println("Size: " + TiniBrain.imagesWithNames.size)
+    println("Mimetype: " + mimeType)
+    println("Tags: " + tags)
+
+    val realMime = if(mimeType == null || mimeType == "all") "" else mimeType
 
     // TODO: make sure only small images are tried to be sent
-    val smalls = TiniBrain.images.filter(_.getMimeType.contains(mimeType)) //.filter(_.getSize <= maxSize)
-    if( smalls.isEmpty ) return None
+    val x = TiniBrain
+      .imagesWithNames
+      .filter{ case (file, folders) => file.getMimeType.contains(realMime) }
+      .filter{ case (file, folders) => tags.isEmpty || folders.exists(tags.contains(_)) }
 
-    val file = oneOf(
-      smalls: _*
-    )
+    println(x.size)
 
-    for(key <- file.getUnknownKeys.keySet().asScala) println(key)
-
-    TiniBrain.gDrive.getFileInputStreamAndName { file }
+    x match {
+      case Vector() => None
+      case files =>
+        val file = oneOf(files: _*)._1
+        for(key <- file.getUnknownKeys.keySet().asScala) println(key)
+        TiniBrain.gDrive.getFileInputStreamAndName { file }
+    }
   }
 
   /**
