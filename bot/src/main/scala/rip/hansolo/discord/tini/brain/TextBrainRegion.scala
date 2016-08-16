@@ -10,6 +10,9 @@ import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.hooks.ListenerAdapter
 
 import rip.hansolo.discord.tini.resources._
+import rip.hansolo.discord.tini.commands._
+import rip.hansolo.discord.tini.Util._
+
 
 /**
   * The brain region for responding to text messages
@@ -55,9 +58,6 @@ class TextBrainRegion extends ListenerAdapter {
 
     // TODO: Use a logger
     val timer = (myMessage: Message) => println("Sent response at " + myMessage.getTime + ", after " + ChronoUnit.MILLIS.between(myMessage.getTime, message.getTime))
-
-    import rip.hansolo.discord.tini.commands._
-    import rip.hansolo.discord.tini.Util._
 
     val command = message.getContent.trim
 

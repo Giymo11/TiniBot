@@ -1,24 +1,31 @@
 package rip.hansolo.discord.tini.commands
-import java.io.{File, FileInputStream, InputStream}
+
+
+import java.io._
+
+import scala.collection.JavaConverters._
 
 import com.mashape.unirest.http.Unirest
 import com.mashape.unirest.http.exceptions.UnirestException
 import com.mashape.unirest.request.body.MultipartBody
+
 import monix.eval.Task
 import monix.execution.Cancelable
-import net.dv8tion.jda.{MessageBuilder, Permission}
-import net.dv8tion.jda.entities.{Message, MessageChannel, TextChannel}
-import net.dv8tion.jda.entities.impl.{JDAImpl, TextChannelImpl}
-import net.dv8tion.jda.exceptions.PermissionException
+
+import net.dv8tion.jda._
+import net.dv8tion.jda.entities._
+import net.dv8tion.jda.entities.impl._
 import net.dv8tion.jda.handle.EntityBuilder
 import net.dv8tion.jda.requests.Requester
+
 import org.apache.http.entity.ContentType
-import org.json.{JSONException, JSONObject}
+import org.json._
+
 import rip.hansolo.discord.tini.brain.TiniBrain
-import monix.execution.Scheduler.Implicits.global
 import rip.hansolo.discord.tini.Util._
 
-import scala.collection.JavaConverters._
+import monix.execution.Scheduler.Implicits.global
+
 
 /**
   * Created by: 
@@ -63,13 +70,13 @@ object DriveImage extends Command {
 
   def driveImageStream(maxSize: Long): Option[(InputStream, String)] = {
 
+    // TODO: make sure only small images are tried to be sent
     val smalls = TiniBrain.images //.filter(_.getSize <= maxSize)
 
     val file = oneOf(
       smalls: _*
     )
-    //println("A file has no size...")
-    //println("File: " + file.getName + ", size: " + (file.getSize >> 10) + ", by: " + file.getSharingUser.getDisplayName)
+
     for(key <- file.getUnknownKeys.keySet().asScala) println(key)
 
     TiniBrain.gDrive.getFileInputStreamAndName { file }
@@ -80,8 +87,10 @@ object DriveImage extends Command {
     */
   def sendFile(channel: MessageChannel, fileStream: InputStream, message: Message, filename: String): Message = {
 
-    /*if (file.length > (8 << 20)) //8MB
-      throw new IllegalArgumentException("File is to big! Max file-size is 8MB")*/
+    /*
+    if (file.length > (8 << 20)) //8MB
+      throw new IllegalArgumentException("File is to big! Max file-size is 8MB")
+    */
 
     val api: JDAImpl = channel.getJDA.asInstanceOf[JDAImpl]
 

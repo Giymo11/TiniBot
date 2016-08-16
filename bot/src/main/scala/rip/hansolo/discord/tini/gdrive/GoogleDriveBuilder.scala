@@ -1,20 +1,19 @@
 package rip.hansolo.discord.tini.gdrive
 
-import java.util
-
-import com.google.api.client.googleapis.auth.oauth2.{GoogleAuthorizationCodeFlow, GoogleCredential}
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
-import com.google.api.client.http.javanet.NetHttpTransport
-import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.services.drive.{Drive, DriveScopes}
-
-import scala.io.StdIn
-import ammonite.ops._
-import com.google.api.client.auth.oauth2.Credential
-import com.google.api.client.util.store.FileDataStoreFactory
-import rip.hansolo.discord.tini.Util
 
 import scala.collection.JavaConverters._
+import scala.io.StdIn
+
+import com.google.api.client.googleapis.auth.oauth2._
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
+import com.google.api.client.json.jackson2.JacksonFactory
+
+import com.google.api.client.auth.oauth2.Credential
+import com.google.api.client.util.store.FileDataStoreFactory
+import com.google.api.services.drive._
+
+import rip.hansolo.discord.tini.Util
+
 
 /**
   * Created by: 

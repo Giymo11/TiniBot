@@ -1,16 +1,14 @@
 package rip.hansolo.discord.tini.brain
 
 
-import java.io.{BufferedReader, FileInputStream, InputStreamReader}
+import java.io._
 
-import cats.data.Xor
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.{FirebaseApp, FirebaseOptions}
-import monix.eval.Task
 
 import scala.concurrent.Promise
 import monix.execution.atomic.Atomic
-import rip.hansolo.discord.tini.commands.{Bio, Command}
+import rip.hansolo.discord.tini.commands._
 import rip.hansolo.discord.tini.gdrive.{GoogleDrive, GoogleDriveBuilder}
 import rip.hansolo.discord.tini.resources.Resources
 

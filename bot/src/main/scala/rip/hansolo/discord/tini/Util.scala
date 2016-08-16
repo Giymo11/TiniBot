@@ -1,11 +1,15 @@
 package rip.hansolo.discord.tini
 
+
+import scala.util.Random
+
 import cats.data.Xor
+
 import com.google.firebase.database.DatabaseReference.CompletionListener
 import com.google.firebase.database.{DatabaseError, DatabaseReference}
 
 import scala.language.implicitConversions
-import scala.util.Random
+
 
 /**
   * Created by Giymo11 on 09.08.2016.

@@ -1,9 +1,11 @@
 package rip.hansolo.discord.tini.gdrive
 
+
 import java.io.InputStream
 
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
+
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.model.File
 
@@ -35,7 +37,7 @@ class GoogleDrive(drive: Drive) {
       searchFolder(parentId)
     case head :: Nil =>
       searchFolder(parentId, head)
-    case head :: tail => {
+    case head :: tail =>
       val files = searchFolder(parentId, head, mimeType = GoogleDrive.folderType)
       for (result <- files) {
         val children = searchPathInParent(tail, result.getId)
@@ -43,7 +45,6 @@ class GoogleDrive(drive: Drive) {
           return children
       }
       Seq()
-    }
   }
 
   private def searchFolder(parentId: String, fileName: String = null, pageToken: String = null, mimeType: String = null): Seq[File] = {
