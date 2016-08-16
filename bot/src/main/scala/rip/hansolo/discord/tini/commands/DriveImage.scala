@@ -53,7 +53,7 @@ object DriveImage extends Command {
         message.getChannel.sendTyping()
 
         println("gimme img plz")
-        val maybe = driveImageStream(maxSize = 8 << 20)
+        val maybe = driveImageStream(maxSize = 8 << 20,args)
         if(maybe.isDefined) {
           val (fileStream, name) = maybe.get
           message.getChannel.sendMessage("Sending " + name)
@@ -68,10 +68,11 @@ object DriveImage extends Command {
     }.runAsync
   }
 
-  def driveImageStream(maxSize: Long): Option[(InputStream, String)] = {
+  def driveImageStream(maxSize: Long,mimeType: String = ""): Option[(InputStream, String)] = {
 
     // TODO: make sure only small images are tried to be sent
-    val smalls = TiniBrain.images //.filter(_.getSize <= maxSize)
+    val smalls = TiniBrain.images.filter(_.getMimeType.contains(mimeType)) //.filter(_.getSize <= maxSize)
+    if( smalls.isEmpty ) return None
 
     val file = oneOf(
       smalls: _*

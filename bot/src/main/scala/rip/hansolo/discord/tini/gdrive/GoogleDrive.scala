@@ -86,8 +86,13 @@ class GoogleDrive(drive: Drive) {
   def getFileInputStreamAndName(file: File): Option[(InputStream, String)] = {
     Try(
       (drive.files().get(file.getId).executeMediaAsInputStream(),
-        file.getName)
+        formatFileName(file))
     ).toOption
+  }
+
+  def formatFileName(file: File): String = {
+    if( !file.getName.contains(".") ) file.getName + "." + file.getMimeType.split("/")(1)
+    else file.getName
   }
 
   def initializeFiles(folderPath: String): Vector[File] = {
