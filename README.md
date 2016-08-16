@@ -36,6 +36,15 @@ Create two environment variables:
 * TINI_TOKEN - the bot token from your discord authorization site.
 * TINI_PASSWORD - the password with which you want to kill the bot.
 
+The Bot can optionally use the Google Drive to load images via the !image Command, for this some environment variables are needed: 
+* TINI_GOOGLE_DRIVE - the image directory in google drive e.g `my-epic-colelction/images`
+* GDRIVE_CLIENT_ID - the client_id form the Google API Manager
+* GDRIVE_SECRET - the secret from the Google API Manager
+* GDRIVE_ACCESS_TOKEN - the access token
+* GDRIVE_REFRESH_TOKEN - the refresh token
+
+GDRIVE_ACCESS_TOKEN and GDRIVE_REFRESH_TOKEN tokens must be created at first startup!
+
 Create a new firebase app. 
 Go to "Permissions" and add a Service Account. 
 Make sure to give it the role "Project Editor". 
@@ -78,6 +87,7 @@ Until now, Tini can:
 * `!bio` - to set your, and display other biographies
 * set the status when you PM her `!botstatus <password> <text>`
 * commit seppuku when you PM it `!kill <password>` where you substitute the <password> with the one in your `TINI_PASSWORD` environment variable.
+* `!image` - the bot will send a random image from the TINI_GOOGLE_DRIVE Directory
 
 Wishlist
 -----------------

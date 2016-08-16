@@ -19,6 +19,9 @@ object Main extends TaskApp{
 
   val clientReadyTask: Task[JDA] = Task.create[JDA] {
     (scheduler, callback) => {
+      if( Resources.token.isEmpty || Resources.authorPassword.isEmpty )
+        callback.onError(new RuntimeException("TINI_TOKEN or TINI_PASSWORD is not set!"))
+
       new JDABuilder()
         .setBotToken(Resources.token)
         // here: the stuff you want to react to
@@ -27,6 +30,7 @@ object Main extends TaskApp{
         })
         .addListener(new TextBrainRegion)
         .buildAsync()
+
       Cancelable.empty
     }
   }.memoize
