@@ -12,7 +12,7 @@ import net.dv8tion.jda.handle.EntityBuilder
 import net.dv8tion.jda.requests.Requester
 import org.apache.http.entity.ContentType
 import org.json.{JSONException, JSONObject}
-import rip.hansolo.discord.tini.resources.TiniDriveImages
+import rip.hansolo.discord.tini.gdrive.TiniDriveImages
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,12 +35,13 @@ object DriveImage extends Command {
     */
   override def exec(args: String, message: Message): Unit = {
     Future {
-      val fileStream = TiniDriveImages.driveImageStream
-
-      if (fileStream.isDefined) {
-        //message.getChannel.sendFile(file.get, null)
-        sendFile(message.getChannel, fileStream.get, null, "WotMATO")
-        fileStream.get.close()
+      println("gimme img plz")
+      val maybe = TiniDriveImages.driveImageStream(maxSize = 8 << 20)
+      if(maybe.isDefined) {
+        val (fileStream, name) = maybe.get
+        println("sending " + name)
+        sendFile(message.getChannel, fileStream, null, name)
+        fileStream.close()
       } else
         println("Filestream not defined")
     }
@@ -56,7 +57,12 @@ object DriveImage extends Command {
 
     val api: JDAImpl = channel.getJDA.asInstanceOf[JDAImpl]
 
-    val realMessage = if(message == null) new MessageBuilder().setTTS(false).appendString("There you go!").build() else message
+    val realMessage = if(message == null)
+      new MessageBuilder()
+        .setTTS(false)
+        .appendString("There you go!")
+        .build()
+      else message
 
     try{
       val body: MultipartBody = Unirest.post(
@@ -65,7 +71,7 @@ object DriveImage extends Command {
         .header("user-agent", Requester.USER_AGENT)
         .field("content", realMessage.getRawContent)
         .field("tts", realMessage.isTTS)
-        .field("file", fileStream, ContentType.APPLICATION_OCTET_STREAM, "image.jpg")
+        .field("file", fileStream, ContentType.APPLICATION_OCTET_STREAM, filename)
 
       val dbg: String =
         s"""Requesting ${body.getHttpRequest.getHttpMethod.name} -> ${body.getHttpRequest.getUrl}

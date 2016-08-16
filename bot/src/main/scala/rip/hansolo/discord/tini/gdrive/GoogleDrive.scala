@@ -7,6 +7,7 @@ import com.google.api.services.drive.Drive
 import com.google.api.services.drive.model.File
 
 import scala.collection.JavaConverters._
+import scala.util.Try
 
 /**
   * Created by: 
@@ -27,41 +28,71 @@ class GoogleDrive(drive: Drive) {
 
   def getImages(parent: File) = getDriveEntries(parent, imageType)
 
-  def getDriveEntries(parent: File, mimeType: String = null, limit: Int = 10000): Seq[File] = {
+  def getDriveEntries(parent: File, mimeType: String = null, limit: Int = 1000): Seq[File] = {
 
-    val query = mimeType match {
-      case mimes if mimes == null || mimes.isEmpty =>
-        s"'${parent.getId}' in parents and trashed = false"
-      case _ =>
-        s"'${parent.getId}' in parents and mimeType contains '$mimeType' and trashed = false"
-    }
+    val part2 =if(mimeType == null || mimeType.isEmpty) "" else s"and mimeType contains '$mimeType'"
 
-    drive.files.list.setQ(query)
-      .setMaxResults(limit)
-      .execute.getItems.asScala
+    val query = s"'${parent.getId}' in parents and trashed = false $part2"
+
+    println(query)
+
+      drive.files.list.setQ(query)
+      .setPageSize(limit)
+      .execute.getFiles.asScala
   }
 
-  def getFileByPath(path: String): Option[File] = {
-    val pathElements = path.split("/")
-    var currentFile = getRoot
 
-    for (file <- pathElements) {
-      val f = getDriveEntries(currentFile).find(_.getTitle == file)
-
-      if (f.isEmpty) return None
-      else currentFile = f.get
-    }
-
-    Some(currentFile)
+  def searchPath(path: String): Option[File] = {
+    val results = searchPathInParent(path.dropWhile(char => char == '/').split("/"), "\"root\"")
+    results.headOption
   }
 
-  def getFileInputStream(file: File): Option[InputStream] = {
-    if (file.getDownloadUrl == null || file.getDownloadUrl.isEmpty) return None
+  def searchPathInParent(pathElements: Seq[String], parentId: String): Seq[File] = {
 
-    try {
-      Some(drive.getRequestFactory.buildGetRequest(new GenericUrl(file.getDownloadUrl)).execute.getContent)
-    } catch {
-      case io: IOException => None
+    val fields = "files(fullFileExtension,id,imageMediaMetadata(height,width),lastModifyingUser/displayName,mimeType,name,size,trashed,webContentLink),nextPageToken"
+
+    def searchFolder(parendId: String, folderName: String, pageToken: String = null, mimeType: String = null): Seq[File] = {
+
+      import scala.collection.JavaConverters._
+
+      val para = "name = \"" + folderName + "\" and " + parentId + " in parents and trashed = false" + (if(mimeType != null) s" and mimeType contains $mimeType" else "")
+
+      println(para)
+
+      val query = drive.files.list()
+        .setQ(para)
+        .setFields(fields)
+        .setPageSize(100)
+
+      val files = if(pageToken == null)
+        query.execute()
+      else
+        query.setPageToken(pageToken).execute()
+
+      if(files.getNextPageToken == null)
+        files.getFiles.asScala
+      else
+        files.getFiles.asScala ++ searchFolder(parentId, folderName, files.getNextPageToken, mimeType)
     }
+
+    if(pathElements.size == 1) {
+      searchFolder(parentId, pathElements.head)
+    } else {
+
+      val results = searchFolder(parentId, pathElements.head, mimeType = folderType)
+      for(result <- results) {
+        val moreResults = searchPathInParent(pathElements.tail, result.getId)
+        if(moreResults != null && moreResults.nonEmpty) // eager!
+          return moreResults
+      }
+      Seq()
+    }
+  }
+
+  def getFileInputStreamAndName(file: File): Option[(InputStream, String)] = {
+    Try(
+      (drive.files().get(file.getId).executeMediaAsInputStream(),
+        file.getName)
+    ).toOption
   }
 }

@@ -6,11 +6,12 @@ import java.io.{BufferedReader, FileInputStream, InputStreamReader}
 import cats.data.Xor
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.{FirebaseApp, FirebaseOptions}
+import monix.eval.Task
 
 import scala.concurrent.Promise
 import monix.execution.atomic.Atomic
 import rip.hansolo.discord.tini.commands.{Bio, Command}
-import rip.hansolo.discord.tini.resources.TiniDriveImages
+import rip.hansolo.discord.tini.gdrive.{GoogleDrive, GoogleDriveBuilder, TiniDriveImages}
 
 
 /**
@@ -41,5 +42,5 @@ object TiniBrain {
   val firebaseDatabase = FirebaseDatabase.getInstance()
   val users = firebaseDatabase.getReference("users")
 
-
+  val gDrive = new GoogleDrive(GoogleDriveBuilder.drive)
 }

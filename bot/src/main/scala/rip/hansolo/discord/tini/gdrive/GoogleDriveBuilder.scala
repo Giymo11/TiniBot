@@ -35,7 +35,16 @@ object GoogleDriveBuilder {
   val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
   val scopes = Seq(DriveScopes.DRIVE).asJava
 
-  private var drive: Option[Drive] = None
+  val drive: Drive = {
+    val credential = authorize()
+
+    new Drive.Builder(
+      httpTransport,
+      jsonFactory,
+      credential
+    ).setApplicationName(appName)
+      .build
+  }
 
   // TODO: add more than one user to be authorized
   def authorize(): Credential = {
@@ -70,23 +79,5 @@ object GoogleDriveBuilder {
 
       authFlow.createAndStoreCredential(token, user)
     }
-  }
-
-  def initializeDrive(): Unit = {
-    val credential = authorize()
-
-    drive = Some(
-      new Drive.Builder(
-        httpTransport,
-        jsonFactory,
-        credential
-      ).setApplicationName(appName)
-      .build
-    )
-  }
-
-  def getDrive: Drive = drive.getOrElse {
-    initializeDrive()
-    drive.get
   }
 }
