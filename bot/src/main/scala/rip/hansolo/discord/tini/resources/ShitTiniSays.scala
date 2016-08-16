@@ -53,6 +53,7 @@ object ShitTiniSays {
     |!bio - to set your and display other biographies
     |!be - make the bot impersonate someone
     |!image - the bot will send a random image from a secret Google Drive Directory hidden under a volcano
+    |!repeat - the bot will repeat some messages
   """.stripMargin
 
   def shutupResponse = oneOf(
