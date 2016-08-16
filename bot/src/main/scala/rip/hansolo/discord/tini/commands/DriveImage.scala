@@ -15,9 +15,10 @@ import net.dv8tion.jda.requests.Requester
 import org.apache.http.entity.ContentType
 import org.json.{JSONException, JSONObject}
 import rip.hansolo.discord.tini.brain.TiniBrain
-import rip.hansolo.discord.tini.gdrive.TiniDriveImages
-
 import monix.execution.Scheduler.Implicits.global
+import rip.hansolo.discord.tini.Util._
+
+import scala.collection.JavaConverters._
 
 /**
   * Created by: 
@@ -44,7 +45,7 @@ object DriveImage extends Command {
         message.getChannel.sendTyping()
 
         println("gimme img plz")
-        val maybe = TiniDriveImages.driveImageStream(maxSize = 8 << 20)
+        val maybe = driveImageStream(maxSize = 8 << 20)
         if(maybe.isDefined) {
           val (fileStream, name) = maybe.get
           message.getChannel.sendMessage("Sending " + name)
@@ -57,6 +58,20 @@ object DriveImage extends Command {
       }
       Cancelable.empty
     }.runAsync
+  }
+
+  def driveImageStream(maxSize: Long): Option[(InputStream, String)] = {
+
+    val smalls = TiniBrain.images //.filter(_.getSize <= maxSize)
+
+    val file = oneOf(
+      smalls: _*
+    )
+    //println("A file has no size...")
+    //println("File: " + file.getName + ", size: " + (file.getSize >> 10) + ", by: " + file.getSharingUser.getDisplayName)
+    for(key <- file.getUnknownKeys.keySet().asScala) println(key)
+
+    TiniBrain.gDrive.getFileInputStreamAndName { file }
   }
 
   /**

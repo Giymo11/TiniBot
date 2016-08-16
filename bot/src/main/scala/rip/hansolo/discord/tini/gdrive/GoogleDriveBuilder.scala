@@ -50,8 +50,8 @@ object GoogleDriveBuilder {
   // TODO: add more than one user to be authorized
   def authorize(): Credential = {
 
-    if( Util.isEnvSet("GDRIVE_CLIENT_ID") ) println("No GDrive Client ID!")
-    if( Util.isEnvSet("GDRIVE_SECRET") ) println("No GDrive Secret!")
+    if( !Util.isEnvSet("GDRIVE_CLIENT_ID") ) println("No GDrive Client ID!")
+    if( !Util.isEnvSet("GDRIVE_SECRET") ) println("No GDrive Secret!")
 
     val user = "user" // TODO: substitute with actual ID
 

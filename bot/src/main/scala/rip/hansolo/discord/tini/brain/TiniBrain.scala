@@ -11,7 +11,8 @@ import monix.eval.Task
 import scala.concurrent.Promise
 import monix.execution.atomic.Atomic
 import rip.hansolo.discord.tini.commands.{Bio, Command}
-import rip.hansolo.discord.tini.gdrive.{GoogleDrive, GoogleDriveBuilder, TiniDriveImages}
+import rip.hansolo.discord.tini.gdrive.{GoogleDrive, GoogleDriveBuilder}
+import rip.hansolo.discord.tini.resources.Resources
 
 
 /**
@@ -45,4 +46,8 @@ object TiniBrain {
   val users = firebaseDatabase.getReference("users")
 
   val gDrive = new GoogleDrive(GoogleDriveBuilder.drive)
+
+  val files = gDrive.initializeFiles(Resources.gdriveFolderName)
+
+  val images = GoogleDrive.getImages(files)
 }
