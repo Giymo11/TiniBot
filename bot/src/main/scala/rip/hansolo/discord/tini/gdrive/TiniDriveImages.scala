@@ -4,11 +4,11 @@ import java.io.InputStream
 import java.lang.Error
 
 import com.google.api.services.drive.model.File
+import rip.hansolo.discord.tini.Util
 import rip.hansolo.discord.tini.Util._
 import rip.hansolo.discord.tini.brain.TiniBrain
 
 import scala.collection.JavaConverters._
-
 import scala.util.{Failure, Success, Try}
 
 /**
@@ -36,7 +36,7 @@ object TiniDriveImages {
   def getFolders(files: Seq[File]) = files.filter(_.getMimeType == folderType)
 
   def initializeFiles(): Vector[File] = {
-    if( imageFolderName == null || imageFolderName.isEmpty ) {
+    if( Util.isEnvSet("TINI_GOOGLE_DRIVE") ) {
       println("No Google Drive Path specified!")
       return Vector.empty
     }

@@ -41,6 +41,8 @@ object DriveImage extends Command {
         message.getChannel.sendMessage("I am still loading...")
       } else {
 
+        message.getChannel.sendTyping()
+
         println("gimme img plz")
         val maybe = TiniDriveImages.driveImageStream(maxSize = 8 << 20)
         if(maybe.isDefined) {

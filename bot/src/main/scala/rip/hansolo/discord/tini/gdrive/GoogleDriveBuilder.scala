@@ -12,6 +12,7 @@ import scala.io.StdIn
 import ammonite.ops._
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.util.store.FileDataStoreFactory
+import rip.hansolo.discord.tini.Util
 
 import scala.collection.JavaConverters._
 
@@ -49,8 +50,8 @@ object GoogleDriveBuilder {
   // TODO: add more than one user to be authorized
   def authorize(): Credential = {
 
-    if(clientID == null || clientID.isEmpty) println("No GDrive Client ID!") else println(clientID)
-    if(secret == null || secret.isEmpty) println("No GDrive Secret!") else println(secret)
+    if( Util.isEnvSet("GDRIVE_CLIENT_ID") ) println("No GDrive Client ID!")
+    if( Util.isEnvSet("GDRIVE_SECRET") ) println("No GDrive Secret!")
 
     val user = "user" // TODO: substitute with actual ID
 
