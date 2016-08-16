@@ -26,6 +26,8 @@ object TiniBrain {
   val prophecy = Promise[Unit]
   val is8ball = Atomic(false)
 
+  val isLoadingImages = Atomic(true)
+
   def killYourself() = prophecy.success()
 
   // no lazy because we want to know about failures at startup!

@@ -4,6 +4,8 @@ import java.io.{File, FileInputStream, InputStream}
 import com.mashape.unirest.http.Unirest
 import com.mashape.unirest.http.exceptions.UnirestException
 import com.mashape.unirest.request.body.MultipartBody
+import monix.eval.Task
+import monix.execution.Cancelable
 import net.dv8tion.jda.{MessageBuilder, Permission}
 import net.dv8tion.jda.entities.{Message, MessageChannel, TextChannel}
 import net.dv8tion.jda.entities.impl.{JDAImpl, TextChannelImpl}
@@ -12,10 +14,10 @@ import net.dv8tion.jda.handle.EntityBuilder
 import net.dv8tion.jda.requests.Requester
 import org.apache.http.entity.ContentType
 import org.json.{JSONException, JSONObject}
+import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.gdrive.TiniDriveImages
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import monix.execution.Scheduler.Implicits.global
 
 /**
   * Created by: 
@@ -34,17 +36,25 @@ object DriveImage extends Command {
     * @param message The message which
     */
   override def exec(args: String, message: Message): Unit = {
-    Future {
-      println("gimme img plz")
-      val maybe = TiniDriveImages.driveImageStream(maxSize = 8 << 20)
-      if(maybe.isDefined) {
-        val (fileStream, name) = maybe.get
-        println("sending " + name)
-        sendFile(message.getChannel, fileStream, null, name)
-        fileStream.close()
-      } else
-        println("Filestream not defined")
-    }
+    Task.create[Unit] { (_, _) =>
+      if(TiniBrain.isLoadingImages.get) {
+        message.getChannel.sendMessage("I am still loading...")
+      } else {
+
+        println("gimme img plz")
+        val maybe = TiniDriveImages.driveImageStream(maxSize = 8 << 20)
+        if(maybe.isDefined) {
+          val (fileStream, name) = maybe.get
+          message.getChannel.sendMessage("Sending " + name)
+          sendFile(message.getChannel, fileStream, null, name)
+          fileStream.close()
+        } else {
+          message.getChannel.sendMessage("Error opening the File :( ")
+          println("Error opening the File :( ")
+        }
+      }
+      Cancelable.empty
+    }.runAsync
   }
 
   /**
@@ -91,9 +101,8 @@ object DriveImage extends Command {
           Requester.LOG.log(e)
       }
     } catch {
-      case e: UnirestException => {
+      case e: UnirestException =>
         Requester.LOG.log(e)
-      }
     }
     null
   }

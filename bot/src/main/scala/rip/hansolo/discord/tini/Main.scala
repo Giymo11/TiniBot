@@ -4,12 +4,11 @@ package rip.hansolo.discord.tini
 import monix.eval.{Task, TaskApp}
 import monix.execution.Cancelable
 import monix.execution.Scheduler.Implicits.global
-
 import net.dv8tion.jda.{JDA, JDABuilder}
 import net.dv8tion.jda.events.ReadyEvent
 import net.dv8tion.jda.hooks.ListenerAdapter
-
 import rip.hansolo.discord.tini.brain._
+import rip.hansolo.discord.tini.gdrive.TiniDriveImages
 import rip.hansolo.discord.tini.resources._
 
 /**
@@ -43,6 +42,10 @@ object Main extends TaskApp{
       val channel = guild.getPublicChannel
       channel.sendMessageAsync(ShitTiniSays.selfAnnouncement, null)
     }
+    TiniBrain.isLoadingImages.set(true)
+    val folders = TiniDriveImages.getFolders(TiniDriveImages.files)
+    println(folders.map(_.getName).mkString("\n"))
+    TiniBrain.isLoadingImages.set(false)
   }
 
   override def runc: Task[Unit] = work.flatMap((_) => Task.fromFuture(TiniBrain.prophecy.future)) // weird hack, but so be it.
