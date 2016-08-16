@@ -8,7 +8,7 @@ import net.dv8tion.jda.entities._
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.hooks.ListenerAdapter
-
+import better.files._
 import rip.hansolo.discord.tini.resources._
 import rip.hansolo.discord.tini.commands._
 import rip.hansolo.discord.tini.Util._
@@ -50,6 +50,10 @@ class TextBrainRegion extends ListenerAdapter {
     }
   }
 
+
+  private[this] def logMessage(message: Message): Unit = {
+    (Resources.logPath/s"${message.getAuthor.getId}.log").createIfNotExists() << message.getRawContent
+  }
   /**
     *
     * @param channel The TextChannel the conversation takes place. Because of this, we are in Guild territory
@@ -77,12 +81,13 @@ class TextBrainRegion extends ListenerAdapter {
       case "!8ballmode" =>
         TiniBrain.is8ball.set(true)
         channel.sendMessageAsync(ShitTiniSays.agreement, timer)
+      case Imitate(args) => Imitate.exec(args, message)
       case DriveImage(args) =>
         DriveImage.exec(args, message)
       case _ if TiniBrain.is8ball.get =>
         val response = new MessageBuilder().appendString(ShitTiniSays.agreement).setTTS(true).build()
         channel.sendMessageAsync(response, timer)
-      case _ => ()
+      case _ => logMessage(message)
     }
   }
 }

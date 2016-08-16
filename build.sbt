@@ -11,7 +11,7 @@ resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/releas
 resolvers += Resolver.jcenterRepo
 resolvers += "twttr" at "https://maven.twttr.com/"
 
-
+lazy val markovLib = uri("https://github.com/runarorama/Malakov.git")
 val scalaV = "2.11.8"
 
 lazy val sharedJVM = project.in(file("shared"))
@@ -36,7 +36,8 @@ lazy val bot = project.in(file("bot"))
     libraryDependencies ++= Seq(
       "net.dv8tion" % "JDA" % "2.2.0_334",
       "com.lihaoyi" %% "ammonite-ops" % "0.7.0",
-      "com.google.apis" % "google-api-services-drive" % "v3-rev37-1.22.0",
+      "com.google.apis" % "google-api-services-drive" % "v2-rev232-1.22.0",
+      "com.github.pathikrit" %% "better-files" % "2.16.0",
       "org.scalatest" %% "scalatest" % "3.0.0" % Test,
       "com.mashape.unirest" % "unirest-java" % "unirest-java"
     ),
@@ -51,6 +52,7 @@ lazy val bot = project.in(file("bot"))
     }
   )
   .dependsOn(sharedJVM)
+  .dependsOn(markovLib)
   // a alternative to this would be the sbt-native plugin
   .enablePlugins(DockerPlugin)
   .settings(

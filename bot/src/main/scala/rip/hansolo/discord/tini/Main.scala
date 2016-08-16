@@ -41,7 +41,7 @@ object Main extends TaskApp{
     for(guild <- client.getGuilds) {
       println("I am in guild " + guild.getName)
       val channel = guild.getPublicChannel
-      channel.sendMessageAsync(ShitTiniSays.selfAnnouncement, null)
+      //channel.sendMessageAsync(ShitTiniSays.selfAnnouncement, null)
     }
     TiniBrain.isLoadingImages.set(true)
     println("MimeTypes: " + TiniBrain.files.map(_.getMimeType).toSet.mkString("\n"))
