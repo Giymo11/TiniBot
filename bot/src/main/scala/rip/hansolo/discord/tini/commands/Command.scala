@@ -42,5 +42,9 @@ trait Command {
     */
   def exec(args: String, message: Message = null)
 
+  def execHelp(args: String,message: Message = null)
+
+  def getHelp: String
+
   def registerCommand(): Unit = Future[Unit] { TiniBrain.register(this) }
 }

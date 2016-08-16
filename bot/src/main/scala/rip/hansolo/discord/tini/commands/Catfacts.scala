@@ -23,4 +23,8 @@ object Catfacts extends Command {
     }
     message.getChannel.sendMessageAsync(response, null)
   }
+
+  override def execHelp(args: String, message: Message): Unit = ???
+
+  override def getHelp: String =  prefix + " - I will show you some catfacts. :cat2:"
 }

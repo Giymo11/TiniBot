@@ -133,4 +133,8 @@ object DriveImage extends Command {
     }
     null
   }
+
+  override def execHelp(args: String, message: Message): Unit = ???
+
+  override def getHelp: String =  prefix + " - the bot will send a random image from a secret Google Drive Directory hidden under a volcano"
 }

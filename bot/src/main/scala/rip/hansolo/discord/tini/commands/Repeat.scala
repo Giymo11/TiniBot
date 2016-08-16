@@ -56,4 +56,8 @@ object Repeat extends Command {
   }
 
   def shutup() = repeatTasks foreach { _.cancel() }
+
+  override def execHelp(args: String, message: Message): Unit = ???
+
+  override def getHelp: String =  prefix + " - the bot will repeat some messages"
 }

@@ -52,4 +52,8 @@ object Roll extends Command {
     case roll :: Nil => s"**$roll**"
     case _ => s"( ${rolls.mkString(" + ")} ) = **${rolls.sum}**"
   }
+
+  override def execHelp(args: String, message: Message): Unit = ???
+
+  override def getHelp: String =  prefix + " - Returns a number between those numbers"
 }
