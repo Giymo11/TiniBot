@@ -1,4 +1,5 @@
 package rip.hansolo.discord.tini.commands
+import cats.data.Xor
 import monix.eval.Task
 import monix.execution.CancelableFuture
 import monix.execution.atomic.Atomic
@@ -6,6 +7,7 @@ import net.dv8tion.jda.entities.Message
 
 import scala.concurrent.duration._
 import monix.execution.Scheduler.Implicits.global
+import rip.hansolo.discord.tini.Util
 import rip.hansolo.discord.tini.brain.{TextBrainRegion, TiniBrain}
 
 import scala.collection.mutable.ListBuffer
@@ -26,30 +28,33 @@ object Repeat extends Command {
     * @param message The message which
     */
   override def exec(args: String, message: Message): Unit = {
-    val arg = args.split(" ")
-
+    val arguments = args.split(" ")
 
     //TODO: make it pretty
-    if( arg.length >= 2 ) {
-      val count = Atomic(arg(0).toInt - 1)
+    if( arguments.length >= 2 ) {
+      val count = Atomic(arguments(0).toInt - 1)
+      val duration = Xor.catchNonFatal(arguments(1).toInt-1).toOption
+
+      val cmdStart = if( duration.isEmpty ) 1 else 2
 
       val repTask = Task {
-        arg(1) match {
-          case "image" => DriveImage.exec(arg.drop(2).mkString(" "), message)
-          case "catfacts" => Catfacts.exec(arg.drop(2).mkString(" "), message)
-          case "be" => Imitate.exec(arg.drop(2).mkString(" "), message)
-          case "roll" => Roll.exec(arg.drop(2).mkString(" "), message)
+        arguments(cmdStart) match {
+          case "image" => DriveImage.exec(arguments.drop(cmdStart+1).mkString(" "), message)
+          case "catfacts" => Catfacts.exec(arguments.drop(cmdStart+1).mkString(" "), message)
+          case "be" => Imitate.exec(arguments.drop(cmdStart+1).mkString(" "), message)
+          case "roll" => Roll.exec(arguments.drop(cmdStart+1).mkString(" "), message)
         }
       }
 
       repTask.runAsync
-      repeatTasks += repTask.delayExecution(10 seconds)
+      repeatTasks += repTask.delayExecution(duration.getOrElse(10) seconds)
                             .restartUntil((Unit) => { count.getAndDecrement(1) < 0 })
                             .runAsync
 
     } else {
-      message.getChannel.sendMessageAsync("Usage: !repeat <count> <command> <other-command-args>", null)
+      message.getChannel.sendMessageAsync("Usage: !repeat <count> [timeout] <command> <other-command-args>", null)
     }
+
   }
 
   def shutup() = repeatTasks foreach { _.cancel() }

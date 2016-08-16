@@ -90,7 +90,7 @@ Until now, Tini can:
 * set the status when you PM her `!botstatus <password> <text>`
 * commit seppuku when you PM it `!kill <password>` where you substitute the <password> with the one in your `TINI_PASSWORD` environment variable.
 * `!image` - the bot will send a random image from the TINI_GOOGLE_DRIVE Directory
-* `!repeat <count> <command> <command-args>` - The bot will repeat the command multiple times with the arguments
+* `!repeat <count> [timeout] <command> <command-args>` - The bot will repeat the command multiple times with the arguments
 
 Wishlist
 -----------------
