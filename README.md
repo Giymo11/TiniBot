@@ -89,7 +89,7 @@ Until now, Tini can:
 * `!bio` - to set your, and display other biographies
 * set the status when you PM her `!botstatus <password> <text>`
 * commit seppuku when you PM it `!kill <password>` where you substitute the <password> with the one in your `TINI_PASSWORD` environment variable.
-* `!image` - the bot will send a random image from the TINI_GOOGLE_DRIVE Directory
+* `!image [image-type]` - the bot will send a random image from the TINI_GOOGLE_DRIVE Directory
 
 Wishlist
 -----------------
