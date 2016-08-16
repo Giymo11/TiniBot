@@ -5,19 +5,24 @@ import java.io._
 
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.{FirebaseApp, FirebaseOptions}
-
-import scala.concurrent.Promise
 import monix.execution.atomic.Atomic
 import rip.hansolo.discord.tini.commands._
 import rip.hansolo.discord.tini.gdrive.{GoogleDrive, GoogleDriveBuilder}
 import rip.hansolo.discord.tini.resources.Resources
+
+import scala.concurrent.Promise
 
 
 /**
   * Contains the state of Tini's Brain
   */
 object TiniBrain {
-  def register(command: Command) = println("command registered: " + command)
+
+  val brain = new TextBrainRegion
+  def register(command: Command) = {
+    println("command registered: " + command)
+    brain.commands.put(command.prefix,command)
+  }
 
   /**
     * If this promise is fulfilled, Tini will kill itself and take the JVM with her

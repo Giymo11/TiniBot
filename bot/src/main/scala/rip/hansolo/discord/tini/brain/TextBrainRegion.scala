@@ -3,21 +3,26 @@ package rip.hansolo.discord.tini.brain
 
 import java.time.temporal.ChronoUnit
 
+import better.files._
 import net.dv8tion.jda.MessageBuilder
 import net.dv8tion.jda.entities._
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.hooks.ListenerAdapter
-import better.files._
-import rip.hansolo.discord.tini.resources._
-import rip.hansolo.discord.tini.commands._
+import rip.hansolo.discord.tini.Util
 import rip.hansolo.discord.tini.Util._
+import rip.hansolo.discord.tini.commands._
+import rip.hansolo.discord.tini.resources._
+
+import scala.collection.concurrent.TrieMap
 
 
 /**
   * The brain region for responding to text messages
   */
 class TextBrainRegion extends ListenerAdapter {
+
+  val commands: TrieMap[String,Command] = new TrieMap[String,Command]
 
   override def onGuildMessageReceived(event: GuildMessageReceivedEvent): Unit = {
     val channel = event.getChannel
@@ -63,35 +68,25 @@ class TextBrainRegion extends ListenerAdapter {
     // TODO: Use a logger
     val timer = (myMessage: Message) => println("Sent response at " + myMessage.getTime + ", after " + ChronoUnit.MILLIS.between(myMessage.getTime, message.getTime))
 
-    val command = message.getContent.trim
+    val msgText = message.getContent.trim
+    if( msgText.startsWith("!") ) {
+      val cmdArgs = msgText.split(" ")
+      val command = commands.get(cmdArgs(0))
 
-    // TODO: make more dynamic (as in, allow for later defined commands)
-    command match {
-      case Bio(args) =>
-        Bio.exec(args, message)
-      case Roll(args) =>
-        Roll.exec(args, message)
-      case Catfacts(args) =>
-        Catfacts.exec(args, message)
-      case "!help" =>
-        channel.sendMessageAsync(ShitTiniSays.help, timer)
-      case "!shutup" =>
-        TiniBrain.is8ball.set(false)
-        Repeat.shutup()
+      println(cmdArgs(0))
+      println(commands)
 
-        channel.sendMessageAsync(ShitTiniSays.shutupResponse, timer)
-      case "!8ballmode" =>
-        TiniBrain.is8ball.set(true)
-        channel.sendMessageAsync(ShitTiniSays.agreement, timer)
-      case Imitate(args) => Imitate.exec(args, message)
-      case DriveImage(args) =>
-        DriveImage.exec(args, message)
-      case Repeat(args) => Repeat.exec(args,message)
-      case _ if TiniBrain.is8ball.get =>
+      if( command.isEmpty ) message.getChannel.sendMessageAsync(s"Command ${cmdArgs(0)} is not known!",null)
+      else command.get.exec(cmdArgs.drop(1).mkString(" "),message)
+
+
+    } else {
+      if(TiniBrain.is8ball.get) {
         val response = new MessageBuilder().appendString(ShitTiniSays.agreement).setTTS(true).build()
         channel.sendMessageAsync(response, timer)
-      case _ => logMessage(message)
-      //case _ =>
+      }
+
+      logMessage(message)
     }
   }
 }

@@ -38,5 +38,5 @@ object Util {
 
   val isWhitespace = (char: Char) => char == ' ' || System.lineSeparator().contains(char) || char == '\n'
 
-  def isEnvSet(name: String): Boolean = System.getenv(name) != null || !System.getenv(name).isEmpty
+  def isEnvSet(name: String): Boolean = System.getenv(name) != null && !System.getenv(name).isEmpty
 }

@@ -2,6 +2,10 @@ package rip.hansolo.discord.tini.commands
 
 import net.dv8tion.jda.entities.Message
 import rip.hansolo.discord.tini.Util
+import rip.hansolo.discord.tini.brain.TiniBrain
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
   * Created by Giymo11 on 12.08.2016.
@@ -37,4 +41,6 @@ trait Command {
     * @param message The message which
     */
   def exec(args: String, message: Message = null)
+
+  def registerCommand(): Unit = Future[Unit] { TiniBrain.register(this) }
 }

@@ -2,15 +2,12 @@ package rip.hansolo.discord.tini.commands
 import cats.data.Xor
 import monix.eval.Task
 import monix.execution.CancelableFuture
+import monix.execution.Scheduler.Implicits.global
 import monix.execution.atomic.Atomic
 import net.dv8tion.jda.entities.Message
 
-import scala.concurrent.duration._
-import monix.execution.Scheduler.Implicits.global
-import rip.hansolo.discord.tini.Util
-import rip.hansolo.discord.tini.brain.{TextBrainRegion, TiniBrain}
-
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.duration._
 
 /**
   * Created by: 
@@ -19,6 +16,7 @@ import scala.collection.mutable.ListBuffer
   * @version 16.08.2016
   */
 object Repeat extends Command {
+
   override def prefix: String = "!repeat"
   private val repeatTasks = new ListBuffer[CancelableFuture[Unit]]
 
