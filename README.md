@@ -36,14 +36,16 @@ Create two environment variables:
 * TINI_TOKEN - the bot token from your discord authorization site.
 * TINI_PASSWORD - the password with which you want to kill the bot.
 
-The Bot can optionally use the Google Drive to load images via the !image Command, for this some environment variables are needed: 
+The Bot can optionally use the Google Drive to load images via the !image Command, for this some environment variables are needed:
+To use the gdrive api:
+* Go to https://console.cloud.google.com/flows/enableapi?apiid=drive&pli=1 and choose the project for your bot.
+* Create new Credentials for "Other UI"
+* Then continue with setting these environment variables: // TODO: !
 * TINI_GOOGLE_DRIVE - the image directory in google drive e.g `my-epic-colelction/images`
 * GDRIVE_CLIENT_ID - the client_id form the Google API Manager
 * GDRIVE_SECRET - the secret from the Google API Manager
-* GDRIVE_ACCESS_TOKEN - the access token
-* GDRIVE_REFRESH_TOKEN - the refresh token
 
-GDRIVE_ACCESS_TOKEN and GDRIVE_REFRESH_TOKEN tokens must be created at first startup!
+You will be asked to authorize your application at first startup, be sure not to miss it!
 
 Create a new firebase app. 
 Go to "Permissions" and add a Service Account. 
@@ -158,6 +160,15 @@ Version 2.0:
 
 Moonshot:
 * Replace the firebase database backend with a Postgres & Kafka setup.
+
+
+To discuss:
+* Rewrite the command system
+  - how do we do content?
+* Use the equivalent of "NadekoFlowers" for cpu/bandwidth intensive stuff
+* lets try actors?
+* rewrite to be using monix Observables?
+* Use HOCON for configs
 
 Libraries used
 -----------------

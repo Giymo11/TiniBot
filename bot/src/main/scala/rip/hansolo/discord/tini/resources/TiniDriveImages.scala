@@ -23,12 +23,12 @@ object TiniDriveImages {
   def driveImage = downloadFile( getRandom( images ) )
 
   def loadAllImages(): List[File] = {
-    if( System.getenv("TINI_GOOGLE_DRIVE") == null || System.getenv("TINI_GOOGLE_DRIVE").isEmpty ) {
+    if( driveFolder == null || driveFolder.isEmpty ) {
       println("No Google Drive Path specified!")
       return List()
     }
 
-    val collection = gDrive.getFileByPath(System.getenv("TINI_GOOGLE_DRIVE"))
+    val collection = gDrive.getFileByPath(driveFolder)
     val images = new ListBuffer[File]()
 
     if( collection.isDefined ) for( folder <- gDrive.getFolders(collection.get) ) images ++= gDrive.getImages(folder)

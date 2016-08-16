@@ -3,11 +3,17 @@ package rip.hansolo.discord.tini.gdrive
 import java.util
 
 import com.google.api.client.googleapis.auth.oauth2.{GoogleAuthorizationCodeFlow, GoogleCredential}
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.drive.{Drive, DriveScopes}
 
 import scala.io.StdIn
+import ammonite.ops._
+import com.google.api.client.auth.oauth2.Credential
+import com.google.api.client.util.store.FileDataStoreFactory
+
+import scala.collection.JavaConverters._
 
 /**
   * Created by: 
@@ -17,57 +23,67 @@ import scala.io.StdIn
   */
 object GoogleDriveBuilder {
 
-  private val redirectURI = s"urn:ietf:wg:oauth:2.0:oob"
+  private val redirectURI = s"urn:ietf:wg:oauth:2.0:oob" // can only be used for type "Other UI" applications.
 
   private val clientID = System.getenv("GDRIVE_CLIENT_ID")
   private val secret = System.getenv("GDRIVE_SECRET")
-  private val accessToken = System.getenv("GDRIVE_ACCESS_TOKEN")
-  private val refreshToken = System.getenv("GDRIVE_REFRESH_TOKEN")
+
+  val appName = "TiniBot"
+  val credentialsDir: java.io.File = new java.io.File("drive-credentials")
+  val dataStoreFactors = new FileDataStoreFactory(credentialsDir)
+  val jsonFactory = JacksonFactory.getDefaultInstance
+  val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
+  val scopes = Seq(DriveScopes.DRIVE).asJava
 
   private var drive: Option[Drive] = None
 
-  /* Call this Method to acquire ACCESS and REFRESH Tokens */
-  def main(argvs: Array[String]): Unit = {
-    if( accessToken.isEmpty || refreshToken.isEmpty ) generateAccessTokens()
-    else println("Nothing to do ...")
-  }
+  // TODO: add more than one user to be authorized
+  def authorize(): Credential = {
 
-  def generateAccessTokens(): Unit = {
-    val http = new NetHttpTransport()
-    val json = JacksonFactory.getDefaultInstance
+    val user = "user" // TODO: substitute with actual ID
 
-    val authFlow = new GoogleAuthorizationCodeFlow.Builder(http, json, clientID, secret, util.Arrays.asList(DriveScopes.DRIVE)).build
-    val uri = authFlow.newAuthorizationUrl().setRedirectUri(redirectURI).setAccessType("offline").build
-
-
-    /* Can not be loaded by simple http request due javascript! */
-    println("Open the URL: " + uri)
-    println("Now enter the Authorization Code: ")
-    val authCode = StdIn.readLine()
-
-    val token = authFlow.newTokenRequest(authCode).setRedirectUri(redirectURI).execute
-
-    println("GDRIVE_ACCESS_TOKEN: " + token.getAccessToken)
-    println("GDRIVE_REFRESH_TOKEN: " + token.getRefreshToken)
-  }
-
-  def buildDrive: Drive = {
-    val http = new NetHttpTransport()
-    val json = JacksonFactory.getDefaultInstance
-
-    val credential = new GoogleCredential.Builder()
-      .setTransport(http)
-      .setJsonFactory(json)
-      .setClientSecrets(clientID,secret)
+    // TODO: read client secrets from json
+    val authFlow = new GoogleAuthorizationCodeFlow.Builder(
+      httpTransport,
+      jsonFactory,
+      clientID,
+      secret,
+      scopes
+    ).setDataStoreFactory(dataStoreFactors)
+      .setAccessType("offline")
       .build
 
-    credential.setAccessToken(accessToken)
-    credential.setRefreshToken(refreshToken)
+    Option( authFlow.loadCredential(user) ).getOrElse {
+      val uri = authFlow
+        .newAuthorizationUrl()
+        .setRedirectUri(redirectURI)
+        .setAccessType("offline")
+        .build
 
+      println("Open this URL and copy the Authorization Token: " + uri)
 
-    drive = Some(new Drive.Builder(http,json,credential).setApplicationName("TiniBot").build)
-    drive.get
+      val authCode = StdIn.readLine()
+      val token = authFlow.newTokenRequest(authCode).setRedirectUri(redirectURI).execute
+
+      authFlow.createAndStoreCredential(token, user)
+    }
   }
 
-  def getDrive: Drive = drive.getOrElse(buildDrive)
+  def initializeDrive(): Unit = {
+    val credential = authorize()
+
+    drive = Some(
+      new Drive.Builder(
+        httpTransport,
+        jsonFactory,
+        credential
+      ).setApplicationName(appName)
+      .build
+    )
+  }
+
+  def getDrive: Drive = drive.getOrElse {
+    initializeDrive()
+    drive.get
+  }
 }

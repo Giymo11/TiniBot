@@ -6,12 +6,14 @@ import rip.hansolo.discord.tini.Util
 /**
   * Created by Giymo11 on 12.08.2016.
   */
-trait Command extends App {
+trait Command {
+
+  // TODO: rewrite `Command` to be a class, making the objects currently inheriting only instances of this class.
+  // TODO: Register to TiniBrain in constructor.
 
   def prefix: String
 
   /**
-    *
     * @param command the full command (excluding signal-character)
     * @return Some(args) with args being the parameter for the exec method. None if it did not match thisi Command
     */
@@ -30,7 +32,6 @@ trait Command extends App {
   }
 
   /**
-    *
     * @param args The return of its unapply. It's the String needed for the execution of the command
     *             Mostly here for convenience reasons, subject to change
     * @param message The message which

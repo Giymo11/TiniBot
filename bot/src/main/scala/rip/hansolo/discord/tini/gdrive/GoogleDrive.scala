@@ -21,23 +21,24 @@ class GoogleDrive(drive: Drive) {
 
   def getRoot: File = drive.files.get("root").execute
 
-
   def getFolders(parent: File) = getDriveEntries(parent, folderType)
 
   def getFiles(parent: File) = getDriveEntries(parent, fileType)
 
   def getImages(parent: File) = getDriveEntries(parent, imageType)
 
-  def getDriveEntries(parent: File, mimeType: String = null, limit: Int = 10000): List[File] = {
-    if (mimeType == null) {
-      drive.files.list.setQ(s"'%s' in parents and trashed = false".format(parent.getId))
-        .setMaxResults(limit)
-        .execute.getItems.asScala.toList
-    } else {
-      drive.files.list.setQ(s"'%s' in parents and mimeType contains '%s' and trashed = false".format(parent.getId, mimeType))
-        .setMaxResults(limit)
-        .execute.getItems.asScala.toList
+  def getDriveEntries(parent: File, mimeType: String = null, limit: Int = 10000): Seq[File] = {
+
+    val query = mimeType match {
+      case mimes if mimes == null || mimes.isEmpty =>
+        s"'${parent.getId}' in parents and trashed = false"
+      case _ =>
+        s"'${parent.getId}' in parents and mimeType contains '$mimeType' and trashed = false"
     }
+
+    drive.files.list.setQ(query)
+      .setMaxResults(limit)
+      .execute.getItems.asScala
   }
 
   def getFileByPath(path: String): Option[File] = {
