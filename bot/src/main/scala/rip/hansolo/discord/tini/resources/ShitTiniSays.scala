@@ -51,6 +51,7 @@ object ShitTiniSays {
     |!8ballmode - I will start responding again. Default mode :stuck_out_tongue_winking_eye:
     |!roll <lower-bound> <upper-bound> - Returns a number between those numbers
     |!bio - to set your and display other biographies
+    |!image - the bot will send a random image from a secret Google Drive Directory hidden under a volcano
   """.stripMargin
 
   def shutupResponse = oneOf(
