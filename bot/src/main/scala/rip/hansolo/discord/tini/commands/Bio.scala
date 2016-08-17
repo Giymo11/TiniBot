@@ -5,8 +5,8 @@ import com.google.firebase.database._
 import net.dv8tion.jda.entities._
 import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.resources.ShitTiniSays
-
 import rip.hansolo.discord.tini.Util._
+import rip.hansolo.discord.tini.commands.Bio.Get._
 
 /**
   * Created by Giymo11 on 11.08.2016.
@@ -52,9 +52,8 @@ object Bio extends Command {
       bioOf(author).setValue(args, errorCallback)
     }
 
-    override def longHelp: String = ???
-
-    override def shortHelp: String = ???
+    override def longHelp: String = shortHelp
+    override def shortHelp: String = s"`${Bio.command} $command <biography>` - Sets your biography"
   }
 
   object Get extends Command{
@@ -98,13 +97,12 @@ object Bio extends Command {
       }
     }
 
-    override def longHelp: String = ???
-
-    override def shortHelp: String = ???
+    override def longHelp: String = shortHelp
+    override def shortHelp: String = s"`${Bio.command} $command<user>` - Gets the Bio of the User"
   }
 
-  override def longHelp: String = "`!bio` <get|set> <biography> - Set your, and display other biographies"
-  override def shortHelp: String =  prefix + " - to set your and display other biographies"
+  override def longHelp: String = Get.longHelp + "\n" + Set.longHelp
+  override def shortHelp: String =  s"`$command` - to set your and display other biographies"
 }
 
 

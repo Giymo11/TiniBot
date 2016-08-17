@@ -27,6 +27,6 @@ object Catfacts extends Command {
     message.getChannel.sendMessageAsync(response, null)
   }
 
-  override def longHelp: String = "`!catfacts` - Display a cat fact"
-  override def shortHelp: String =  prefix + " - I will show you some catfacts. :cat2:"
+  override def longHelp: String = s"`$command` - Display a cat fact"
+  override def shortHelp: String =  s"`$command` - I will show you some catfacts. :cat2:"
 }

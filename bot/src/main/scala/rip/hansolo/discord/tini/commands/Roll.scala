@@ -54,5 +54,5 @@ object Roll extends Command {
 
   override def longHelp: String = s"`$command <lower> <upper>`, example: `!roll 1 10`\n" +
                                   s"`$command <count>d<sides>`, example: `!roll 2d6`"
-  override def shortHelp: String =  prefix + " - Returns a number between those numbers"
+  override def shortHelp: String =  s"`$command` - Returns a number between those numbers"
 }

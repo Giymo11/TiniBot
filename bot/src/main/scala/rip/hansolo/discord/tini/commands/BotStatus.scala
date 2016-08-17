@@ -35,5 +35,5 @@ object BotStatus extends PrivateCommand {
   }
 
   override def longHelp: String = shortHelp
-  override def shortHelp: String = "`!botstatus` <password> <status> - Sets the Game status of Tini"
+  override def shortHelp: String = s"`$command <password> <status>` - Sets the Game status of Tini"
 }

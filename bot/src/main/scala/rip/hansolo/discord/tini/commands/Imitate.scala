@@ -44,5 +44,5 @@ object Imitate extends Command {
   }
 
   override def longHelp: String = s"`$command <@user>` - Tini tries to impersonate the other user"
-  override def shortHelp: String =  prefix + " - make the bot impersonate someone"
+  override def shortHelp: String =  s"`$command` - make the bot impersonate someone"
 }

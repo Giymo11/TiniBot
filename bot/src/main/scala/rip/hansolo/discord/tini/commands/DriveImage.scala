@@ -172,5 +172,5 @@ object DriveImage extends Command {
   }
 
   override def longHelp: String = "`!image [type] [tags]*` -  Send a random image with the image type (or any with image-type \"all\") from one of the directories specified with `tags`"
-  override def shortHelp: String =  prefix + " - the bot will send a random image from a secret Google Drive Directory hidden under a volcano"
+  override def shortHelp: String =  s"`$command` - the bot will send a random image from a secret Google Drive Directory hidden under a volcano"
 }

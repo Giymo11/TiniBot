@@ -33,6 +33,6 @@ object Help extends Command {
   }
 
   override def longHelp: String = "`!help [command]` - Tini tells you how to use the command"
-  override def shortHelp: String = prefix + " - Tells you how Tini works, use !help <command> to get more help with one command\n" +
+  override def shortHelp: String = s"`$command` - Tells you how Tini works, use !help <command> to get more help with one command\n" +
     "You can also use `!help all` to get the detailed help from all commands"
 }
