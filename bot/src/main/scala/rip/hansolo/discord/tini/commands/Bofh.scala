@@ -10,7 +10,7 @@ import rip.hansolo.discord.tini.resources.ShitTiniSays
   */
 object Bofh extends Command {
 
-  override def prefix: String = "!bofh"
+  override def prefix: String = "bofh"
 
   /**
     * @param args    The return of its unapply. It's the String needed for the execution of the command

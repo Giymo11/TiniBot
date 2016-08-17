@@ -11,10 +11,10 @@ import rip.hansolo.discord.tini.resources.Resources
   * @version 17.08.2016
   */
 object Kill extends PrivateCommand {
-  override def prefix: String = "!kill"
+  override def prefix: String = "kill"
 
   override def longHelp: String = shortHelp
-  override def shortHelp: String = "`!kill <password>` - Kills Tini :cry:"
+  override def shortHelp: String = s"`$command <password>` - Kills Tini :cry:"
 
   override def exec(event: PrivateMessageReceivedEvent): Unit = {
     val client = event.getJDA

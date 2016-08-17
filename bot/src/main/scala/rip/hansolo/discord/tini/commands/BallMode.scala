@@ -10,7 +10,10 @@ import rip.hansolo.discord.tini.resources.ShitTiniSays
   * @version 17.08.2016
   */
 object BallMode extends Command {
-  override def prefix: String = "!8ballmode"
+
+
+
+  override def prefix: String = "8ballmode"
 
   /**
     * @param args    The return of its unapply. It's the String needed for the execution of the command
@@ -24,5 +27,5 @@ object BallMode extends Command {
 
   override def longHelp: String = shortHelp
 
-  override def shortHelp: String = "`!8ballmode` - do that again."
+  override def shortHelp: String = s"`$command` - do that again."
 }

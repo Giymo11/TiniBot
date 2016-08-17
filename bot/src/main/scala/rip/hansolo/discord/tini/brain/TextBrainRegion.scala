@@ -41,8 +41,8 @@ object TextBrainRegion extends ListenerAdapter {
   override def onPrivateMessageReceived(event: PrivateMessageReceivedEvent): Unit = {
     val content = event.getMessage.getContent.trim
 
-    if( content.startsWith("!") ) {
-     privateCommands.getOrElse(content.split(" ").head,NotACommand).exec(event)
+    if( content.startsWith(TiniBrain.prefixChar.get) ) {
+     privateCommands.getOrElse(content.split(" ").head.drop(1),NotACommand).exec(event)
     }
   }
 
@@ -62,10 +62,10 @@ object TextBrainRegion extends ListenerAdapter {
     val timer = (myMessage: Message) => println("Sent response at " + myMessage.getTime + ", after " + ChronoUnit.MILLIS.between(myMessage.getTime, message.getTime))
 
     val msgText = message.getContent.trim
-    if( msgText.startsWith("!") ) {
+    if( msgText.startsWith(TiniBrain.prefixChar.get) ) {
 
       val cmdArgs = msgText.split(" ")
-      channelCommands.getOrElse(cmdArgs.head,NotACommand).exec(cmdArgs.drop(1).mkString(" "),message)
+      channelCommands.getOrElse(cmdArgs.head.drop(1),NotACommand).exec(cmdArgs.drop(1).mkString(" "),message)
 
     } else {
       if(TiniBrain.is8ball.get) {

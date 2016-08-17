@@ -14,6 +14,8 @@ import scala.concurrent.Future
   */
 trait Command {
 
+  def command: String = TiniBrain.prefixChar.get + prefix
+
   // TODO: rewrite `Command` to be a class, making the objects currently inheriting only instances of this class.
   // TODO: Register to TiniBrain in constructor.
 
@@ -44,8 +46,8 @@ trait Command {
     */
   def exec(args: String, message: Message = null)
 
-  def longHelp: String = ???
-  def shortHelp: String = ???
+  def longHelp: String
+  def shortHelp: String
 
   def registerCommand(): Unit = Future[Unit] { TiniBrain.register(this) }
 }

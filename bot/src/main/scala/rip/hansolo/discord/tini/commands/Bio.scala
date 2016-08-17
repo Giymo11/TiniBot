@@ -14,7 +14,7 @@ import rip.hansolo.discord.tini.Util._
 
 object Bio extends Command {
 
-  override def prefix: String = "!bio"
+  override def prefix: String = "bio"
 
   override def exec(args: String, message: Message): Unit = args match {
     case Bio.Set(arg) =>

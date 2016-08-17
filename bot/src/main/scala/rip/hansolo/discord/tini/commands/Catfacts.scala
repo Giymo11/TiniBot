@@ -10,7 +10,7 @@ import rip.hansolo.discord.tini.resources.ShitTiniSays
   */
 object Catfacts extends Command {
 
-  override def prefix: String = "!catfacts"
+  override def prefix: String = "catfacts"
 
   /**
     *

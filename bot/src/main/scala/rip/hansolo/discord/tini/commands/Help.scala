@@ -9,7 +9,7 @@ import rip.hansolo.discord.tini.brain.{TextBrainRegion, TiniBrain}
   * @version 16.08.2016
   */
 object Help extends Command {
-  override def prefix: String = "!help"
+  override def prefix: String = "help"
 
   /**
     * @param args    The return of its unapply. It's the String needed for the execution of the command

@@ -18,7 +18,7 @@ import scala.concurrent.duration._
   */
 object Repeat extends Command {
 
-  override def prefix: String = "!repeat"
+  override def prefix: String = "repeat"
   private val repeatTasks = new ListBuffer[CancelableFuture[Unit]]
 
   /**
@@ -47,13 +47,13 @@ object Repeat extends Command {
                             .runAsync
 
     } else {
-      message.getChannel.sendMessageAsync("Usage: !repeat <count> [timeout] <command> <other-command-args>", null)
+      message.getChannel.sendMessageAsync("Usage: " + longHelp, null)
     }
 
   }
 
   def shutup() = repeatTasks foreach { _.cancel() }
 
-  override def longHelp: String = "`!repeat <count> [timeout] <command> <command-args>` - Repeat the command multiple times with the arguments"
+  override def longHelp: String = s"`$command <count> [timeout] <command> <command-args>` - Repeat the command multiple times with the arguments"
   override def shortHelp: String =  prefix + " - the bot will repeat some messages"
 }

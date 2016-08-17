@@ -19,7 +19,7 @@ import rip.hansolo.discord.tini.resources._
   */
 object Imitate extends Command {
 
-  override def prefix:String = "!be"
+  override def prefix:String = "be"
 
   override def exec(args: String, message: Message):Unit = {
     val mentions = {
@@ -43,6 +43,6 @@ object Imitate extends Command {
     message.getChannel.sendMessageAsync(response, null)
   }
 
-  override def longHelp: String = "`!be <@user>` - Tini tries to impersonate the other user"
+  override def longHelp: String = s"`$command <@user>` - Tini tries to impersonate the other user"
   override def shortHelp: String =  prefix + " - make the bot impersonate someone"
 }

@@ -30,7 +30,7 @@ import rip.hansolo.discord.tini.resources.ShitTiniSays
   */
 object DriveImage extends Command {
 
-  override def prefix: String = "!image"
+  override def prefix: String = "image"
 
   /**
     *

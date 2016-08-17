@@ -1,7 +1,7 @@
 package rip.hansolo.discord.tini.commands
 import net.dv8tion.jda.entities.Message
+import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
 import rip.hansolo.discord.tini.brain.TiniBrain
-import rip.hansolo.discord.tini.resources.{Resources, ShitTiniSays}
 
 /**
   * Created by: 
@@ -9,8 +9,9 @@ import rip.hansolo.discord.tini.resources.{Resources, ShitTiniSays}
   * @author Raphael
   * @version 17.08.2016
   */
-object Shutup extends Command {
-  override def prefix: String = "shutup"
+object SetChar extends PrivateCommand {
+
+  override def prefix: String = "setChar"
 
   /**
     * @param args    The return of its unapply. It's the String needed for the execution of the command
@@ -18,10 +19,11 @@ object Shutup extends Command {
     * @param message The message which
     */
   override def exec(args: String, message: Message): Unit = {
-    TiniBrain.is8ball.set(false)
-    message.getChannel.sendMessageAsync(ShitTiniSays.shutupResponse,null)
+    TiniBrain.prefixChar.set(args)
   }
 
-  override def longHelp: String = shortHelp
-  override def shortHelp: String = s"$command - not do that anymore."
+  override def longHelp: String = s"`$command <char>` - sets the Command char for Tini"
+  override def shortHelp: String = longHelp
+
+  override def exec(event: PrivateMessageReceivedEvent): Unit = ???
 }

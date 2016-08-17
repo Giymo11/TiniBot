@@ -23,7 +23,7 @@ object BotStatus extends PrivateCommand {
     }
   }
 
-  override def prefix: String = "!botstatus"
+  override def prefix: String = "botstatus"
 
   /**
     * @param args    The return of its unapply. It's the String needed for the execution of the command
