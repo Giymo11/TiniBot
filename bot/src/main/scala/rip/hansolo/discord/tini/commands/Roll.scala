@@ -52,7 +52,7 @@ object Roll extends Command {
     case _ => s"( ${rolls.mkString(" + ")} ) = **${rolls.sum}**"
   }
 
-  override def longHelp: String = s"`$command <lower> <upper>`, example: `!roll 1 10`\n" +
-                                  s"`$command <count>d<sides>`, example: `!roll 2d6`"
+  override def longHelp: String = s"`$command <lower> <upper>`, example: `$command 1 10`\n" +
+                                  s"`$command <count>d<sides>`, example: `$command 2d6`"
   override def shortHelp: String =  s"`$command` - Returns a number between those numbers"
 }

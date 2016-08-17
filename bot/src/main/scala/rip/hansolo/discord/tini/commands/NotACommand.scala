@@ -16,10 +16,12 @@ object NotACommand extends PrivateCommand {
     *                Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  override def exec(args: String, message: Message): Unit = {}
+  override def exec(args: String, message: Message): Unit = {
+    message.getChannel.sendMessageAsync(s"Tini is confused, there is no such a command.\nType `${Help.command}` to see the commands",null)
+  }
 
-  override def longHelp: String = shortHelp
-  override def shortHelp: String = "Tini is confused, there is no such a command.\nType `!help` to see the commands"
+  override def longHelp: String = ""
+  override def shortHelp: String = ""
 
   override def exec(event: PrivateMessageReceivedEvent): Unit = {}
 }

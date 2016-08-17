@@ -37,7 +37,7 @@ object Repeat extends Command {
       val cmdStart = if( duration.isEmpty ) 1 else 2
 
       val repTask = Task {
-        val cmd = TextBrainRegion.channelCommands.get(arguments(cmdStart))
+        val cmd = TextBrainRegion.channelCommands.get(arguments(cmdStart).drop(1))
         cmd.getOrElse(NotACommand).exec(arguments.drop(cmdStart+1).mkString(" "), message)
       }
 

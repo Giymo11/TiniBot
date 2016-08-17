@@ -26,6 +26,5 @@ object BallMode extends Command {
   }
 
   override def longHelp: String = shortHelp
-
   override def shortHelp: String = s"`$command` - do that again."
 }
