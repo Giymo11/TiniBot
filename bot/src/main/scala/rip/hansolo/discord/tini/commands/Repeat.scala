@@ -5,6 +5,7 @@ import monix.execution.CancelableFuture
 import monix.execution.Scheduler.Implicits.global
 import monix.execution.atomic.Atomic
 import net.dv8tion.jda.entities.Message
+import rip.hansolo.discord.tini.brain.TextBrainRegion
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
@@ -36,12 +37,8 @@ object Repeat extends Command {
       val cmdStart = if( duration.isEmpty ) 1 else 2
 
       val repTask = Task {
-        arguments(cmdStart) match {
-          case "image" => DriveImage.exec(arguments.drop(cmdStart+1).mkString(" "), message)
-          case "catfacts" => Catfacts.exec(arguments.drop(cmdStart+1).mkString(" "), message)
-          case "be" => Imitate.exec(arguments.drop(cmdStart+1).mkString(" "), message)
-          case "roll" => Roll.exec(arguments.drop(cmdStart+1).mkString(" "), message)
-        }
+        val cmd = TextBrainRegion.channelCommands.get(arguments(cmdStart))
+        cmd.getOrElse(NotACommand).exec(arguments.drop(cmdStart+1).mkString(" "), message)
       }
 
       repTask.runAsync
