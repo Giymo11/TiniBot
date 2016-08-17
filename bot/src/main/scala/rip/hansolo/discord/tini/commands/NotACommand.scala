@@ -1,5 +1,6 @@
 package rip.hansolo.discord.tini.commands
 import net.dv8tion.jda.entities.Message
+import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
 
 /**
   * Created by: 
@@ -7,7 +8,7 @@ import net.dv8tion.jda.entities.Message
   * @author Raphael
   * @version 17.08.2016
   */
-object NotACommand extends Command {
+object NotACommand extends PrivateCommand {
   override def prefix: String = "!<this-is-not-a-tini-command>!"
 
   /**
@@ -19,4 +20,6 @@ object NotACommand extends Command {
 
   override def longHelp: String = ""
   override def shortHelp: String = ""
+
+  override def exec(event: PrivateMessageReceivedEvent): Unit = {}
 }

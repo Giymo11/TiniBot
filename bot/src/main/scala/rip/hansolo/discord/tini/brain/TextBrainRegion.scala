@@ -42,10 +42,7 @@ object TextBrainRegion extends ListenerAdapter {
     val content = event.getMessage.getContent.trim
 
     if( content.startsWith("!") ) {
-      val cmdArgs = content.split(" ")
-      val command = privateCommands.get(cmdArgs.head)
-
-      if( command.isDefined ) command.get.exec(event)
+     privateCommands.getOrElse(content.split(" ").head,NotACommand).exec(event)
     }
   }
 
