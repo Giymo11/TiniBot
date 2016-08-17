@@ -46,6 +46,7 @@ object Main extends TaskApp{
       //channel.sendMessageAsync(ShitTiniSays.selfAnnouncement, null)
     }
     TiniBrain.isLoadingImages.set(true)
+    println("FileNames. " + TiniBrain.filesWithNames.take(20).map(_._2.mkString(", ")).mkString("\n"))
     println("MimeTypes: " + TiniBrain.files.map(_.getMimeType).toSet.mkString("\n"))
     TiniBrain.isLoadingImages.set(false)
   }

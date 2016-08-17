@@ -20,7 +20,7 @@ import scala.collection.concurrent.TrieMap
 /**
   * The brain region for responding to text messages
   */
-class TextBrainRegion extends ListenerAdapter {
+object TextBrainRegion extends ListenerAdapter {
 
   val commands: TrieMap[String,Command] = new TrieMap[String,Command]
 

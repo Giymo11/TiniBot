@@ -63,7 +63,7 @@ object ShitTiniSays {
     ":middle_finger:"
   )
 
-  def rollAnnouncement = oneOf(
+  def rollResponse = oneOf(
     "You rolled: ",
     ":game_die: says: ",
     "RNGesus says: ",
@@ -82,6 +82,13 @@ object ShitTiniSays {
     |`!bio set <text>` to set your biography
     |`!bio <@mention>` to display someones biography
   """.stripMargin
+
+  def imageResponse = oneOf(
+    "There you go!",
+    "You're welcome!",
+    "Enjoy ;)",
+    "This is what I found: "
+  )
 
   val imitateUsage =
     """

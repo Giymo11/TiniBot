@@ -29,7 +29,7 @@ object GoogleDriveBuilder {
   private val secret = System.getenv("GDRIVE_SECRET")
 
   val appName = "TiniBot"
-  val credentialsDir: java.io.File = new java.io.File("drive-credentials")
+  val credentialsDir: java.io.File = new java.io.File("credentials")
   val dataStoreFactors = new FileDataStoreFactory(credentialsDir)
   val jsonFactory = JacksonFactory.getDefaultInstance
   val httpTransport = GoogleNetHttpTransport.newTrustedTransport()

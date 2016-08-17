@@ -86,11 +86,11 @@ Until now, Tini can:
 * `!8ballmode` - do that again.
 * `!roll <lower> <upper>`, example: `!roll 1 10`
 * `!roll <count>d<sides>`, example: `!roll 2d6`
-* `!bio` - to set your, and display other biographies
+* `!bio` - Set your, and display other biographies
 * set the status when you PM her `!botstatus <password> <text>`
 * commit seppuku when you PM it `!kill <password>` where you substitute the <password> with the one in your `TINI_PASSWORD` environment variable.
-* `!image` - the bot will send a random image from the TINI_GOOGLE_DRIVE Directory
-* `!repeat <count> [timeout] <command> <command-args>` - The bot will repeat the command multiple times with the arguments
+* `!repeat <count> [timeout] <command> <command-args>` - Repeat the command multiple times with the arguments
+* `!image [image-type] [tags]*` - Send a random image with the image type (or any with image-type "all") from one of the directories specified with `tags`
 
 Wishlist
 -----------------

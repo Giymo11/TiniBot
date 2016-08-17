@@ -5,9 +5,12 @@ import java.io._
 
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.{FirebaseApp, FirebaseOptions}
+import com.google.firebase._
+
+import scala.concurrent.Promise
 import monix.execution.atomic.Atomic
 import rip.hansolo.discord.tini.commands._
-import rip.hansolo.discord.tini.gdrive.{GoogleDrive, GoogleDriveBuilder}
+import rip.hansolo.discord.tini.gdrive._
 import rip.hansolo.discord.tini.resources.Resources
 
 import scala.concurrent.Promise
@@ -28,9 +31,10 @@ object TiniBrain {
     * If this promise is fulfilled, Tini will kill itself and take the JVM with her
     */
   val prophecy = Promise[Unit]
-  val is8ball = Atomic(false)
 
+  val is8ball = Atomic(false)
   val isLoadingImages = Atomic(true)
+  val isShowingTags = Atomic(false)
 
   def killYourself() = prophecy.success()
 
@@ -39,7 +43,7 @@ object TiniBrain {
     val options = new FirebaseOptions.Builder()
       // if you want your own credentials here, follow the Guide at the firebase docs and then make sure to give the
       // ServiceAccount "Project -> Editor" permissions in the IAM settings (under Permissions in Firebase Console)
-      .setServiceAccount(new FileInputStream("tinibot-firebase.json"))
+      .setServiceAccount(new FileInputStream("credentials/tinibot-firebase.json"))
       .setDatabaseUrl("https://tinibot-a4c07.firebaseio.com/")
       .build()
 
@@ -50,7 +54,10 @@ object TiniBrain {
 
   val gDrive = new GoogleDrive(GoogleDriveBuilder.drive)
 
-  val files = gDrive.initializeFiles(Resources.gdriveFolderName)
 
-  val images = GoogleDrive.getImages(files)
+  val filesWithNames = gDrive.initializeFiles(Resources.gdriveFolderName)
+  val files = filesWithNames.map{ case (file, parents) => file }
+
+  val imagesWithNames = filesWithNames.filter{ case (file, parents) => GoogleDrive.isImage(file) }
+  val images = files.filter(GoogleDrive.isImage)
 }
