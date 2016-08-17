@@ -1,8 +1,8 @@
 package rip.hansolo.discord.tini.commands
 
 import com.google.firebase.database.DatabaseReference.CompletionListener
-import com.google.firebase.database.{DataSnapshot, DatabaseError, DatabaseReference, ValueEventListener}
-import net.dv8tion.jda.entities.{Message, MessageChannel, User}
+import com.google.firebase.database._
+import net.dv8tion.jda.entities._
 import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.resources.ShitTiniSays
 

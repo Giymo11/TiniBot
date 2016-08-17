@@ -28,7 +28,7 @@ object Main extends TaskApp{
         .addListener(new ListenerAdapter { // TODO: this could probably be written in a more scala-esque way
           override def onReady(event: ReadyEvent): Unit = callback.onSuccess(event.getJDA)
         })
-        .addListener(new TextBrainRegion)
+        .addListener(TextBrainRegion)
         .buildAsync()
 
       Cancelable.empty
@@ -44,6 +44,7 @@ object Main extends TaskApp{
       //channel.sendMessageAsync(ShitTiniSays.selfAnnouncement, null)
     }
     TiniBrain.isLoadingImages.set(true)
+    println("FileNames. " + TiniBrain.filesWithNames.take(20).map(_._2.mkString(", ")).mkString("\n"))
     println("MimeTypes: " + TiniBrain.files.map(_.getMimeType).toSet.mkString("\n"))
     TiniBrain.isLoadingImages.set(false)
   }

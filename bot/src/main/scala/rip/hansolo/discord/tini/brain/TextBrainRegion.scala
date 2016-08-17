@@ -17,7 +17,7 @@ import rip.hansolo.discord.tini.Util._
 /**
   * The brain region for responding to text messages
   */
-class TextBrainRegion extends ListenerAdapter {
+object TextBrainRegion extends ListenerAdapter {
 
   override def onGuildMessageReceived(event: GuildMessageReceivedEvent): Unit = {
     val channel = event.getChannel
