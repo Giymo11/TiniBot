@@ -22,5 +22,5 @@ object Bofh extends Command {
   }
 
   override def longHelp: String = shortHelp
-  override def shortHelp: String = s"`$command` - Gives you a Bastard Operator of Hell Excuse"
+  override def shortHelp: String = s"`$command` - Gives you a Bastard Operator from Hell Excuse"
 }

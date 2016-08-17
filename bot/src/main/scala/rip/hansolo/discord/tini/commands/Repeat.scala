@@ -32,7 +32,7 @@ object Repeat extends Command {
     //TODO: make it pretty
     if( arguments.length >= 2 ) {
       val count = Atomic(arguments.head.toInt - 1)
-      val duration = Xor.catchNonFatal(arguments(1).toInt).toOption
+      val duration = Xor.catchNonFatal(if (arguments(1).toInt > 10) arguments(1).toInt else 10 ).toOption
 
       val cmdStart = if( duration.isEmpty ) 1 else 2
 
@@ -40,6 +40,8 @@ object Repeat extends Command {
         val cmd = TextBrainRegion.channelCommands.get(arguments(cmdStart).drop(1))
         cmd.getOrElse(NotACommand).exec(arguments.drop(cmdStart+1).mkString(" "), message)
       }
+
+      message.getChannel.sendMessageAsync(s":ok_hand: Tini will repeat `${arguments(cmdStart)}` every ***${duration.getOrElse(10) seconds}***",null)
 
       repTask.runAsync
       repeatTasks += repTask.delayExecution(duration.getOrElse(10) seconds)

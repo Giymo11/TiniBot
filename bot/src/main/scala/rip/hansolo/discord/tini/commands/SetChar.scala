@@ -20,7 +20,7 @@ object SetChar extends PrivateCommand {
     * @param message The message which
     */
   override def exec(args: String, message: Message): Unit = {
-    message.getChannel.sendMessageAsync("*:rolling_eyes:  Tini won't change clothes here ... *",null)
+    message.getChannel.sendMessageAsync(":rolling_eyes:  *Tini won't change clothes here ...*",null)
   }
 
   override def longHelp: String = s"`$command <password> <char>` - Sets the Command char for Tini"
@@ -28,10 +28,11 @@ object SetChar extends PrivateCommand {
 
   override def exec(event: PrivateMessageReceivedEvent): Unit = {
     val args = event.getMessage.getContent.trim.split(" ")
-    if( args.length >= 2 && args(0) == Reference.authorPassword ) {
-      TiniBrain.prefixChar.set(args(1)(0))
+
+    if( args.length == 3 && args(1) == Reference.authorPassword ) {
+      TiniBrain.prefixChar.set(args(2)(0))
     } else {
-      event.getMessage.getChannel.sendMessageAsync("Tini can't set the command prefix :sad:",null)
+      event.getMessage.getChannel.sendMessageAsync("Tini can't set the command prefix :robot:",null)
     }
   }
 }
