@@ -32,7 +32,7 @@ object TiniBrain {
   val is8ball = Atomic(false)
   val isLoadingImages = Atomic(true)
   val isShowingTags = Atomic(false)
-  val prefixChar = Atomic("!")
+  val prefixChar = Atomic('!')
   val isSelfAccouncing = Atomic(false)
 
   def killYourself() = prophecy.success()

@@ -2,6 +2,7 @@ package rip.hansolo.discord.tini.commands
 import net.dv8tion.jda.entities.Message
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
 import rip.hansolo.discord.tini.brain.TiniBrain
+import rip.hansolo.discord.tini.resources.Reference
 
 /**
   * Created by: 
@@ -19,11 +20,18 @@ object SetChar extends PrivateCommand {
     * @param message The message which
     */
   override def exec(args: String, message: Message): Unit = {
-    TiniBrain.prefixChar.set(args)
+    message.getChannel.sendMessageAsync("*:rolling_eyes:  Tini won't change clothes here ... *",null)
   }
 
-  override def longHelp: String = s"`$command <char>` - sets the Command char for Tini"
+  override def longHelp: String = s"`$command <password> <char>` - Sets the Command char for Tini"
   override def shortHelp: String = longHelp
 
-  override def exec(event: PrivateMessageReceivedEvent): Unit = ???
+  override def exec(event: PrivateMessageReceivedEvent): Unit = {
+    val args = event.getMessage.getContent.trim.split(" ")
+    if( args.length >= 2 && args(0) == Reference.authorPassword ) {
+      TiniBrain.prefixChar.set(args(1)(0))
+    } else {
+      event.getMessage.getChannel.sendMessageAsync("Tini can't set the command prefix :sad:",null)
+    }
+  }
 }

@@ -45,7 +45,7 @@ object CommandResolver {
 
         obj.instance.isInstanceOf[Command] match { /* Fixes Command object glitch */
           case true => obj.instance.asInstanceOf[Command].registerCommand() /* touch obj & load it */
-          case _ => println("Unable to get Class from: " + obj)
+          case _ => println(s"[CommandResolver] Class $c does not seem to be a instance from the Command trait => It does get ignored")
         }
 
       }
