@@ -22,7 +22,8 @@ import scala.collection.concurrent.TrieMap
   */
 object TextBrainRegion extends ListenerAdapter {
 
-  val commands: TrieMap[String,Command] = new TrieMap[String,Command]
+  val channelCommands: TrieMap[String,Command] = new TrieMap[String,Command]
+  val privateCommands: TrieMap[String,PrivateCommand] = new TrieMap[String,PrivateCommand]
 
   override def onGuildMessageReceived(event: GuildMessageReceivedEvent): Unit = {
     val channel = event.getChannel
@@ -38,20 +39,13 @@ object TextBrainRegion extends ListenerAdapter {
   }
 
   override def onPrivateMessageReceived(event: PrivateMessageReceivedEvent): Unit = {
-    val client = event.getJDA
     val content = event.getMessage.getContent.trim
 
-    println(content)
-    content match {
-      case command if command.contains("!kill") && command.contains(Resources.authorPassword) =>
-        client.shutdown(true)
-        TiniBrain.killYourself()
-      case command if command.contains("!botstatus") && command.contains(Resources.authorPassword) =>
-        val status = command.replace("!botstatus", "").replace(Resources.authorPassword, "").trim
-        client.getAccountManager.setGame(status)
-        event.getMessage.getChannel.sendMessageAsync("status set", null)
-      case _ =>
-        ()
+    if( content.startsWith("!") ) {
+      val cmdArgs = content.split(" ")
+      val command = privateCommands.get(cmdArgs.head)
+
+      if( command.isDefined ) command.get.exec(event)
     }
   }
 
@@ -71,10 +65,7 @@ object TextBrainRegion extends ListenerAdapter {
     val msgText = message.getContent.trim
     if( msgText.startsWith("!") ) {
       val cmdArgs = msgText.split(" ")
-      val command = commands.get(cmdArgs(0))
-
-      println(cmdArgs(0))
-      println(commands)
+      val command = channelCommands.get(cmdArgs.head)
 
       if( command.isEmpty ) message.getChannel.sendMessageAsync(s"Command ${cmdArgs(0)} is not known!",null)
       else command.get.exec(cmdArgs.drop(1).mkString(" "),message)

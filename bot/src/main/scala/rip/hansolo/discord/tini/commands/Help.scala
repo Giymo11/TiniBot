@@ -20,12 +20,12 @@ object Help extends Command {
     val arguments = args.split(" ")
 
     if( arguments.nonEmpty ) {
-      val cmd = TextBrainRegion.commands.get(arguments.head)
+      val cmd = TextBrainRegion.channelCommands.get(arguments.head)
       if( cmd.isDefined ) cmd.get.execHelp(arguments.drop(1).mkString(" "),message)
-      else if( arguments.head.equals("all") ) TextBrainRegion.commands.foreach(_._2.execHelp("",message))
+      else if( arguments.head.equals("all") ) TextBrainRegion.channelCommands.foreach(_._2.execHelp("",message))
 
     } else {
-      message.getChannel.sendMessageAsync(s"*Available Commands:*\n" + TextBrainRegion.commands.map(_._2.getHelp).mkString("\n"), null)
+      message.getChannel.sendMessageAsync(s"*Available Commands:*\n" + TextBrainRegion.channelCommands.map(_._2.getHelp).mkString("\n"), null)
     }
   }
 
