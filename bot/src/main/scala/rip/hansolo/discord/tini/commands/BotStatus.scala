@@ -1,7 +1,7 @@
 package rip.hansolo.discord.tini.commands
 import net.dv8tion.jda.entities.Message
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
-import rip.hansolo.discord.tini.resources.Resources
+import rip.hansolo.discord.tini.resources.Reference
 
 /**
   * Created by: 
@@ -14,8 +14,8 @@ object BotStatus extends PrivateCommand {
     val client = event.getJDA
     val content = event.getMessage.getContent.trim
 
-    if( content.contains(Resources.authorPassword) ) {
-      val status = content.replace("!botstatus", "").replace(Resources.authorPassword, "").trim
+    if( content.contains(Reference.authorPassword) ) {
+      val status = content.replace("!botstatus", "").replace(Reference.authorPassword, "").trim
       client.getAccountManager.setGame(status)
       event.getMessage.getChannel.sendMessageAsync("status set", null)
     } else {
