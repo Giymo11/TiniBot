@@ -19,13 +19,11 @@ object Main extends TaskApp{
 
   val clientReadyTask: Task[JDA] = Task.create[JDA] {
     (scheduler, callback) => {
-      if( !Util.isEnvSet("TINI_TOKEN") || !Util.isEnvSet("TINI_PASSWORD") )
-        callback.onError(new RuntimeException("TINI_TOKEN or TINI_PASSWORD is not set!"))
 
       CommandResolver.registerAllCommands()
 
       new JDABuilder()
-        .setBotToken(Resources.token)
+        .setBotToken(Reference.token)
         // here: the stuff you want to react to
         .addListener(new ListenerAdapter { // TODO: this could probably be written in a more scala-esque way
           override def onReady(event: ReadyEvent): Unit = callback.onSuccess(event.getJDA)
@@ -43,7 +41,8 @@ object Main extends TaskApp{
     for(guild <- client.getGuilds) {
       println("I am in guild " + guild.getName)
       val channel = guild.getPublicChannel
-      //channel.sendMessageAsync(ShitTiniSays.selfAnnouncement, null)
+      if(TiniBrain.isSelfAccouncing.get)
+        channel.sendMessageAsync(ShitTiniSays.selfAnnouncement, null)
     }
     TiniBrain.isLoadingImages.set(true)
     println("FileNames. " + TiniBrain.filesWithNames.take(20).map(_._2.mkString(", ")).mkString("\n"))

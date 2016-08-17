@@ -7,12 +7,12 @@ import scala.io.StdIn
 import com.google.api.client.googleapis.auth.oauth2._
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
-
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.util.store.FileDataStoreFactory
 import com.google.api.services.drive._
 
 import rip.hansolo.discord.tini.Util
+import rip.hansolo.discord.tini.resources.Reference
 
 
 /**
@@ -25,12 +25,9 @@ object GoogleDriveBuilder {
 
   private val redirectURI = s"urn:ietf:wg:oauth:2.0:oob" // can only be used for type "Other UI" applications.
 
-  private val clientID = System.getenv("GDRIVE_CLIENT_ID")
-  private val secret = System.getenv("GDRIVE_SECRET")
-
   val appName = "TiniBot"
-  val credentialsDir: java.io.File = new java.io.File("credentials")
-  val dataStoreFactors = new FileDataStoreFactory(credentialsDir)
+  val credentialsDirFile: java.io.File = new java.io.File(Reference.gdriveCredentialsDir)
+  val dataStoreFactors = new FileDataStoreFactory(credentialsDirFile)
   val jsonFactory = JacksonFactory.getDefaultInstance
   val httpTransport = GoogleNetHttpTransport.newTrustedTransport()
   val scopes = Seq(DriveScopes.DRIVE).asJava
@@ -49,17 +46,14 @@ object GoogleDriveBuilder {
   // TODO: add more than one user to be authorized
   def authorize(): Credential = {
 
-    if( !Util.isEnvSet("GDRIVE_CLIENT_ID") ) println("No GDrive Client ID!")
-    if( !Util.isEnvSet("GDRIVE_SECRET") ) println("No GDrive Secret!")
-
     val user = "user" // TODO: substitute with actual ID
 
     // TODO: read client secrets from json
     val authFlow = new GoogleAuthorizationCodeFlow.Builder(
       httpTransport,
       jsonFactory,
-      clientID,
-      secret,
+      Reference.gdriveClientID,
+      Reference.gdriveSecret,
       scopes
     ).setDataStoreFactory(dataStoreFactors)
       .setAccessType("offline")

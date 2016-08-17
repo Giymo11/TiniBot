@@ -39,6 +39,7 @@ object TextBrainRegion extends ListenerAdapter {
   }
 
   override def onPrivateMessageReceived(event: PrivateMessageReceivedEvent): Unit = {
+    val client = event.getJDA
     val content = event.getMessage.getContent.trim
 
     if( content.startsWith(TiniBrain.prefixChar.get) ) {
@@ -46,10 +47,9 @@ object TextBrainRegion extends ListenerAdapter {
     }
   }
 
-
   private[this] def logMessage(message: Message): Unit = {
     import better.files._
-    (Resources.logPath / (message.getAuthor.getId + ".log")).createIfNotExists() << message.getRawContent
+    (Reference.logPath / (message.getAuthor.getId + ".log")).createIfNotExists() << message.getRawContent
   }
 
   /**

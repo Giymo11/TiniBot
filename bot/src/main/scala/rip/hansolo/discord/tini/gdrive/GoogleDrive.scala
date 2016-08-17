@@ -5,9 +5,9 @@ import java.io.InputStream
 
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
-
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.model.File
+import rip.hansolo.discord.tini.resources.Reference
 
 
 object GoogleDrive {
@@ -75,7 +75,7 @@ class GoogleDrive(drive: Drive) {
   def getFilesForParent(parentFile: File, parents: Seq[String]): Seq[(File, Seq[String])] =
     Try(searchFolder(parentFile.getId)) match {
       case Success(someFiles) =>
-        val files = someFiles.filter(_ != null).filter(!_.getName.contains("TINI_NO"))
+        val files = someFiles.filter(_ != null).filter(!_.getName.contains(Reference.gdriveIgnore))
         val allParents = parentFile.getName +: parents
         val zipped = files.zip(Stream.continually(allParents))
         zipped ++ files.filter(GoogleDrive.isFolder).flatMap(getFilesForParent(_, allParents))

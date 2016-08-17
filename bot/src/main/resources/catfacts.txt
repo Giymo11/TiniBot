@@ -258,3 +258,4 @@ Invalid Command, CatFacts!
 A cat's brain is more similar to a man's brain than that of a dog.
 A cat has more bones than a human; humans have 206, and the cat - 230.
 Cats have 30 vertebrae--5 more than humans have.
+70% of a cat's life is spent asleep. That's more than 16 hours a day!

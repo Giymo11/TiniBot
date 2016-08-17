@@ -30,7 +30,7 @@ object Imitate extends Command {
     val response = mentions match {
         case user :: Nil =>
           val id = user.getId
-          val strings = (Resources.logPath / (id + ".log")).contentAsString.split(" ")
+          val strings = (Reference.logPath / (id + ".log")).contentAsString.split(" ")
           val len = strings.length
           import scalaz.stream.Process
           Markov.run(1, Process.emitAll(strings.toStream), Random.nextInt(len))
