@@ -51,8 +51,10 @@ object TextBrainRegion extends ListenerAdapter {
 
 
   private[this] def logMessage(message: Message): Unit = {
-    (Resources.logPath/s"${message.getAuthor.getId}.log").createIfNotExists() << message.getRawContent
+    import better.files._
+    (Resources.logPath / (message.getAuthor.getId + ".log")).createIfNotExists() << message.getRawContent
   }
+
   /**
     *
     * @param channel The TextChannel the conversation takes place. Because of this, we are in Guild territory

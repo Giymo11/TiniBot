@@ -50,3 +50,15 @@ trait Command {
 
   def registerCommand(): Unit = Future[Unit] { TiniBrain.register(this) }
 }
+
+object Command {
+  def unapply(command: String): Option[(Command, String)] = command match {
+    case Bio(args) => Some(Bio, args)
+    case Roll(args) => Some(Roll, args)
+    case Catfacts(args) => Some(Catfacts, args)
+    case Imitate(args) => Some(Imitate, args)
+    case DriveImage(args) => Some(DriveImage, args)
+    case Repeat(args) => Some(Repeat, args)
+    case _ => None
+  }
+}

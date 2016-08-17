@@ -1,11 +1,16 @@
 package rip.hansolo.discord.tini.commands
 
-import net.dv8tion.jda.entities.{User, Message}
-import rip.hansolo.discord.tini.resources.{ShitTiniSays, Resources}
-import better.files._
-import malakov.Markov
 
 import scala.util.Random
+
+import better.files._
+
+import malakov.Markov
+
+import net.dv8tion.jda.entities._
+
+import rip.hansolo.discord.tini.resources._
+
 
 /**
   * User: Michael Reitgruber
@@ -25,7 +30,7 @@ object Imitate extends Command {
     val response = mentions match {
         case user :: Nil =>
           val id = user.getId
-          val strings = (Resources.logPath/s"$id.log").contentAsString.split(" ")
+          val strings = (Resources.logPath / (id + ".log")).contentAsString.split(" ")
           val len = strings.length
           import scalaz.stream.Process
           Markov.run(1, Process.emitAll(strings.toStream), Random.nextInt(len))

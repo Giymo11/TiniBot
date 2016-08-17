@@ -43,7 +43,7 @@ object Repeat extends Command {
 
       repTask.runAsync
       repeatTasks += repTask.delayExecution(duration.getOrElse(10) seconds)
-                            .restartUntil((Unit) => { count.getAndDecrement(1) < 0 })
+                            .restartUntil((Unit) => { count.getAndDecrement(1) == 1 } ) // because this gets the value before updating it
                             .runAsync
 
     } else {

@@ -44,6 +44,7 @@ To use the gdrive api:
 * TINI_GOOGLE_DRIVE - the image directory in google drive e.g `my-epic-colelction/images`
 * GDRIVE_CLIENT_ID - the client_id form the Google API Manager
 * GDRIVE_SECRET - the secret from the Google API Manager
+* TINI_LOGS - the folder where the logs for imitating people are stored.
 
 You will be asked to authorize your application at first startup, be sure not to miss it!
 
@@ -84,14 +85,14 @@ Until now, Tini can:
 * respond to everything with an opinion.
 * `!shutup` - not do that anymore.
 * `!8ballmode` - do that again.
-* `!roll <lower> <upper>`, example: `!roll 1 10`
+* `!roll [lower] <upper>`, example: `!roll 1 10`, `!roll 6`
 * `!roll <count>d<sides>`, example: `!roll 2d6`
 * `!bio` - Set your, and display other biographies
 * set the status when you PM her `!botstatus <password> <text>`
 * commit seppuku when you PM it `!kill <password>` where you substitute the <password> with the one in your `TINI_PASSWORD` environment variable.
 * `!repeat <count> [timeout] <command> <command-args>` - Repeat the command multiple times with the arguments
 * `!image [image-type] [tags]*` - Send a random image with the image type (or any with image-type "all") from one of the directories specified with `tags`
-
+* `!be <user>`
 Wishlist
 -----------------
 
