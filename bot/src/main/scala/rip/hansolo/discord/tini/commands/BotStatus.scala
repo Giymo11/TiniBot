@@ -34,9 +34,6 @@ object BotStatus extends PrivateCommand {
     message.getChannel.sendMessageAsync(" *Tini listens to loud music and can't hear you screaming* :musical_note: ",null)
   }
 
-  override def execHelp(args: String, message: Message): Unit = {
-    message.getChannel.sendMessageAsync(getHelp,null)
-  }
-
-  override def getHelp: String = "`!botstatus` <password> <status> - Sets the Game status of Tini"
+  override def longHelp: String = shortHelp
+  override def shortHelp: String = "`!botstatus` <password> <status> - Sets the Game status of Tini"
 }

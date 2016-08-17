@@ -8,7 +8,7 @@ import net.dv8tion.jda.entities.Message
   * @version 17.08.2016
   */
 object NotACommand extends Command {
-  override def prefix: String = "!nope"
+  override def prefix: String = "!<this-is-not-a-tini-command>!"
 
   /**
     * @param args    The return of its unapply. It's the String needed for the execution of the command
@@ -17,7 +17,6 @@ object NotACommand extends Command {
     */
   override def exec(args: String, message: Message): Unit = {}
 
-  override def execHelp(args: String, message: Message): Unit = {}
-
-  override def getHelp: String = "`!nope` - Does nothing ... "
+  override def longHelp: String = ""
+  override def shortHelp: String = ""
 }

@@ -66,12 +66,9 @@ object TextBrainRegion extends ListenerAdapter {
 
     val msgText = message.getContent.trim
     if( msgText.startsWith("!") ) {
+
       val cmdArgs = msgText.split(" ")
-      val command = channelCommands.get(cmdArgs.head)
-
-      if( command.isEmpty ) message.getChannel.sendMessageAsync(s"Command ${cmdArgs(0)} is not known!",null)
-      else command.get.exec(cmdArgs.drop(1).mkString(" "),message)
-
+      channelCommands.getOrElse(cmdArgs.head,NotACommand).exec(cmdArgs.drop(1).mkString(" "),message)
 
     } else {
       if(TiniBrain.is8ball.get) {

@@ -54,10 +54,7 @@ object Roll extends Command {
     case _ => s"( ${rolls.mkString(" + ")} ) = **${rolls.sum}**"
   }
 
-  override def execHelp(args: String, message: Message): Unit = {
-    message.getChannel.sendMessageAsync("`!roll <lower> <upper>`, example: `!roll 1 10`\n" +
-      "`!roll <count>d<sides>`, example: `!roll 2d6`",null)
-  }
-
-  override def getHelp: String =  prefix + " - Returns a number between those numbers"
+  override def longHelp: String = "`!roll <lower> <upper>`, example: `!roll 1 10`\n" +
+                                  "`!roll <count>d<sides>`, example: `!roll 2d6`"
+  override def shortHelp: String =  prefix + " - Returns a number between those numbers"
 }

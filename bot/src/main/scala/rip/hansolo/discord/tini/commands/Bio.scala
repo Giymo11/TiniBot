@@ -52,9 +52,9 @@ object Bio extends Command {
       bioOf(author).setValue(args, errorCallback)
     }
 
-    override def execHelp(args: String, message: Message): Unit = ???
+    override def longHelp: String = ???
 
-    override def getHelp: String = ???
+    override def shortHelp: String = ???
   }
 
   object Get extends Command{
@@ -98,16 +98,13 @@ object Bio extends Command {
       }
     }
 
-    override def execHelp(args: String, message: Message): Unit = ???
+    override def longHelp: String = ???
 
-    override def getHelp: String = ???
+    override def shortHelp: String = ???
   }
 
-  override def execHelp(args: String, message: Message): Unit = {
-    message.getChannel.sendMessageAsync(s"`!bio` <get|set> <biography> - Set your, and display other biographies\n",null)
-  }
-
-  override def getHelp: String =  prefix + " - to set your and display other biographies"
+  override def longHelp: String = "`!bio` <get|set> <biography> - Set your, and display other biographies"
+  override def shortHelp: String =  prefix + " - to set your and display other biographies"
 }
 
 

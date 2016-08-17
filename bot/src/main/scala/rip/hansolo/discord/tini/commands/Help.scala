@@ -19,20 +19,16 @@ object Help extends Command {
   override def exec(args: String, message: Message): Unit = {
     val arguments = args.split(" ")
 
-    if( arguments.nonEmpty ) {
-      val cmd = TextBrainRegion.channelCommands.get(arguments.head)
-      if( cmd.isDefined ) cmd.get.execHelp(arguments.drop(1).mkString(" "),message)
-      else if( arguments.head.equals("all") ) TextBrainRegion.channelCommands.foreach(_._2.execHelp("",message))
-
+    if( arguments.nonEmpty && arguments.head != "all" ) {
+      message.getChannel.sendMessageAsync(TextBrainRegion.channelCommands.getOrElse(arguments.head, NotACommand).longHelp, null)
+    } else if( arguments.nonEmpty ) {
+      message.getChannel.sendMessageAsync(TextBrainRegion.channelCommands.map(_._2.longHelp).mkString("\n\n"),null)
     } else {
-      message.getChannel.sendMessageAsync(s"*Available Commands:*\n" + TextBrainRegion.channelCommands.map(_._2.getHelp).mkString("\n"), null)
+      message.getChannel.sendMessageAsync(s"*Available Commands:*\n" + TextBrainRegion.channelCommands.map(_._2.shortHelp).mkString("\n"), null)
     }
   }
 
-  override def execHelp(args: String, message: Message): Unit = {
-    message.getChannel.sendMessageAsync("`!help [command]` - Tini tells you how to use the command",null)
-  }
-
-  override def getHelp: String = prefix + " - Tells you how Tini works, use !help <command> to get more help with one command\n" +
+  override def longHelp: String = "`!help [command]` - Tini tells you how to use the command"
+  override def shortHelp: String = prefix + " - Tells you how Tini works, use !help <command> to get more help with one command\n" +
     "You can also use `!help all` to get the detailed help from all commands"
 }

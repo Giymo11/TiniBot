@@ -22,7 +22,7 @@ object BallMode extends Command {
     message.getChannel.sendMessageAsync(ShitTiniSays.agreement, null)
   }
 
-  override def execHelp(args: String, message: Message): Unit = getHelp
+  override def longHelp: String = shortHelp
 
-  override def getHelp: String = "`!8ballmode` - do that again."
+  override def shortHelp: String = "`!8ballmode` - do that again."
 }

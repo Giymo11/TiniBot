@@ -22,7 +22,6 @@ object Shutup extends Command {
     message.getChannel.sendMessageAsync(ShitTiniSays.shutupResponse,null)
   }
 
-  override def execHelp(args: String, message: Message): Unit = { }
-
-  override def getHelp: String = prefix + " - not do that anymore."
+  override def longHelp: String = shortHelp
+  override def shortHelp: String = prefix + " - not do that anymore."
 }
