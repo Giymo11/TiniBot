@@ -19,4 +19,6 @@ dist
 activator
 activator-launch-1.0.0.jar
 activator.bat
-
+/credentials
+/drive-credentials
+shared/

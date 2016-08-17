@@ -103,7 +103,9 @@ object Bio extends Command {
     override def getHelp: String = ???
   }
 
-  override def execHelp(args: String, message: Message): Unit = ???
+  override def execHelp(args: String, message: Message): Unit = {
+    message.getChannel.sendMessageAsync(s"`!bio` <get|set> <biography> - Set your, and display other biographies\n",null)
+  }
 
   override def getHelp: String =  prefix + " - to set your and display other biographies"
 }

@@ -38,7 +38,9 @@ object Imitate extends Command {
     message.getChannel.sendMessageAsync(response, null)
   }
 
-  override def execHelp(args: String, message: Message): Unit = ???
+  override def execHelp(args: String, message: Message): Unit = {
+    message.getChannel.sendMessageAsync("`!be <@user>` - Tini tries to impersonate the other user",null)
+  }
 
   override def getHelp: String =  prefix + " - make the bot impersonate someone"
 }

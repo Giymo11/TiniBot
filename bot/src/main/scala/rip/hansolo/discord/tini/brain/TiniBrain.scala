@@ -21,10 +21,9 @@ import scala.concurrent.Promise
   */
 object TiniBrain {
 
-  val brain = new TextBrainRegion
   def register(command: Command) = {
     println("command registered: " + command)
-    brain.commands.put(command.prefix,command)
+    TextBrainRegion.commands.put(command.prefix,command)
   }
 
   /**

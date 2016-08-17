@@ -22,7 +22,7 @@ object Main extends TaskApp{
       if( !Util.isEnvSet("TINI_TOKEN") || !Util.isEnvSet("TINI_PASSWORD") )
         callback.onError(new RuntimeException("TINI_TOKEN or TINI_PASSWORD is not set!"))
 
-      CommandSearcher.registerAllCommands()
+      CommandResolver.registerAllCommands()
 
       new JDABuilder()
         .setBotToken(Resources.token)
@@ -30,7 +30,7 @@ object Main extends TaskApp{
         .addListener(new ListenerAdapter { // TODO: this could probably be written in a more scala-esque way
           override def onReady(event: ReadyEvent): Unit = callback.onSuccess(event.getJDA)
         })
-        .addListener(TiniBrain.brain)
+        .addListener(TextBrainRegion)
         .buildAsync()
 
       Cancelable.empty
