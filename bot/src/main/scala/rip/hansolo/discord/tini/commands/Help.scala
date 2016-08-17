@@ -17,12 +17,16 @@ object Help extends Command {
     * @param message The message which
     */
   override def exec(args: String, message: Message): Unit = {
-    val arguments = args.split(" ")
+    val arguments = args.trim.split(" ")
 
-    if( arguments.nonEmpty && arguments.head != "all" ) {
+    if( arguments.isEmpty || ( arguments.nonEmpty && arguments.head.isEmpty ) ){
+      message.getChannel.sendMessageAsync(s"*Available Commands:*\n" + TextBrainRegion.channelCommands.map(_._2.shortHelp).mkString("\n"), null)
+    } else if( arguments.nonEmpty && arguments.head != "all" ) {
       message.getChannel.sendMessageAsync(TextBrainRegion.channelCommands.getOrElse(arguments.head, NotACommand).longHelp, null)
     } else if( arguments.nonEmpty ) {
-      message.getChannel.sendMessageAsync(TextBrainRegion.channelCommands.map(_._2.longHelp).mkString("\n\n"),null)
+      val msg = "***Available Commands (all of it)***\n" +
+                TextBrainRegion.channelCommands.map(_._2.longHelp).mkString("\n* ")
+      message.getChannel.sendMessageAsync(msg,null)
     } else {
       message.getChannel.sendMessageAsync(s"*Available Commands:*\n" + TextBrainRegion.channelCommands.map(_._2.shortHelp).mkString("\n"), null)
     }

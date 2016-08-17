@@ -42,7 +42,12 @@ object CommandResolver {
 
       if( module.typeSignature.typeSymbol.isClass ) {
         val obj = runtimeMirror.reflectModule(module)
-        obj.instance.asInstanceOf[Command].registerCommand() /* touch obj & load it */
+
+        obj.instance.isInstanceOf[Command] match { /* Fixes Command object glitch */
+          case true => obj.instance.asInstanceOf[Command].registerCommand() /* touch obj & load it */
+          case _ => println("Unable to get Class from: " + obj)
+        }
+
       }
     }
   }

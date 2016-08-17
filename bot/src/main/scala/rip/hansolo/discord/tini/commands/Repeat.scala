@@ -31,8 +31,8 @@ object Repeat extends Command {
 
     //TODO: make it pretty
     if( arguments.length >= 2 ) {
-      val count = Atomic(arguments(0).toInt - 1)
-      val duration = Xor.catchNonFatal(arguments(1).toInt-1).toOption
+      val count = Atomic(arguments.head.toInt - 1)
+      val duration = Xor.catchNonFatal(arguments(1).toInt).toOption
 
       val cmdStart = if( duration.isEmpty ) 1 else 2
 

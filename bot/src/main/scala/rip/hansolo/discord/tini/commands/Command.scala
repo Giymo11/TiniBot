@@ -44,9 +44,8 @@ trait Command {
     */
   def exec(args: String, message: Message = null)
 
-  def longHelp: String
-
-  def shortHelp: String
+  def longHelp: String = shortHelp
+  def shortHelp: String = "Tini is confused, there is no such a command.\nType `!help` to see the commands"
 
   def registerCommand(): Unit = Future[Unit] { TiniBrain.register(this) }
 }
