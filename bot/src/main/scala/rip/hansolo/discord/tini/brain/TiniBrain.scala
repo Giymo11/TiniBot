@@ -23,9 +23,10 @@ object TiniBrain {
     * If this promise is fulfilled, Tini will kill itself and take the JVM with her
     */
   val prophecy = Promise[Unit]
-  val is8ball = Atomic(false)
 
+  val is8ball = Atomic(false)
   val isLoadingImages = Atomic(true)
+  val isShowingTags = Atomic(false)
 
   def killYourself() = prophecy.success()
 

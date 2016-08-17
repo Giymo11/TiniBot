@@ -72,23 +72,20 @@ class GoogleDrive(drive: Drive) {
       files.getFiles.asScala ++ searchFolder(parentId, fileName, files.getNextPageToken, mimeType)
   }
 
-  def getFilesForParent(parentFile: File, parents: Seq[String]): Seq[(File, Seq[String])] = Try(searchFolder(parentFile.getId)) match {
-    case Success(someFiles) =>
-      val files = someFiles.filter(_ != null).filter(!_.getName.contains("TINI_NO"))
-      val allParents = parentFile.getName +: parents
-      val zipped = files.zip(Stream.continually(allParents))
-      zipped ++ files.filter(GoogleDrive.isFolder).flatMap(getFilesForParent(_, allParents))
-    case Failure(exception) =>
-      println(exception.getMessage + " for file " + parentFile.getName)
-      Seq()
+  def getFilesForParent(parentFile: File, parents: Seq[String]): Seq[(File, Seq[String])] =
+    Try(searchFolder(parentFile.getId)) match {
+      case Success(someFiles) =>
+        val files = someFiles.filter(_ != null).filter(!_.getName.contains("TINI_NO"))
+        val allParents = parentFile.getName +: parents
+        val zipped = files.zip(Stream.continually(allParents))
+        zipped ++ files.filter(GoogleDrive.isFolder).flatMap(getFilesForParent(_, allParents))
+      case Failure(exception) =>
+        println(exception.getMessage + " for file " + parentFile.getName)
+        Seq()
   }
 
-  def getFileInputStreamAndName(file: File): Option[(InputStream, String)] = {
-    Try(
-      (drive.files().get(file.getId).executeMediaAsInputStream(),
-        formatFileName(file))
-    ).toOption
-  }
+  def getFileInputStreamAndName(file: File): Option[InputStream] =
+    Try( drive.files().get(file.getId).executeMediaAsInputStream() ).toOption
 
   def formatFileName(file: File): String = {
     if( !file.getName.contains(".") ) file.getName + "." + file.getMimeType.split("/")(1)

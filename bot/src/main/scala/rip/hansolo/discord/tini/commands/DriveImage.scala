@@ -4,27 +4,22 @@ package rip.hansolo.discord.tini.commands
 import java.io._
 
 import scala.collection.JavaConverters._
-
 import com.mashape.unirest.http.Unirest
 import com.mashape.unirest.http.exceptions.UnirestException
 import com.mashape.unirest.request.body.MultipartBody
-
 import monix.eval.Task
 import monix.execution.Cancelable
-
 import net.dv8tion.jda._
 import net.dv8tion.jda.entities._
 import net.dv8tion.jda.entities.impl._
 import net.dv8tion.jda.handle.EntityBuilder
 import net.dv8tion.jda.requests.Requester
-
 import org.apache.http.entity.ContentType
 import org.json._
-
 import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.Util._
-
 import monix.execution.Scheduler.Implicits.global
+import rip.hansolo.discord.tini.resources.ShitTiniSays
 
 
 /**
@@ -46,9 +41,9 @@ object DriveImage extends Command {
   override def exec(args: String, message: Message): Unit = {
 
     Task.create[Unit] { (_, _) =>
-      if(TiniBrain.isLoadingImages.get) {
+      if(TiniBrain.isLoadingImages.get)
         message.getChannel.sendMessage("I am still loading...")
-      } else {
+      else {
         message.getChannel.sendTyping()
 
         println("args: " + args)
@@ -64,13 +59,19 @@ object DriveImage extends Command {
             driveImageStream(maxSize = 8 << 20, mimeType, filteredTags)
         }
 
+        def getResponseMessage(tags: Seq[String]) =
+          new MessageBuilder()
+            .appendString(ShitTiniSays.imageResponse + getTagsString(tags))
+            .build()
+        def getTagsString(tags: Seq[String]) = if(TiniBrain.isShowingTags.get) "\nTags: " + tags.mkString(", ") else ""
+
         streamWithName match {
-          case Some( (fileStream, name) ) =>
-            sendFile(message.getChannel, fileStream, null, name)
+          case Some( (fileStream, name, tags) ) =>
+            sendFile(message.getChannel, fileStream, getResponseMessage(tags), name)
             fileStream.close()
           case None =>
-            message.getChannel.sendMessage("Error opening the Files :(")
-            println("Error opening the Files :(")
+            message.getChannel.sendMessage("No files found :(")
+            println("No files found :(")
         }
       }
       Cancelable.empty
@@ -82,7 +83,7 @@ object DriveImage extends Command {
     println(parts.mkString(", "))
     parts
       .zipWithIndex
-      .flatMap{
+      .flatMap {
         case (part, index) =>
           if(index % 2 == 1)
             Seq(part)
@@ -91,7 +92,7 @@ object DriveImage extends Command {
       }
   }
 
-  def driveImageStream(maxSize: Long, mimeType: String = "", tags: Seq[String] = Seq()): Option[(InputStream, String)] = {
+  def driveImageStream(maxSize: Long, mimeType: String = "", tags: Seq[String] = Seq()): Option[(InputStream, String, Seq[String])] = {
 
     println("Size: " + TiniBrain.imagesWithNames.size)
     println("Mimetype: " + mimeType)
@@ -110,9 +111,11 @@ object DriveImage extends Command {
     x match {
       case Vector() => None
       case files =>
-        val file = oneOf(files: _*)._1
+        val (file, tags) = oneOf(files: _*)
         for(key <- file.getUnknownKeys.keySet().asScala) println(key)
-        TiniBrain.gDrive.getFileInputStreamAndName { file }
+
+        val stream = TiniBrain.gDrive.getFileInputStreamAndName(file)
+        stream.map( (_, file.getName, tags) )
     }
   }
 
