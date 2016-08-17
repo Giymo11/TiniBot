@@ -22,7 +22,7 @@ object CommandResolver {
   private def getClassNames(pkg: String): List[String] = {
     val url = Thread.currentThread
       .getContextClassLoader
-      .getResource( masterPKG.replace(".","/") )
+      .getResource( pkg.replace(".","/") )
 
     val classNames = new ListBuffer[String]()
     for( resource <- new File(url.getFile).listFiles ) {
