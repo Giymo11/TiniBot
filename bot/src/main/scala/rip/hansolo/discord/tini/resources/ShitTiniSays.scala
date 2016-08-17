@@ -23,6 +23,9 @@ object ShitTiniSays {
   private[this] val catfacts = read.lines ! resource / "catfacts.txt"
   def catfact = oneOf(catfacts :_*)
 
+  private[this] val bofhFile = read.lines ! resource / "bofh.txt"
+  def bofh = oneOf(bofhFile : _*)
+
   def agreement = oneOf(
     "I disagree :raised_hand:",
     "I agree :ok_hand:"
