@@ -38,11 +38,11 @@ object TextBrainRegion extends ListenerAdapter {
 
     println(content)
     content match {
-      case command if command.contains("!kill") && command.contains(Resources.authorPassword) =>
+      case command if command.contains("!kill") && command.contains(Reference.authorPassword) =>
         client.shutdown(true)
         TiniBrain.killYourself()
-      case command if command.contains("!botstatus") && command.contains(Resources.authorPassword) =>
-        val status = command.replace("!botstatus", "").replace(Resources.authorPassword, "").trim
+      case command if command.contains("!botstatus") && command.contains(Reference.authorPassword) =>
+        val status = command.replace("!botstatus", "").replace(Reference.authorPassword, "").trim
         client.getAccountManager.setGame(status)
         event.getMessage.getChannel.sendMessageAsync("status set", null)
       case _ =>
@@ -52,7 +52,7 @@ object TextBrainRegion extends ListenerAdapter {
 
   private[this] def logMessage(message: Message): Unit = {
     import better.files._
-    (Resources.logPath / (message.getAuthor.getId + ".log")).createIfNotExists() << message.getRawContent
+    (Reference.logPath / (message.getAuthor.getId + ".log")).createIfNotExists() << message.getRawContent
   }
 
   /**

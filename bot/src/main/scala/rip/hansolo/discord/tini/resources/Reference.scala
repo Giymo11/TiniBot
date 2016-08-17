@@ -1,15 +1,29 @@
 package rip.hansolo.discord.tini.resources
 
+import com.typesafe.config.ConfigFactory
+
+import ammonite.ops._
+
 /**
   * Created by Giymo11 on 08.08.2016.
   */
-object Resources {
-  val token: String = System.getenv("TINI_TOKEN")
-  val authorPassword: String = System.getenv("TINI_PASSWORD")
+object Reference {
+  private val config = ConfigFactory.parseString(read ! cwd / "config" / "application.conf")
 
-  val logPath: String = System.getenv("TINI_LOGS")
+  val token: String = config.getString("secret.discord.token") //System.getenv("TINI_TOKEN")
+  val authorPassword: String = config.getString("secret.password") //System.getenv("TINI_PASSWORD")
 
-  val gdriveFolderName = System.getenv("TINI_GOOGLE_DRIVE")
+  val logPath: String = config.getString("config.log-dir")
+
+  val gdriveFolderName = config.getString("config.gdrive.folder")
+  val gdriveIgnore = config.getString("config.gdrive.ignore")
+  val gdriveCredentialsDir = config.getString("config.gdrive.credentials-dir")
+
+  val gdriveClientID = config.getString("secret.gdrive.client-id")
+  val gdriveSecret = config.getString("secret.gdrive.secret")
+
+  val firebaseJson = config.getString("config.firebase.json")
+  val firebaseUrl = config.getString("secret.firebase.database-url")
 
   object Permissions {
     val CREATE_INSTANT_INVITE	= 0x00000001	//Allows creation of instant invites
