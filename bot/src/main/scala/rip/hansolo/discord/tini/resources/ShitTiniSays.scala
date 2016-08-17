@@ -51,7 +51,9 @@ object ShitTiniSays {
     |!8ballmode - I will start responding again. Default mode :stuck_out_tongue_winking_eye:
     |!roll <lower-bound> <upper-bound> - Returns a number between those numbers
     |!bio - to set your and display other biographies
-    |!image [image-type] - the bot will send a random image from a secret Google Drive Directory hidden under a volcano
+    |!be - make the bot impersonate someone
+    |!image - the bot will send a random image from a secret Google Drive Directory hidden under a volcano
+    |!repeat - the bot will repeat some messages
   """.stripMargin
 
   def shutupResponse = oneOf(
@@ -87,4 +89,10 @@ object ShitTiniSays {
     "Enjoy ;)",
     "This is what I found: "
   )
+
+  val imitateUsage =
+    """
+      |Usage:
+      |`!be <@mention> to make the bot impersonate the mentioned person`
+    """.stripMargin
 }

@@ -6,6 +6,7 @@ package rip.hansolo.discord.tini.resources
 object Resources {
   val token: String = System.getenv("TINI_TOKEN")
   val authorPassword: String = System.getenv("TINI_PASSWORD")
+  val logPath: String = System.getenv("TINI_LOGS")
 
   val gdriveFolderName = System.getenv("TINI_GOOGLE_DRIVE")
 

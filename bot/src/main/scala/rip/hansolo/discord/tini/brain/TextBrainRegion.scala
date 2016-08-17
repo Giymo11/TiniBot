@@ -8,7 +8,7 @@ import net.dv8tion.jda.entities._
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.hooks.ListenerAdapter
-
+import better.files._
 import rip.hansolo.discord.tini.resources._
 import rip.hansolo.discord.tini.commands._
 import rip.hansolo.discord.tini.Util._
@@ -50,11 +50,15 @@ object TextBrainRegion extends ListenerAdapter {
     }
   }
 
+
+  private[this] def logMessage(message: Message): Unit = {
+    (Resources.logPath/s"${message.getAuthor.getId}.log").createIfNotExists() << message.getRawContent
+  }
   /**
     *
     * @param channel The TextChannel the conversation takes place. Because of this, we are in Guild territory
     */
-  private[this] def handleMessage(message: Message, channel: TextChannel) = {
+  def handleMessage(message: Message, channel: TextChannel) = {
 
     // TODO: Use a logger
     val timer = (myMessage: Message) => println("Sent response at " + myMessage.getTime + ", after " + ChronoUnit.MILLIS.between(myMessage.getTime, message.getTime))
@@ -73,16 +77,21 @@ object TextBrainRegion extends ListenerAdapter {
         channel.sendMessageAsync(ShitTiniSays.help, timer)
       case "!shutup" =>
         TiniBrain.is8ball.set(false)
+        Repeat.shutup()
+
         channel.sendMessageAsync(ShitTiniSays.shutupResponse, timer)
       case "!8ballmode" =>
         TiniBrain.is8ball.set(true)
         channel.sendMessageAsync(ShitTiniSays.agreement, timer)
+      case Imitate(args) => Imitate.exec(args, message)
       case DriveImage(args) =>
         DriveImage.exec(args, message)
+      case Repeat(args) => Repeat.exec(args,message)
       case _ if TiniBrain.is8ball.get =>
         val response = new MessageBuilder().appendString(ShitTiniSays.agreement).setTTS(true).build()
         channel.sendMessageAsync(response, timer)
-      case _ => ()
+      case _ => logMessage(message)
+      //case _ =>
     }
   }
 }
