@@ -1,16 +1,21 @@
 package rip.hansolo.discord.tini.commands
+
+
+import scala.language.postfixOps
+import scala.collection.mutable.ListBuffer
+import scala.concurrent.duration._
+
 import cats.data.Xor
+
 import monix.eval.Task
 import monix.execution.CancelableFuture
 import monix.execution.atomic.Atomic
+import monix.execution.Scheduler.Implicits.global
+
 import net.dv8tion.jda.entities.Message
 
-import scala.concurrent.duration._
-import monix.execution.Scheduler.Implicits.global
-import rip.hansolo.discord.tini.Util
-import rip.hansolo.discord.tini.brain.{TextBrainRegion, TiniBrain}
+import rip.hansolo.discord.tini.resources.ShitTiniSays
 
-import scala.collection.mutable.ListBuffer
 
 /**
   * Created by: 
@@ -37,18 +42,21 @@ object Repeat extends Command {
 
       val cmdStart = if( duration.isEmpty ) 1 else 2
 
-      val repTask = Task {
-        arguments(cmdStart) match {
-          case "image" => DriveImage.exec(arguments.drop(cmdStart+1).mkString(" "), message)
-          case "catfacts" => Catfacts.exec(arguments.drop(cmdStart+1).mkString(" "), message)
-          case "be" => Imitate.exec(arguments.drop(cmdStart+1).mkString(" "), message)
-          case "roll" => Roll.exec(arguments.drop(cmdStart+1).mkString(" "), message)
+      val payload = arguments.drop(cmdStart).mkString(" ")
+      println("Payload: " + payload)
+
+      val repTask = Task[Unit] {
+        payload match {
+          case Command(myCommand, commandArgs) =>
+            myCommand.exec(commandArgs, message)
+          case _ =>
+            message.getChannel.sendMessage(ShitTiniSays.help)
         }
       }
 
       repTask.runAsync
       repeatTasks += repTask.delayExecution(duration.getOrElse(10) seconds)
-                            .restartUntil((Unit) => { count.getAndDecrement(1) < 0 })
+                            .restartUntil((Unit) => { count.getAndDecrement(1) == 1 } ) // because this gets the value before updating it
                             .runAsync
 
     } else {

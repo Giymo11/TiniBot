@@ -8,7 +8,7 @@ import net.dv8tion.jda.entities._
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.hooks.ListenerAdapter
-import better.files._
+
 import rip.hansolo.discord.tini.resources._
 import rip.hansolo.discord.tini.commands._
 import rip.hansolo.discord.tini.Util._
@@ -50,10 +50,11 @@ object TextBrainRegion extends ListenerAdapter {
     }
   }
 
-
   private[this] def logMessage(message: Message): Unit = {
-    (Resources.logPath/s"${message.getAuthor.getId}.log").createIfNotExists() << message.getRawContent
+    import better.files._
+    (Resources.logPath / (message.getAuthor.getId + ".log")).createIfNotExists() << message.getRawContent
   }
+
   /**
     *
     * @param channel The TextChannel the conversation takes place. Because of this, we are in Guild territory
@@ -63,35 +64,26 @@ object TextBrainRegion extends ListenerAdapter {
     // TODO: Use a logger
     val timer = (myMessage: Message) => println("Sent response at " + myMessage.getTime + ", after " + ChronoUnit.MILLIS.between(myMessage.getTime, message.getTime))
 
-    val command = message.getContent.trim
+    val commandString = message.getContent.trim
 
     // TODO: make more dynamic (as in, allow for later defined commands)
-    command match {
-      case Bio(args) =>
-        Bio.exec(args, message)
-      case Roll(args) =>
-        Roll.exec(args, message)
-      case Catfacts(args) =>
-        Catfacts.exec(args, message)
+    commandString match {
+      case Command(command, args) =>
+        command.exec(args, message)
       case "!help" =>
         channel.sendMessageAsync(ShitTiniSays.help, timer)
       case "!shutup" =>
         TiniBrain.is8ball.set(false)
         Repeat.shutup()
-
         channel.sendMessageAsync(ShitTiniSays.shutupResponse, timer)
       case "!8ballmode" =>
         TiniBrain.is8ball.set(true)
         channel.sendMessageAsync(ShitTiniSays.agreement, timer)
-      case Imitate(args) => Imitate.exec(args, message)
-      case DriveImage(args) =>
-        DriveImage.exec(args, message)
-      case Repeat(args) => Repeat.exec(args,message)
       case _ if TiniBrain.is8ball.get =>
         val response = new MessageBuilder().appendString(ShitTiniSays.agreement).setTTS(true).build()
         channel.sendMessageAsync(response, timer)
-      case _ => logMessage(message)
-      //case _ =>
+      case _ =>
+        logMessage(message)
     }
   }
 }
