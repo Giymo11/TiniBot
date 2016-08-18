@@ -49,6 +49,7 @@ object Command {
     case Imitate(args) => Some(Imitate, args)
     case DriveImage(args) => Some(DriveImage, args)
     case Repeat(args) => Some(Repeat, args)
+    case Animelist(args) => Some(Animelist, args)
     case _ => None
   }
 }

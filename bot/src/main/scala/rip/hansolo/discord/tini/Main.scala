@@ -1,6 +1,7 @@
 package rip.hansolo.discord.tini
 
 
+
 import monix.eval._
 import monix.execution.Cancelable
 
@@ -45,7 +46,6 @@ object Main extends TaskApp{
     TiniBrain.isLoadingImages.set(true)
     println("FileNames. " + TiniBrain.filesWithNames.take(20).map(_._2.mkString(", ")).mkString("\n"))
     println("MimeTypes: " + TiniBrain.files.map(_.getMimeType).toSet.mkString("\n"))
-    TiniBrain.isLoadingImages.set(false)
   }
 
   override def runc: Task[Unit] = work.flatMap((_) => Task.fromFuture(TiniBrain.prophecy.future)) // weird hack, but so be it.
