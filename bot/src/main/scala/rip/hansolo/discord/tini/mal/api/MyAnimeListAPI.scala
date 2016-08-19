@@ -9,10 +9,10 @@ import scala.xml._
   * Created by Reiti on 19.08.2016.
   */
 class MyAnimeListAPI(username: String, password: String) {
-  lazy val searchReq = Unirest.get("http://myanimelist.net/api/{type}/search.xml").basicAuth(username, password)
 
   def findAnime(name: String): Option[List[Anime]] = {
-    val animeReq = searchReq.routeParam("type", "anime").queryString("q", name)
+    val animeReq = Unirest.get("http://myanimelist.net/api/anime/search.xml").basicAuth(username, password).queryString("q", name)
+    println("test")
     val res = animeReq.asString
     res.getStatus match {
       case 204 => None
@@ -22,7 +22,7 @@ class MyAnimeListAPI(username: String, password: String) {
   }
 
   def findManga(name: String): Option[List[Manga]] = {
-    val mangaReq = searchReq.routeParam("type", "manga").queryString("q", name)
+    val mangaReq = Unirest.get("http://myanimelist.net/api/manga/search.xml").basicAuth(username, password).queryString("q", name)
     val res = mangaReq.asString
     res.getStatus match {
       case 204 => None

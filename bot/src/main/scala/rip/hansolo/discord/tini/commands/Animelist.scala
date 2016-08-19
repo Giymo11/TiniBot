@@ -28,7 +28,7 @@ object Animelist extends Command{
       s"""
          .$link
          .Score: ${manga.score} | Volumes: ${manga.volumes} | Chapters: ${manga.chapters}
-       """.stripMargin
+       """.stripMargin('.')
     channel.sendMessageAsync(response, null)
   }
 
@@ -47,20 +47,20 @@ object Animelist extends Command{
     else {
       Task[Unit] {
         arguments(0) match {
-          case "anime" =>
+          case s if s equals "anime" =>
             api.findAnime(arguments.tail.mkString(" ")) match {
               case Some(x :: xs) => sendResponse(x, message.getChannel)
-              case None => message.getChannel.sendMessageAsync("Anime not found", null)
+              case _ => message.getChannel.sendMessageAsync("Anime not found", null)
             }
-          case "manga" =>
+          case s if s equals "manga" =>
             api.findManga(arguments.tail.mkString(" ")) match {
               case Some(x :: xs) => sendResponse(x, message.getChannel)
-              case None => message.getChannel.sendMessageAsync("Manga not found", null)
+              case _ => message.getChannel.sendMessageAsync("Manga not found", null)
             }
           case _ =>
             api.findAnime(arguments.mkString(" ")) match {
               case Some(x :: xs) => sendResponse(x, message.getChannel)
-              case None => message.getChannel.sendMessageAsync("Anime not found", null)
+              case _ => message.getChannel.sendMessageAsync("Anime not found", null)
             }
         }
       }.runAsync
