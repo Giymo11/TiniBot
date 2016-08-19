@@ -4,7 +4,7 @@ import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import net.dv8tion.jda.entities.{Message, MessageChannel}
 import rip.hansolo.discord.tini.mal.api.MyAnimeListAPI
-import rip.hansolo.discord.tini.mal.model.Anime
+import rip.hansolo.discord.tini.mal.model.{Anime, Manga}
 import rip.hansolo.discord.tini.resources.{Reference, ShitTiniSays}
 
 
@@ -22,9 +22,18 @@ object Animelist extends Command{
     channel.sendMessageAsync(ShitTiniSays.animelistUsage, null)
   }
 
+  def sendResponse(manga: Manga, channel: MessageChannel): Unit = {
+    val link = "http://myanimelist.net/manga/"+manga.id
+    val response =
+      s"""
+         .$link
+         .Score: ${manga.score} | Volumes: ${manga.volumes} | Chapters: ${manga.chapters}
+       """.stripMargin
+    channel.sendMessageAsync(response, null)
+  }
+
   def sendResponse(anime: Anime, channel: MessageChannel): Unit = {
     val link = "http://myanimelist.net/anime/"+anime.id
-
     val response =
       s"""
          .$link
@@ -33,17 +42,28 @@ object Animelist extends Command{
     channel.sendMessageAsync(response, null)
   }
   override def exec(args: String, message: Message): Unit = {
-    args.length match {
-      case 0 => sendUsage(message.getChannel)
-      case _ =>
-        Task[Unit] {
-          val result_list = api.findAnime(args)
-          result_list match {
-            case Some(x :: xs) => sendResponse(x, message.getChannel)
-            case _ => message.getChannel.sendMessageAsync("Anime not found", null)
-          }
-
-        }.runAsync
+    val arguments = args.split(" ")
+    if(arguments.isEmpty) sendUsage(message.getChannel)
+    else {
+      Task[Unit] {
+        arguments(0) match {
+          case "anime" =>
+            api.findAnime(arguments.tail.mkString(" ")) match {
+              case Some(x :: xs) => sendResponse(x, message.getChannel)
+              case None => message.getChannel.sendMessageAsync("Anime not found", null)
+            }
+          case "manga" =>
+            api.findManga(arguments.tail.mkString(" ")) match {
+              case Some(x :: xs) => sendResponse(x, message.getChannel)
+              case None => message.getChannel.sendMessageAsync("Manga not found", null)
+            }
+          case _ =>
+            api.findAnime(arguments.mkString(" ")) match {
+              case Some(x :: xs) => sendResponse(x, message.getChannel)
+              case None => message.getChannel.sendMessageAsync("Anime not found", null)
+            }
+        }
+      }.runAsync
     }
   }
 }
