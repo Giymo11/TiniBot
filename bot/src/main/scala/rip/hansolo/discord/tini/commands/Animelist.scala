@@ -1,9 +1,10 @@
 package rip.hansolo.discord.tini.commands
 
-import com.mashape.unirest.http.Unirest
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import net.dv8tion.jda.entities.{Message, MessageChannel}
+import rip.hansolo.discord.tini.mal.api.MyAnimeListAPI
+import rip.hansolo.discord.tini.mal.model.Anime
 import rip.hansolo.discord.tini.resources.{Reference, ShitTiniSays}
 
 
@@ -15,21 +16,19 @@ import rip.hansolo.discord.tini.resources.{Reference, ShitTiniSays}
 object Animelist extends Command{
   override def prefix = "!mal"
 
+  lazy val api = new MyAnimeListAPI(Reference.malUser, Reference.malPass)
+
   def sendUsage(channel: MessageChannel): Unit = {
     channel.sendMessageAsync(ShitTiniSays.animelistUsage, null)
   }
 
-  def sendResponse(result: scala.xml.Node, channel: MessageChannel): Unit = {
-    val score = (result\"score").text
-    val typ = (result\"type").text
-    val id = (result\"id").text
-    val link = "http://myanimelist.net/anime/"+id
-    val episodes = (result\"episodes").text
+  def sendResponse(anime: Anime, channel: MessageChannel): Unit = {
+    val link = "http://myanimelist.net/anime/"+anime.id
 
     val response =
       s"""
          .$link
-         .Score: $score | Episodes: $episodes | Type: $typ
+         .Score: ${anime.score} | Episodes: ${anime.episodes} | Type: ${anime.showType}
        """.stripMargin('.')
     channel.sendMessageAsync(response, null)
   }
@@ -37,16 +36,11 @@ object Animelist extends Command{
     args.length match {
       case 0 => sendUsage(message.getChannel)
       case _ =>
-        val req = Unirest.get("http://myanimelist.net/api/anime/search.xml")
-          .basicAuth(Reference.malUser, Reference.malPass)
-          .queryString("q", args)
         Task[Unit] {
-          val resp = req.asString
-          resp.getStatus match {
-            case 204 => message.getChannel.sendMessageAsync("Anime not found", null)
-            case _ =>
-              val firstResult = scala.xml.XML.loadString(resp.getBody).head.child(1)
-              sendResponse(firstResult, message.getChannel)
+          val result_list = api.findAnime(args)
+          result_list match {
+            case Some(x :: xs) => sendResponse(x, message.getChannel)
+            case None => message.getChannel.sendMessageAsync("Anime not found", null)
           }
 
         }.runAsync
