@@ -1,7 +1,7 @@
 package rip.hansolo.discord.tini.mal.api
 
 import com.mashape.unirest.http.Unirest
-import rip.hansolo.discord.tini.mal.model.Anime
+import rip.hansolo.discord.tini.mal.model.{Anime, Manga}
 
 import scala.xml._
 
@@ -19,17 +19,32 @@ class MyAnimeListAPI(username: String, password: String) {
       case _ =>
         parseAnime(XML.loadString(res.getBody))
     }
-
   }
 
-  def isElem(n: Node): Boolean = n match {
+  def findManga(name: String): Option[List[Manga]] = {
+    val mangaReq = searchReq.routeParam("type", "manga").queryString("q", name)
+    val res = mangaReq.asString
+    res.getStatus match {
+      case 204 => None
+      case _ =>
+        parseManga(XML.loadString(res.getBody))
+    }
+  }
+
+
+  private[this] def isElem(n: Node): Boolean = n match {
     case e: Elem => true
     case _ => false
   }
 
-  private def parseAnime(list: Node): Option[List[Anime]] = list.head.child match {
+  private[this] def parseAnime(list: Node): Option[List[Anime]] = list.head.child match {
     case _ :: Nil => None
     case _ => Some(list.head.child.filter(isElem).map(a => Anime(a)).toList)
+  }
+
+  private[this] def parseManga(list: Node): Option[List[Manga]] = list.head.child match {
+    case _ :: Nil => None
+    case _ => Some(list.head.child.filter(isElem).map(m => Manga(m)).toList)
   }
 
 

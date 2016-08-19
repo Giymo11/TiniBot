@@ -40,7 +40,7 @@ object Animelist extends Command{
           val result_list = api.findAnime(args)
           result_list match {
             case Some(x :: xs) => sendResponse(x, message.getChannel)
-            case None => message.getChannel.sendMessageAsync("Anime not found", null)
+            case _ => message.getChannel.sendMessageAsync("Anime not found", null)
           }
 
         }.runAsync
