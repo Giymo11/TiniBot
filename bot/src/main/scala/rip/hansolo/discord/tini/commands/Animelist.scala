@@ -13,8 +13,8 @@ import rip.hansolo.discord.tini.resources.{Reference, ShitTiniSays}
   * Date: 18.08.2016
   * Time: 12:41
   */
-object Animelist extends Command{
-  override def prefix = "!mal"
+object Animelist extends Command {
+  override def prefix = "mal"
 
   lazy val api = new MyAnimeListAPI(Reference.malUser, Reference.malPass)
 
@@ -66,4 +66,7 @@ object Animelist extends Command{
       }.runAsync
     }
   }
+
+  override def longHelp: String = s"`$command <anime|manga> <name>` - Gives you information about the anime or manage with the specific name"
+  override def shortHelp: String = s"`$command` - Gives you information about anime and manga"
 }
