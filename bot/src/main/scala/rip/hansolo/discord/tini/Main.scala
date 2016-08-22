@@ -11,6 +11,7 @@ import net.dv8tion.jda._
 
 import rip.hansolo.discord.tini.brain._
 import rip.hansolo.discord.tini.resources._
+import monix.execution.Scheduler.Implicits.global
 
 
 /**
@@ -42,13 +43,18 @@ object Main extends TaskApp{
     for(guild <- client.getGuilds) {
       println("I am in guild " + guild.getName)
       val channel = guild.getPublicChannel
+
       if(TiniBrain.isSelfAccouncing.get)
         channel.sendMessageAsync(ShitTiniSays.selfAnnouncement, null)
     }
+  }
+
+  val gdriveLoader = Task {
     TiniBrain.isLoadingImages.set(true)
     println("FileNames. " + TiniBrain.filesWithNames.take(20).map(_._2.mkString(", ")).mkString("\n"))
     println("MimeTypes: " + TiniBrain.files.map(_.getMimeType).toSet.mkString("\n"))
-  }
+    TiniBrain.isLoadingImages.set(false)
+  }.runAsync
 
   override def runc: Task[Unit] = work.flatMap((_) => Task.fromFuture(TiniBrain.prophecy.future)) // weird hack, but so be it.
 }
