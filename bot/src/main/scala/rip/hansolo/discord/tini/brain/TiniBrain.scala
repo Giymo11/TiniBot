@@ -21,8 +21,8 @@ import scala.concurrent.Promise
   */
 object TiniBrain {
 
-  def register(command: Command) = TextBrainRegion.channelCommands.put(command.prefix,command)
-  def registerPrivate(command: PrivateCommand) = TextBrainRegion.privateCommands.put(command.prefix,command)
+  def register(command: Command) = TextBrainRegion.channelCommands.put(command.prefix, command)
+  def registerPrivate(command: PrivateCommand) = TextBrainRegion.privateCommands.put(command.prefix, command)
 
   /**
     * If this promise is fulfilled, Tini will kill itself and take the JVM with her
@@ -32,7 +32,7 @@ object TiniBrain {
   val is8ball = Atomic(false)
   val isLoadingImages = Atomic(true)
   val isShowingTags = Atomic(false)
-  val prefixChar = Atomic('!')
+  val tiniPrefix = Atomic("!")
   val isSelfAccouncing = Atomic(false)
 
   def killYourself() = prophecy.success()

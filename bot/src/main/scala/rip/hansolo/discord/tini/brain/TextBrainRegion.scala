@@ -23,6 +23,8 @@ object TextBrainRegion extends ListenerAdapter {
   val channelCommands: TrieMap[String,Command] = new TrieMap[String,Command]
   val privateCommands: TrieMap[String,PrivateCommand] = new TrieMap[String,PrivateCommand]
 
+  def charsToDrop = TiniBrain.tiniPrefix.get.length
+
   override def onGuildMessageReceived(event: GuildMessageReceivedEvent): Unit = {
     val channel = event.getChannel
     val message = event.getMessage
@@ -35,11 +37,14 @@ object TextBrainRegion extends ListenerAdapter {
   }
 
   override def onPrivateMessageReceived(event: PrivateMessageReceivedEvent): Unit = {
-    val content = event.getMessage.getContent.trim
+    val message = event.getMessage
 
-    content(0) match {
-      case x if TiniBrain.prefixChar.get == content(0) =>
-        privateCommands.getOrElse(content.split(" ").head.drop(1),NotACommand).exec(event)
+    val content = message.getContent.trim
+    val rawContent = message.getRawContent.trim
+
+    rawContent match {
+      case x if x.startsWith(TiniBrain.tiniPrefix.get) =>
+        privateCommands.getOrElse(rawContent.split(" ").head.drop(charsToDrop), NotACommand).exec(event)
       case _ => /* no command just some random message */
     }
   }
@@ -58,16 +63,17 @@ object TextBrainRegion extends ListenerAdapter {
     // TODO: Use a logger
     val timer = (myMessage: Message) => println("Sent response at " + myMessage.getTime + ", after " + ChronoUnit.MILLIS.between(myMessage.getTime, message.getTime))
 
-    val msgText = message.getContent.trim
-    msgText(0) match {
-      case x if TiniBrain.prefixChar.get == msgText(0) =>
-        val cmdArgs = msgText.split(" ")
-        channelCommands.getOrElse(cmdArgs.head.drop(1),NotACommand).exec(cmdArgs.drop(1).mkString(" "),message)
+    val content = message.getContent.trim
+    val rawContent = message.getRawContent.trim
 
+    // TODO: enable usage of ' ' and '\n' in between tiniPrefix and normal prefix
+
+    rawContent match {
+      case x if x.startsWith(TiniBrain.tiniPrefix.get)=>
+        channelCommands.getOrElse(rawContent.split(" ").head.drop(charsToDrop), NotACommand).exec(content.split(" ").drop(1).mkString(" "), message)
       case _ if TiniBrain.is8ball.get =>
         val response = new MessageBuilder().appendString(ShitTiniSays.agreement).setTTS(true).build()
         channel.sendMessageAsync(response, timer)
-
       case _ =>
         logMessage(message)
     }

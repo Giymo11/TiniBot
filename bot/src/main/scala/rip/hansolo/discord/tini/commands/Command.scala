@@ -14,7 +14,7 @@ import scala.concurrent.Future
   */
 trait Command {
 
-  def command: String = TiniBrain.prefixChar.get + prefix
+  final def command: String = TiniBrain.tiniPrefix.get + prefix
 
   // TODO: rewrite `Command` to be a class, making the objects currently inheriting only instances of this class.
   // TODO: Register to TiniBrain in constructor.

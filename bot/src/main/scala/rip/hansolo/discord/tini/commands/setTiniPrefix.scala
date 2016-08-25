@@ -10,9 +10,9 @@ import rip.hansolo.discord.tini.resources.Reference
   * @author Raphael
   * @version 17.08.2016
   */
-object SetChar extends PrivateCommand {
+object setTiniPrefix extends PrivateCommand {
 
-  override def prefix: String = "setChar"
+  override def prefix: String = "setTiniPrefix"
 
   /**
     * @param args    The return of its unapply. It's the String needed for the execution of the command
@@ -20,19 +20,22 @@ object SetChar extends PrivateCommand {
     * @param message The message which
     */
   override def exec(args: String, message: Message): Unit = {
-    message.getChannel.sendMessageAsync(":rolling_eyes:  *Tini won't change clothes here ...*",null)
+    message.getChannel.sendMessageAsync(":rolling_eyes:  *Tini won't change clothes here ...*", null)
   }
 
   override def longHelp: String = s"`$command <password> <char>` - Sets the Command char for Tini"
   override def shortHelp: String = longHelp
 
   override def exec(event: PrivateMessageReceivedEvent): Unit = {
-    val args = event.getMessage.getContent.trim.split(" ")
+    val args = event.getMessage.getRawContent.trim.split(" ")
 
     if( args.length == 3 && args(1) == Reference.authorPassword ) {
-      TiniBrain.prefixChar.set(args(2)(0))
+      val toBeMention = args(2)
+      TiniBrain.tiniPrefix.set(toBeMention)
+      event.getMessage.getChannel.sendMessageAsync("New char: " + toBeMention, null)
+      println(toBeMention)
     } else {
-      event.getMessage.getChannel.sendMessageAsync("Tini can't set the command prefix :robot:",null)
+      event.getMessage.getChannel.sendMessageAsync("Tini can't set the command prefix :robot:", null)
     }
   }
 }
