@@ -3,17 +3,18 @@ package rip.hansolo.discord.tini.brain
 
 import java.io._
 
+import scala.concurrent.Promise
+
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.{FirebaseApp, FirebaseOptions}
 import com.google.firebase._
 
-import scala.concurrent.Promise
 import monix.execution.atomic.Atomic
+
 import rip.hansolo.discord.tini.commands._
 import rip.hansolo.discord.tini.gdrive._
 import rip.hansolo.discord.tini.resources.Reference
 
-import scala.concurrent.Promise
+
 
 
 /**
@@ -34,6 +35,7 @@ object TiniBrain {
   val isShowingTags = Atomic(false)
   val tiniPrefix = Atomic("!")
   val isSelfAccouncing = Atomic(false)
+  val minimumRepeatDurationMins = Atomic(Reference.repeatMinimumDuration)
 
   def killYourself() = prophecy.success()
 
