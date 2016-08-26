@@ -30,7 +30,7 @@ object Reference {
 
   val repeatMinimumDuration = config.getInt("config.repeat.min")
 
-  val shitTiniSays = ConfigFactory.parseString(read ! cwd / "config" / "shitTiniSays.conf")
+  val shitTiniSays = ConfigFactory.parseString(read ! cwd / "config" / "shitTiniSays.conf").resolve()
 
   object Permissions {
     val CREATE_INSTANT_INVITE	= 0x00000001	//Allows creation of instant invites

@@ -1,8 +1,13 @@
 package rip.hansolo.discord.tini.commands
+
+
 import net.dv8tion.jda.entities.Message
+
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
+
 import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.resources.Reference
+
 
 /**
   * Created by: 
@@ -10,7 +15,7 @@ import rip.hansolo.discord.tini.resources.Reference
   * @author Raphael
   * @version 17.08.2016
   */
-object setTiniPrefix extends PrivateCommand {
+object SetTiniPrefix extends PrivateCommand {
 
   override def prefix: String = "setTiniPrefix"
 

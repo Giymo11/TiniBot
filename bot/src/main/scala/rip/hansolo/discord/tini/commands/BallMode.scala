@@ -1,5 +1,8 @@
 package rip.hansolo.discord.tini.commands
+
+
 import net.dv8tion.jda.entities.Message
+
 import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.resources.ShitTiniSays
 
@@ -20,6 +23,6 @@ object BallMode extends Command {
     */
   override def exec(args: String, message: Message): Unit = {
     TiniBrain.is8ball.set(true)
-    message.getChannel.sendMessageAsync(ShitTiniSays.agreement, null)
+    message.getChannel.sendMessageAsync(ShitTiniSays.eightBallAnswer, null)
   }
 }

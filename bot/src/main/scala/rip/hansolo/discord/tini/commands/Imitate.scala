@@ -1,11 +1,15 @@
 package rip.hansolo.discord.tini.commands
 
-import better.files._
-import malakov.Markov
-import net.dv8tion.jda.entities.Message
-import rip.hansolo.discord.tini.resources.{Reference, ShitTiniSays}
 
 import scala.util.Random
+
+import better.files._
+
+import malakov.Markov
+
+import net.dv8tion.jda.entities.Message
+
+import rip.hansolo.discord.tini.resources._
 
 
 /**
@@ -35,7 +39,7 @@ object Imitate extends Command {
             .map(line => line.takeWhile(_ != '\n'))
             .runLog.unsafePerformSync.mkString(" ")
         case _ =>
-          ShitTiniSays.imitateUsage
+          longHelp
       }
     message.getChannel.sendMessageAsync(response, null)
   }
