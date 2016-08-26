@@ -1,10 +1,13 @@
 package rip.hansolo.discord.tini.brain
 
-import java.io.File
+import java.nio.file._
+import java.util.Collections
 
+import rip.hansolo.discord.tini.Util._
 import rip.hansolo.discord.tini.commands.Command
 
 import scala.collection.mutable.ListBuffer
+import scala.reflect.io.File
 
 /**
   * Created by: 
@@ -20,16 +23,34 @@ object CommandResolver {
 
   /* usage of dark java magic, don't touch it burns ... */
   private def getClassNames(pkg: String): List[String] = {
+    val resourceString = pkg.replace(".","/")
+
     val url = Thread.currentThread
       .getContextClassLoader
-      .getResource( pkg.replace(".","/") )
+      .getResource( resourceString ).toURI
 
-    val classNames = new ListBuffer[String]()
-    for( resource <- new File(url.getFile).listFiles ) {
-      if( resource.isDirectory ) classNames ++= getClassNames( pkg + "." + resource.getName.replace(".class","") )
-      else classNames += pkg + "." + resource.getName.replace(".class","")
+    val path: Path = url.getScheme match {
+      case "jar" => /* use virtual file system */
+        println("[CommandResolver] Use Virtual File System for .jar File Source ...")
+        val fileSystem: FileSystem = FileSystems.newFileSystem( url, Collections.emptyMap().asInstanceOf[java.util.Map[String,Object]] )
+        fileSystem.getPath( resourceString );
+      case _ =>  Paths.get(url)
     }
 
+
+    val classNames = new ListBuffer[String]()
+    def buildList(p: Path): Unit = {
+      val name = p.getFileName.toString
+
+      /* check if its the pkg folder -> why is this even here? */
+      if( name != pkg.substring(pkg.lastIndexOf(".")+1,pkg.length) )
+        Files.isDirectory(p) match {
+          case true  => classNames ++= getClassNames( pkg + "." + name.replace(".class","") )
+          case false => classNames += pkg + "." + name.replace(".class","")
+        }
+    }
+
+    Files.walk(path,1).forEach( (p: Path) => buildList(p) )
     classNames.filter(!_.contains("$")).toList.distinct
   }
 
