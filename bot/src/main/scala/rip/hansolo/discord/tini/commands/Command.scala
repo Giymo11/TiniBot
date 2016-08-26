@@ -1,22 +1,24 @@
 package rip.hansolo.discord.tini.commands
 
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.util.Try
+
 import net.dv8tion.jda.entities.Message
+
 import rip.hansolo.discord.tini.Util
 import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.resources.Reference
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import scala.util.Try
 
 /**
   * Created by Giymo11 on 12.08.2016.
   */
 trait Command {
 
-  // TODO: rewrite `Command` to be a class, making the objects currently inheriting only instances of this class.
-  // TODO: Register to TiniBrain in constructor.
+  // TODO: get the prefix from the config file as well to be able to change this prefix.
+  // TODO: separate usage and examples?
 
   def prefix: String
 

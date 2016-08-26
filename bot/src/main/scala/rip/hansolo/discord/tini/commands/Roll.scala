@@ -2,9 +2,10 @@ package rip.hansolo.discord.tini.commands
 
 
 import scala.util.Random
+
 import net.dv8tion.jda.entities.Message
+
 import rip.hansolo.discord.tini.Util._
-import rip.hansolo.discord.tini.resources.ShitTiniSays
 
 
 /**
@@ -47,7 +48,7 @@ object Roll extends Command {
     * Formats the List of dice rolls
     */
   private def format(rolls: List[Int]): String = rolls match{
-    case Nil => ShitTiniSays.rollUsage
+    case Nil => longHelp
     case roll :: Nil => s"**$roll**"
     case _ => s"( ${rolls.mkString(" + ")} ) = **${rolls.sum}**"
   }

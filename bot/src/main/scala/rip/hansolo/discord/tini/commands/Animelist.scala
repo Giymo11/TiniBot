@@ -1,11 +1,14 @@
 package rip.hansolo.discord.tini.commands
 
+
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
-import net.dv8tion.jda.entities.{Message, MessageChannel}
+
+import net.dv8tion.jda.entities._
+
 import rip.hansolo.discord.tini.mal.api.MyAnimeListAPI
-import rip.hansolo.discord.tini.mal.model.{Anime, Manga}
-import rip.hansolo.discord.tini.resources.{Reference, ShitTiniSays}
+import rip.hansolo.discord.tini.mal.model._
+import rip.hansolo.discord.tini.resources._
 
 
 /**
@@ -19,7 +22,7 @@ object Animelist extends Command {
   lazy val api = new MyAnimeListAPI(Reference.malUser, Reference.malPass)
 
   def sendUsage(channel: MessageChannel): Unit = {
-    channel.sendMessageAsync(ShitTiniSays.animelistUsage, null)
+    channel.sendMessageAsync(longHelp, null)
   }
 
   def sendResponse(manga: Manga, channel: MessageChannel): Unit = {
@@ -43,7 +46,8 @@ object Animelist extends Command {
   }
   override def exec(args: String, message: Message): Unit = {
     val arguments = args.split(" ")
-    if(arguments.isEmpty) sendUsage(message.getChannel)
+    if(arguments.isEmpty)
+      sendUsage(message.getChannel)
     else {
       Task[Unit] {
         arguments(0) match {

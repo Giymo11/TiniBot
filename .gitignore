@@ -2,7 +2,6 @@ logs
 project/project
 target
 tmp
-.history
 dist
 /.idea
 /*.iml
@@ -19,9 +18,10 @@ dist
 activator
 activator-launch-1.0.0.jar
 activator.bat
-
+application.conf
 credentials
 shared/
+
 /drive-credentials
 config/
 *.conf

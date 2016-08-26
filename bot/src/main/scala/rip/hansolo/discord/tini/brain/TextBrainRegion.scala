@@ -73,7 +73,7 @@ object TextBrainRegion extends ListenerAdapter {
         println("Prefix: " + args.head)
         exec(args.toList, message)
       case _ if TiniBrain.is8ball.get =>
-        val response = new MessageBuilder().appendString(ShitTiniSays.agreement).setTTS(true).build()
+        val response = new MessageBuilder().appendString(ShitTiniSays.eightBallAnswer).setTTS(true).build()
         channel.sendMessageAsync(response, timer)
       case _ =>
         logMessage(message)
