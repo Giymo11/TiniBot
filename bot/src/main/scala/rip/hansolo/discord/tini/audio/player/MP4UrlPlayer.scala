@@ -100,30 +100,12 @@ class MP4UrlPlayer(api: JDA,urlOfResource: URL) extends Player {
 
     println("AudioSystem it's your time")
     //setVolume(150f)
-    setAudioSource(toPCMStream(new AudioInputStream(inStream,audioFMT,sBuffer.getBytes.length)))
+    setAudioSource(new AudioInputStream(inStream,audioFMT,sBuffer.getBytes.length))
     playing = true
 
+    //Commands for testing: 
     //!sound General http://localhost:8080/videoplayback.mp4
     //!sound General https://r8---sn-uxax3vh50nugp5-8px6.googlevideo.com/videoplayback?upn=bo-B526ERB4&key=yt6&pl=17&initcwndbps=956250&sparams=dur%2Cei%2Cid%2Cinitcwndbps%2Cip%2Cipbits%2Citag%2Clmt%2Cmime%2Cmm%2Cmn%2Cms%2Cmv%2Cpl%2Cratebypass%2Crequiressl%2Csource%2Cupn%2Cexpire&source=youtube&requiressl=yes&ratebypass=yes&mime=video%2Fmp4&ipbits=0&mn=sn-uxax3vh50nugp5-8px6&mm=31&signature=74B4C59087BFE1783F77769731027F0D03534A52.3CE1D86B1990C2E2D7358ABA78AD3D19354F22B2&itag=18&sver=3&dur=234.266&mv=m&mt=1472175222&ms=au&lmt=1458207802428817&ip=62.46.184.41&ei=rp2_V8zXO8riiQbZqoXABg&expire=1472197135&id=o-ABdG_0FYV9N9qTdLONrb_avMrmsKPSG-5sU2f5rQB-tw
-  }
-
-  // should be done by JDA -> must be tested
-  private def toPCMStream(in: AudioInputStream): AudioInputStream = {
-    var stream = in
-    val format = stream.getFormat
-
-    if(format.getEncoding != AudioFormat.Encoding.PCM_SIGNED) {
-      stream = AudioSystem.getAudioInputStream(
-        new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-          format.getSampleRate,
-          16,
-          format.getChannels,
-          format.getChannels * 2,
-          format.getSampleRate,
-          false), stream)
-    }
-
-    stream
   }
 
   override def isStopped: Boolean = !playing
