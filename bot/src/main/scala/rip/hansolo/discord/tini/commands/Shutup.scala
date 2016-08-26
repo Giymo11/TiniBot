@@ -23,7 +23,4 @@ object Shutup extends Command {
 
     message.getChannel.sendMessageAsync(ShitTiniSays.shutupResponse,null)
   }
-
-  override def longHelp: String = shortHelp
-  override def shortHelp: String = s"`$command` - not do that anymore."
 }

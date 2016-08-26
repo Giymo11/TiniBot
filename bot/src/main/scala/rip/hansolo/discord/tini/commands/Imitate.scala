@@ -39,7 +39,4 @@ object Imitate extends Command {
       }
     message.getChannel.sendMessageAsync(response, null)
   }
-
-  override def longHelp: String = s"`$command <@user>` - Tini tries to impersonate the other user"
-  override def shortHelp: String =  s"`$command` - make the bot impersonate someone"
 }

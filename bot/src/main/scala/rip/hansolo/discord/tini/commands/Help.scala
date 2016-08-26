@@ -17,22 +17,22 @@ object Help extends Command {
     * @param message The message which
     */
   override def exec(args: String, message: Message): Unit = {
-    val arguments = args.trim.split(" ")
+    val arguments = args.trim.split(" ").toList
 
-    if( arguments.isEmpty || ( arguments.nonEmpty && arguments.head.isEmpty ) ){
-      message.getChannel.sendMessageAsync(s"*Available Commands:*\n" + TextBrainRegion.channelCommands.map(_._2.shortHelp).mkString("\n"), null)
-    } else if( arguments.nonEmpty && arguments.head != "all" ) {
-      message.getChannel.sendMessageAsync(TextBrainRegion.channelCommands.getOrElse(arguments.head, NotACommand).longHelp, null)
-    } else if( arguments.nonEmpty ) {
-      val msg = "***Available Commands (all of it)***\n" +
-                TextBrainRegion.channelCommands.map(_._2.longHelp).mkString("\n* ")
-      message.getChannel.sendMessageAsync(msg,null)
-    } else {
-      message.getChannel.sendMessageAsync(s"*Available Commands:*\n" + TextBrainRegion.channelCommands.map(_._2.shortHelp).mkString("\n"), null)
+    val emptyOrNil = (str: String) => str == null || str.isEmpty
+
+    arguments match {
+      case empty if empty.isEmpty || arguments.head.isEmpty =>
+        val helpList = TextBrainRegion.channelCommands.map(_._2.shortHelp).filterNot(emptyOrNil)
+        val msg = s"*Available Commands:*\n\n" + helpList.mkString("\n")
+        message.getChannel.sendMessageAsync(msg, null)
+      case "all" :: _ =>
+        val helpList = TextBrainRegion.channelCommands.map(_._2.longHelp).filterNot(emptyOrNil)
+        val msg = "***Available Commands with details:***\n\n" + helpList.mkString("\n")
+        message.getChannel.sendMessageAsync(msg, null)
+      case _ =>
+        val msg = TextBrainRegion.channelCommands.getOrElse(arguments.head, NotACommand).longHelp
+        message.getChannel.sendMessageAsync(msg, null)
     }
   }
-
-  override def shortHelp: String = s"`$command [command]` - Tini tells you how to use the command"
-  override def longHelp: String = s"`$command` - Tells you how Tini works, use `$command <command>` to get more help with one command\n" +
-    s"You can also use `$command all` to get the detailed help from all commands"
 }

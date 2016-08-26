@@ -11,8 +11,6 @@ import rip.hansolo.discord.tini.resources.ShitTiniSays
   */
 object BallMode extends Command {
 
-
-
   override def prefix: String = "8ballmode"
 
   /**
@@ -24,7 +22,4 @@ object BallMode extends Command {
     TiniBrain.is8ball.set(true)
     message.getChannel.sendMessageAsync(ShitTiniSays.agreement, null)
   }
-
-  override def longHelp: String = shortHelp
-  override def shortHelp: String = s"`$command` - do that again."
 }

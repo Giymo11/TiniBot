@@ -23,9 +23,6 @@ object setTiniPrefix extends PrivateCommand {
     message.getChannel.sendMessageAsync(":rolling_eyes:  *Tini won't change clothes here ...*", null)
   }
 
-  override def longHelp: String = s"`$command <password> <char>` - Sets the Command char for Tini"
-  override def shortHelp: String = longHelp
-
   override def exec(event: PrivateMessageReceivedEvent): Unit = {
     val args = event.getMessage.getRawContent.trim.split(" ")
 
