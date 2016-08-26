@@ -10,22 +10,22 @@ class BioSpec extends WordSpec {
   "Bio.unapply" should {
     "return Some" when {
       "the argument starts with !bio" in {
-        assert(Bio.unapply("!bio").isDefined)
-        assert(Bio.unapply("!bio help").isDefined)
-        assert(Bio.unapply("!bio set bla bla").isDefined)
-        assert(Bio.unapply("!bio \nset bla \nbla").isDefined)
-        assert(Bio.unapply("!bio\nset\nbla\nbla").isDefined)
-        assert(Bio.unapply("!bio @mention").isDefined)
+        assert(Bio.unapply("bio").isDefined)
+        assert(Bio.unapply("bio help").isDefined)
+        assert(Bio.unapply("bio set bla bla").isDefined)
+        assert(Bio.unapply("bio \nset bla \nbla").isDefined)
+        assert(Bio.unapply("bio\nset\nbla\nbla").isDefined)
+        assert(Bio.unapply("bio @mention").isDefined)
       }
     }
     "should stip the !bio and whitespacefrom reply" in {
-      assert(Bio.unapply("!bio").contains(""))
-      assert(Bio.unapply("!bio help").contains("help"))
-      assert(Bio.unapply("!bio set bla bla").contains("set bla bla"))
-      assert(Bio.unapply("!bio       set bla bla      ").contains("set bla bla"))
-      assert(Bio.unapply("!bio \nset bla bla").contains("set bla bla"))
-      assert(Bio.unapply("!bio \n   set bla bla").contains("set bla bla"))
-      assert(Bio.unapply("!bio @mention").contains("@mention"))
+      assert(Bio.unapply("bio").contains(""))
+      assert(Bio.unapply("bio help").contains("help"))
+      assert(Bio.unapply("bio set bla bla").contains("set bla bla"))
+      assert(Bio.unapply("bio       set bla bla      ").contains("set bla bla"))
+      assert(Bio.unapply("bio \nset bla bla").contains("set bla bla"))
+      assert(Bio.unapply("bio \n   set bla bla").contains("set bla bla"))
+      assert(Bio.unapply("bio @mention").contains("@mention"))
     }
     "return None" when {
       "the argument is invalid" in {

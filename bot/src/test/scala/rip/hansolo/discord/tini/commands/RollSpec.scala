@@ -16,11 +16,11 @@ class RollSpec extends WordSpec {
     }
     "return Some" when {
       "the command is a Dnd roll" in {
-        assert(Roll.unapply("!roll 2d6").isDefined)}
+        assert(Roll.unapply("roll 2d6").isDefined)}
       "the command is a single argument roll" in {
-        assert(Roll.unapply("!roll 4").isDefined)}
+        assert(Roll.unapply("roll 4").isDefined)}
       "the command is a roll with a lower and upper bound" in {
-        assert(Roll.unapply("!roll 4 10").isDefined)}
+        assert(Roll.unapply("roll 4 10").isDefined)}
     }
   }
   "rollTheDice" when {
