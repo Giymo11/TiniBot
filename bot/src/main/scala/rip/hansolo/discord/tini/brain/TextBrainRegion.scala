@@ -21,8 +21,8 @@ import rip.hansolo.discord.tini.resources._
   */
 object TextBrainRegion extends ListenerAdapter {
 
-  val channelCommands: TrieMap[String,Command] = new TrieMap[String,Command]
-  val privateCommands: TrieMap[String,PrivateCommand] = new TrieMap[String,PrivateCommand]
+  val channelCommands: TrieMap[String, Command] = new TrieMap[String, Command]
+  val privateCommands: TrieMap[String, PrivateCommand] = new TrieMap[String, PrivateCommand]
 
   def charsToDrop = TiniBrain.tiniPrefix.get.length
 
@@ -73,7 +73,7 @@ object TextBrainRegion extends ListenerAdapter {
         println("Prefix: " + args.head)
         exec(args.toList, message, event)
       case _ if TiniBrain.is8ball.get =>
-        val response = new MessageBuilder().appendString(ShitTiniSays.agreement).setTTS(true).build()
+        val response = new MessageBuilder().appendString(ShitTiniSays.eightBallAnswer).setTTS(true).build()
         channel.sendMessageAsync(response, timer)
       case _ =>
         logMessage(message)
@@ -81,6 +81,6 @@ object TextBrainRegion extends ListenerAdapter {
   }
 
   def exec(args: List[String], message: Message, event: GuildMessageReceivedEvent) = {
-    channelCommands.getOrElse(args.head, NotACommand).exec(args.tail.mkString(" "), message, event)
+    channelCommands.getOrElse(args.head, NotACommand).exec(args.mkString(" "), message)
   }
 }

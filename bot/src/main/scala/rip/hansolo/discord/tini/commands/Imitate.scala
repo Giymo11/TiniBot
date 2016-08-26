@@ -1,12 +1,17 @@
 package rip.hansolo.discord.tini.commands
 
+
+import scala.util.Random
+
 import better.files._
+
 import malakov.Markov
+
 import net.dv8tion.jda.entities.Message
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.resources.{Reference, ShitTiniSays}
 
-import scala.util.Random
+import rip.hansolo.discord.tini.resources._
 
 
 /**
@@ -36,11 +41,8 @@ object Imitate extends Command {
             .map(line => line.takeWhile(_ != '\n'))
             .runLog.unsafePerformSync.mkString(" ")
         case _ =>
-          ShitTiniSays.imitateUsage
+          longHelp
       }
     message.getChannel.sendMessageAsync(response, null)
   }
-
-  override def longHelp: String = s"`$command <@user>` - Tini tries to impersonate the other user"
-  override def shortHelp: String =  s"`$command` - make the bot impersonate someone"
 }

@@ -1,10 +1,14 @@
 package rip.hansolo.discord.tini.commands
 
-import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
-import rip.hansolo.discord.tini.brain.TiniBrain
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+
+import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
+
+import rip.hansolo.discord.tini.brain.TiniBrain
+
+
 /**
   * Created by: 
   *
@@ -15,5 +19,8 @@ trait PrivateCommand extends Command {
 
   def exec(event: PrivateMessageReceivedEvent)
 
-  override  def registerCommand(): Unit = Future[Unit] { TiniBrain.registerPrivate(this); TiniBrain.register(this) }
+  override def registerCommand(): Unit = Future[Unit] {
+    TiniBrain.registerPrivate(this)
+    TiniBrain.register(this)
+  }
 }

@@ -1,5 +1,8 @@
 package rip.hansolo.discord.tini.commands
+
+
 import net.dv8tion.jda.entities.Message
+
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.resources.ShitTiniSays
@@ -12,8 +15,6 @@ import rip.hansolo.discord.tini.resources.ShitTiniSays
   */
 object BallMode extends Command {
 
-
-
   override def prefix: String = "8ballmode"
 
   /**
@@ -23,9 +24,6 @@ object BallMode extends Command {
     */
   override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit = {
     TiniBrain.is8ball.set(true)
-    message.getChannel.sendMessageAsync(ShitTiniSays.agreement, null)
+    message.getChannel.sendMessageAsync(ShitTiniSays.eightBallAnswer, null)
   }
-
-  override def longHelp: String = shortHelp
-  override def shortHelp: String = s"`$command` - do that again."
 }

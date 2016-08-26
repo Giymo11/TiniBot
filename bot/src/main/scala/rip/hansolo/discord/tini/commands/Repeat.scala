@@ -84,7 +84,4 @@ object Repeat extends Command {
     case _ =>
   }
   def shutup() = repeatTasks foreach { _._2 foreach { _.cancel() } }
-
-  override def longHelp: String = s"`$command <count> [timeout] <command> <command-args>` - Repeat the command multiple times with the arguments"
-  override def shortHelp: String =  s"`$command` - the bot will repeat some messages"
 }

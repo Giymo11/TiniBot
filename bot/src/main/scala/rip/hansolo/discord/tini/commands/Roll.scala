@@ -2,10 +2,11 @@ package rip.hansolo.discord.tini.commands
 
 
 import scala.util.Random
+
 import net.dv8tion.jda.entities.Message
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
+
 import rip.hansolo.discord.tini.Util._
-import rip.hansolo.discord.tini.resources.ShitTiniSays
 
 
 /**
@@ -48,12 +49,8 @@ object Roll extends Command {
     * Formats the List of dice rolls
     */
   private def format(rolls: List[Int]): String = rolls match{
-    case Nil => ShitTiniSays.rollUsage
+    case Nil => longHelp
     case roll :: Nil => s"**$roll**"
     case _ => s"( ${rolls.mkString(" + ")} ) = **${rolls.sum}**"
   }
-
-  override def longHelp: String = s"`$command <lower> <upper>`, example: `$command 1 10`\n" +
-                                  s"`$command <count>d<sides>`, example: `$command 2d6`"
-  override def shortHelp: String =  s"`$command` - Returns a number between those numbers"
 }

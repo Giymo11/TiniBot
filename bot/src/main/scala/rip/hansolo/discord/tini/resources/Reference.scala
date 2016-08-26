@@ -31,6 +31,8 @@ object Reference {
   val repeatMinimumDuration = config.getInt("config.repeat.min")
   val youtubedlBinary = config.getString("config.youtube-dl")
 
+  val shitTiniSays = ConfigFactory.parseString(read ! cwd / "config" / "shitTiniSays.conf").resolve()
+
   object Permissions {
     val CREATE_INSTANT_INVITE	= 0x00000001	//Allows creation of instant invites
     val KICK_MEMBERS = 0x00000002  // *	Allows kicking members

@@ -18,9 +18,6 @@ object Say extends Command {
     * @param message The message which
     */
   override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit = {
-    message.getChannel.sendMessageAsync(args,null)
+    message.getChannel.sendMessageAsync(args, null)
   }
-
-  override def longHelp: String = shortHelp
-  override def shortHelp: String = s"`$command <text>` - Tini will say that"
 }

@@ -1,12 +1,17 @@
 package rip.hansolo.discord.tini.commands
 
+
 import com.google.firebase.database.DatabaseReference.CompletionListener
 import com.google.firebase.database._
+
+import com.typesafe.config.Config
+
 import net.dv8tion.jda.entities._
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
+
 import rip.hansolo.discord.tini.Util._
 import rip.hansolo.discord.tini.brain.TiniBrain
-import rip.hansolo.discord.tini.resources.ShitTiniSays
+
 
 /**
   * Created by Giymo11 on 11.08.2016.
@@ -25,10 +30,9 @@ object Bio extends Command {
       sendUsage(message.getChannel)
   }
 
-  def sendUsage(channel: MessageChannel): Unit = channel.sendMessageAsync(ShitTiniSays.bioUsage, null)
+  def sendUsage(channel: MessageChannel): Unit = channel.sendMessageAsync(longHelp, null)
 
   def bioOf(user: User): DatabaseReference = TiniBrain.users.child(user.getId + "/bio")
-
 
   object Set extends Command {
 
@@ -52,8 +56,9 @@ object Bio extends Command {
       bioOf(author).setValue(args, errorCallback)
     }
 
+    override lazy val config: Config = null
     override def longHelp: String = shortHelp
-    override def shortHelp: String = s"`${Bio.command} $prefix <biography>` - Sets your biography"
+    override def shortHelp: String = s"`${Bio.command} $prefix <biography text>` - Sets your biography"
   }
 
   object Get extends Command{
@@ -96,13 +101,10 @@ object Bio extends Command {
           sendUsage(channel)
       }
     }
-
+    override lazy val config: Config = null
     override def longHelp: String = shortHelp
-    override def shortHelp: String = s"`${Bio.command} $prefix<user>` - Gets the Bio of the User"
+    override def shortHelp: String = s"`${Bio.command} <@user>` - Gets the Bio of the User"
   }
-
-  override def longHelp: String = Get.longHelp + "\n" + Set.longHelp
-  override def shortHelp: String =  s"`$command` - to set your and display other biographies"
 }
 
 

@@ -1,9 +1,14 @@
 package rip.hansolo.discord.tini.commands
+
+
 import net.dv8tion.jda.entities.Message
+
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
+
 import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.resources.Reference
+
 
 /**
   * Created by: 
@@ -11,7 +16,7 @@ import rip.hansolo.discord.tini.resources.Reference
   * @author Raphael
   * @version 17.08.2016
   */
-object setTiniPrefix extends PrivateCommand {
+object SetTiniPrefix extends PrivateCommand {
 
   override def prefix: String = "setTiniPrefix"
 
@@ -23,9 +28,6 @@ object setTiniPrefix extends PrivateCommand {
   override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit = {
     message.getChannel.sendMessageAsync(":rolling_eyes:  *Tini won't change clothes here ...*", null)
   }
-
-  override def longHelp: String = s"`$command <password> <char>` - Sets the Command char for Tini"
-  override def shortHelp: String = longHelp
 
   override def exec(event: PrivateMessageReceivedEvent): Unit = {
     val args = event.getMessage.getRawContent.trim.split(" ")

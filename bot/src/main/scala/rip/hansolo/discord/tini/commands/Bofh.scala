@@ -19,9 +19,6 @@ object Bofh extends Command {
     * @param message The message which
     */
   override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit = {
-      message.getChannel.sendMessageAsync(ShitTiniSays.bofh,null)
+      message.getChannel.sendMessageAsync(ShitTiniSays.bofh, null)
   }
-
-  override def longHelp: String = shortHelp
-  override def shortHelp: String = s"`$command` - Gives you a Bastard Operator from Hell Excuse"
 }

@@ -1,25 +1,33 @@
 package rip.hansolo.discord.tini.commands
 
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.util.Try
+
 import net.dv8tion.jda.entities.Message
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.Util
 import rip.hansolo.discord.tini.brain.TiniBrain
+import rip.hansolo.discord.tini.resources.Reference
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 /**
   * Created by Giymo11 on 12.08.2016.
   */
 trait Command {
 
-  final def command: String = TiniBrain.tiniPrefix.get + prefix
-
-  // TODO: rewrite `Command` to be a class, making the objects currently inheriting only instances of this class.
-  // TODO: Register to TiniBrain in constructor.
+  // TODO: get the prefix from the config file as well to be able to change this prefix.
+  // TODO: separate usage and examples?
 
   def prefix: String
+
+  final def command: String = TiniBrain.tiniPrefix.get + prefix
+
+  lazy val config = Reference.shitTiniSays.getConfig("commands." + prefix)
+
+  def shortHelp: String =  s"`$command` - " + config.getString("help.short")
+  def longHelp: String = Try(s"`$command` " + config.getString("help.long")).getOrElse(shortHelp)
 
   /**
     * @param command the full command (excluding signal-character)
@@ -49,7 +57,7 @@ trait Command {
   def longHelp: String
   def shortHelp: String
 
-  def registerCommand(): Unit = Future[Unit] { TiniBrain.register(this); println("Register Command: " + prefix) }
+  def registerCommand(): Unit = Future[Unit] { TiniBrain.register(this) }
 }
 
 object Command {
