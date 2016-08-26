@@ -49,7 +49,7 @@ trait Command {
   def longHelp: String
   def shortHelp: String
 
-  def registerCommand(): Unit = Future[Unit] { TiniBrain.register(this) }
+  def registerCommand(): Unit = Future[Unit] { TiniBrain.register(this); println("Register Command: " + prefix) }
 }
 
 object Command {

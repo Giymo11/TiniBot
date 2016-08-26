@@ -21,7 +21,7 @@ import scala.concurrent.Promise
   */
 object TiniBrain {
 
-  def register(command: Command) = TextBrainRegion.channelCommands.put(command.prefix, command)
+  def register(command: Command) = TextBrainRegion.channelCommands.put(command.prefix, command);
   def registerPrivate(command: PrivateCommand) = TextBrainRegion.privateCommands.put(command.prefix, command)
 
   /**
