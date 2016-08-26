@@ -1,5 +1,6 @@
 package rip.hansolo.discord.tini.commands
 import net.dv8tion.jda.entities.Message
+import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
 import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.resources.Reference
@@ -33,7 +34,7 @@ object Kill extends PrivateCommand {
     *                Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  override def exec(args: String, message: Message): Unit = {
+  override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit = {
     message.getChannel.sendMessageAsync(" *Too many People are watching, you can't kill Tini here* ",null)
   }
 }

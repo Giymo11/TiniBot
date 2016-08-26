@@ -4,15 +4,13 @@ package rip.hansolo.discord.tini.commands
 import scala.collection.concurrent.TrieMap
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
-
 import cats.data.Xor
-
 import monix.eval.Task
 import monix.execution.CancelableFuture
 import monix.execution.Scheduler.Implicits.global
 import monix.execution.atomic.Atomic
 import net.dv8tion.jda.entities.Message
-
+import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.Util._
 import rip.hansolo.discord.tini.brain.{TextBrainRegion, TiniBrain}
 
@@ -39,7 +37,7 @@ object Repeat extends Command {
     *                Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  override def exec(args: String, message: Message): Unit = {
+  override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit = {
     val arguments = args.dropWhile(isWhitespace).split(" ")
     println("Prefix: " + arguments.head)
 
@@ -62,7 +60,7 @@ object Repeat extends Command {
         .split(" ")
 
       val repTask = Task {
-        TextBrainRegion.exec(newArgs.toList, message)
+        TextBrainRegion.exec(newArgs.toList, message, event)
       }
 
       message.getChannel.sendMessageAsync(s"Tini will repeat `${newArgs.mkString(" ")}` " +

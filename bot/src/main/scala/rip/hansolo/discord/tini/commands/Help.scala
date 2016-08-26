@@ -1,5 +1,6 @@
 package rip.hansolo.discord.tini.commands
 import net.dv8tion.jda.entities.Message
+import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.brain.{TextBrainRegion, TiniBrain}
 
 /**
@@ -16,7 +17,7 @@ object Help extends Command {
     *                Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  override def exec(args: String, message: Message): Unit = {
+  override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit = {
     val arguments = args.trim.split(" ")
 
     if( arguments.isEmpty || ( arguments.nonEmpty && arguments.head.isEmpty ) ){

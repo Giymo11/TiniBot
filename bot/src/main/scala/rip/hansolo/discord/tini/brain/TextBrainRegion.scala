@@ -34,7 +34,7 @@ object TextBrainRegion extends ListenerAdapter {
     println(s"${channel.getGuild.getName} #${channel.getName} - ${message.getTime} - @${message.getAuthor.getUsername}: ${message.getContent}")
 
     if(message.getAuthor.getId != event.getJDA.getSelfInfo.getId)
-      handleMessage(message, channel)
+      handleMessage(message, channel, event)
   }
 
   override def onPrivateMessageReceived(event: PrivateMessageReceivedEvent): Unit = {
@@ -60,7 +60,7 @@ object TextBrainRegion extends ListenerAdapter {
     *
     * @param channel The TextChannel the conversation takes place. Because of this, we are in Guild territory
     */
-  def handleMessage(message: Message, channel: TextChannel) = {
+  def handleMessage(message: Message, channel: TextChannel,event: GuildMessageReceivedEvent) = {
 
     // TODO: Use a logger
     val timer = (myMessage: Message) => println("Sent response at " + myMessage.getTime + ", after " + ChronoUnit.MILLIS.between(myMessage.getTime, message.getTime))
@@ -71,7 +71,7 @@ object TextBrainRegion extends ListenerAdapter {
       case x if x.startsWith(TiniBrain.tiniPrefix.get)=>
         val args = rawContent.dropWhile(isWhitespace).drop(charsToDrop).dropWhile(isWhitespace).replace("\n", " ").split(" ")
         println("Prefix: " + args.head)
-        exec(args.toList, message)
+        exec(args.toList, message, event)
       case _ if TiniBrain.is8ball.get =>
         val response = new MessageBuilder().appendString(ShitTiniSays.agreement).setTTS(true).build()
         channel.sendMessageAsync(response, timer)
@@ -80,7 +80,7 @@ object TextBrainRegion extends ListenerAdapter {
     }
   }
 
-  def exec(args: List[String], message: Message) = {
-    channelCommands.getOrElse(args.head, NotACommand).exec(args.tail.mkString(" "), message)
+  def exec(args: List[String], message: Message, event: GuildMessageReceivedEvent) = {
+    channelCommands.getOrElse(args.head, NotACommand).exec(args.tail.mkString(" "), message, event)
   }
 }

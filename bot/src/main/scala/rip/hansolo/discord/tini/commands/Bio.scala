@@ -3,6 +3,7 @@ package rip.hansolo.discord.tini.commands
 import com.google.firebase.database.DatabaseReference.CompletionListener
 import com.google.firebase.database._
 import net.dv8tion.jda.entities._
+import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.Util._
 import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.resources.ShitTiniSays
@@ -15,11 +16,11 @@ object Bio extends Command {
 
   override def prefix: String = "bio"
 
-  override def exec(args: String, message: Message): Unit = args match {
+  override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit = args match {
     case Bio.Set(arg) =>
-      Bio.Set.exec(arg, message)
+      Bio.Set.exec(arg, message,event)
     case Bio.Get(_) =>
-      Bio.Get.exec(null, message)
+      Bio.Get.exec(null, message,event)
     case _ =>
       sendUsage(message.getChannel)
   }
@@ -33,7 +34,7 @@ object Bio extends Command {
 
     def prefix = "set"
 
-    override def exec(args: String, message: Message): Unit = {
+    override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit = {
       val author = message.getAuthor
       val channel = message.getChannel
 
@@ -66,7 +67,7 @@ object Bio extends Command {
       */
     override def unapply(command: String): Option[String] = matchesPrefix(command)
 
-    override def exec(args: String, message: Message): Unit = {
+    override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit = {
 
       val channel = message.getChannel
 

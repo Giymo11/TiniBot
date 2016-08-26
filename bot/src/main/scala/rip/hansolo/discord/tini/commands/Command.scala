@@ -2,7 +2,7 @@ package rip.hansolo.discord.tini.commands
 
 
 import net.dv8tion.jda.entities.Message
-
+import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.Util
 import rip.hansolo.discord.tini.brain.TiniBrain
 
@@ -44,7 +44,7 @@ trait Command {
     *             Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  def exec(args: String, message: Message = null)
+  def exec(args: String, message: Message = null, event: GuildMessageReceivedEvent)
 
   def longHelp: String
   def shortHelp: String

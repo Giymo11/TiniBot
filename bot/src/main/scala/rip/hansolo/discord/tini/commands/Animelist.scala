@@ -3,6 +3,7 @@ package rip.hansolo.discord.tini.commands
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import net.dv8tion.jda.entities.{Message, MessageChannel}
+import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.mal.api.MyAnimeListAPI
 import rip.hansolo.discord.tini.mal.model.{Anime, Manga}
 import rip.hansolo.discord.tini.resources.{Reference, ShitTiniSays}
@@ -41,7 +42,7 @@ object Animelist extends Command {
        """.stripMargin('.')
     channel.sendMessageAsync(response, null)
   }
-  override def exec(args: String, message: Message): Unit = {
+  override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit = {
     val arguments = args.split(" ")
     if(arguments.isEmpty) sendUsage(message.getChannel)
     else {

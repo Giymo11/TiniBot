@@ -3,6 +3,7 @@ package rip.hansolo.discord.tini.commands
 import better.files._
 import malakov.Markov
 import net.dv8tion.jda.entities.Message
+import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.resources.{Reference, ShitTiniSays}
 
 import scala.util.Random
@@ -17,7 +18,7 @@ object Imitate extends Command {
 
   override def prefix:String = "be"
 
-  override def exec(args: String, message: Message):Unit = {
+  override def exec(args: String, message: Message, event: GuildMessageReceivedEvent):Unit = {
     val mentions = {
       import scala.collection.JavaConverters._
       message.getMentionedUsers.asScala.toList
