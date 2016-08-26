@@ -55,9 +55,7 @@ object Audio extends Command {
             case Some(p) if p.isStopped => playResource(uri, p, message, event, userVoice.getChannel)
             case Some(p) if p.isPlaying => p.stop() //message.getChannel.sendMessageAsync("*Tini is allready speaking ...*",null)
             case _ =>
-              val newPlayer = new YoutubePlayer(event.getJDA)
-              // produces errors until stream was loaded -> move to Player or something else ...
-              userVoice.getGuild.getAudioManager.setSendingHandler(newPlayer)
+              val newPlayer = new YoutubePlayer(event.getGuild)
               onlinePlayers.put(userVoice.getChannel.getId,newPlayer)
 
               playResource(uri, newPlayer, message, event, userVoice.getChannel)
@@ -78,9 +76,11 @@ object Audio extends Command {
       case Some(uri) =>
         Task {
           event.getGuild.getAudioManager.closeAudioConnection()
-          event.getGuild.getAudioManager.openAudioConnection( userVoice )
 
-          Task.fromFuture( player.play(uri).future ).flatMap( _ => Task { event.getGuild.getAudioManager.closeAudioConnection() })
+          player.load(uri)
+          event.getGuild.getAudioManager.openAudioConnection( userVoice )
+          player.play()
+
         }.runAsync
 
         message.getChannel.sendMessageAsync("There you go ",null)
