@@ -65,7 +65,7 @@ object CommandResolver {
         val obj = runtimeMirror.reflectModule(module)
 
         obj.instance.isInstanceOf[Command] match { /* Fixes Command object glitch */
-          case true => obj.instance.asInstanceOf[Command].registerCommand() /* touch obj & load it */; println(obj.instance.asInstanceOf[Command].command)
+          case true => obj.instance.asInstanceOf[Command].registerCommand() /* touch obj & load it */
           case _ => println(s"[CommandResolver] Class $c does not seem to be a instance from the Command trait => It does get ignored")
         }
 
