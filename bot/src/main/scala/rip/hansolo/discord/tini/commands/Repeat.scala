@@ -30,7 +30,7 @@ object Repeat extends Command {
   override def prefix: String = "repeat"
 
   private val repeatTasks = new TrieMap[String, ListBuffer[CancelableFuture[Unit]]]()
-  private val minimumDuration = 15
+  private def minimumDuration = TiniBrain.minimumRepeatDurationMins.get
 
   def charsToDrop = TiniBrain.tiniPrefix.get.length
 
