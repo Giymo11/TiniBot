@@ -19,7 +19,4 @@ object Say extends Command {
   override def exec(args: String, message: Message): Unit = {
     message.getChannel.sendMessageAsync(args,null)
   }
-
-  override def longHelp: String = shortHelp
-  override def shortHelp: String = s"`$command <text>` - Tini will say that"
 }

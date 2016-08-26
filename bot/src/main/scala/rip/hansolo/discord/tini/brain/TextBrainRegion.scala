@@ -21,8 +21,8 @@ import rip.hansolo.discord.tini.resources._
   */
 object TextBrainRegion extends ListenerAdapter {
 
-  val channelCommands: TrieMap[String,Command] = new TrieMap[String,Command]
-  val privateCommands: TrieMap[String,PrivateCommand] = new TrieMap[String,PrivateCommand]
+  val channelCommands: TrieMap[String, Command] = new TrieMap[String, Command]
+  val privateCommands: TrieMap[String, PrivateCommand] = new TrieMap[String, PrivateCommand]
 
   def charsToDrop = TiniBrain.tiniPrefix.get.length
 

@@ -2,8 +2,7 @@ package rip.hansolo.discord.tini.commands
 
 
 import net.dv8tion.jda.entities.Message
-
-import rip.hansolo.discord.tini.resources.ShitTiniSays
+import rip.hansolo.discord.tini.resources.{Reference, ShitTiniSays}
 
 /**
   * Created by Giymo11 on 12.08.2016.
@@ -21,12 +20,11 @@ object Catfacts extends Command {
   override def exec(args: String, message: Message): Unit = {
     val response = args match {
       case "" => ShitTiniSays.catfact
-      case "credits" => ShitTiniSays.credits
-      case _ => ShitTiniSays.catUsage
+      case "credits" => credits
+      case _ => longHelp
     }
     message.getChannel.sendMessageAsync(response, null)
   }
 
-  override def longHelp: String = s"`$command` - Display a cat fact"
-  override def shortHelp: String =  s"`$command` - I will show you some catfacts. :cat2:"
+  val credits = config.getString("credits")
 }

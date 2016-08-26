@@ -66,7 +66,4 @@ object Animelist extends Command {
       }.runAsync
     }
   }
-
-  override def longHelp: String = s"`$command <anime|manga> <name>` - Gives you information about the anime or manage with the specific name"
-  override def shortHelp: String = s"`$command` - Gives you information about anime and manga"
 }

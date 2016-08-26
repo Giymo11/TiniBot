@@ -185,7 +185,7 @@ To discuss:
 Libraries used
 -----------------
 
-* [JDA](https://github.com/DV8FromTheWorld/JDA) // Way better than Discord4J. TODO: investigate multithreading efficiency.
+* [JDA](https://github.com/DV8FromTheWorld/JDA) // Way better than Discord4J.
 * [monix](https://github.com/monixio/monix) // amazing! 
 * [cats](https://github.com/typelevel/cats/) // Not used much yet. The Xor is nice I guess.
 * [scalatest](https://github.com/scalatest/scalatest) // My favourite testing lib. Not that I write many, tho.
