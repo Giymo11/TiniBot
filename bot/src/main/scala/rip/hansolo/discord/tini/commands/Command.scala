@@ -54,8 +54,8 @@ trait Command {
     */
   def exec(args: String, message: Message = null, event: GuildMessageReceivedEvent)
 
-  def longHelp: String
-  def shortHelp: String
+  //def longHelp: String
+  //def shortHelp: String
 
   def registerCommand(): Unit = Future[Unit] { TiniBrain.register(this) }
 }

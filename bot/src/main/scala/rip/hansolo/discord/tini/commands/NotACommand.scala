@@ -2,8 +2,8 @@ package rip.hansolo.discord.tini.commands
 
 
 import com.typesafe.config.Config
-
 import net.dv8tion.jda.entities.Message
+import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
 
 
@@ -30,5 +30,5 @@ object NotACommand extends PrivateCommand {
     message.getChannel.sendMessageAsync(msg, null)
   }
 
-  override def exec(event: PrivateMessageReceivedEvent): Unit = exec(null, event.getMessage)
+  override def exec(event: PrivateMessageReceivedEvent): Unit = exec(null, event.getMessage, null)
 }

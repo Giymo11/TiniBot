@@ -88,6 +88,4 @@ object Audio extends Command {
     }
   }
 
-  override def longHelp: String = shortHelp
-  override def shortHelp: String = s"`$command <channel> <url>` - plays the mp4 file from the url in the channel "
 }

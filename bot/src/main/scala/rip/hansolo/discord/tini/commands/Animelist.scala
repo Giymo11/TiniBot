@@ -2,9 +2,6 @@ package rip.hansolo.discord.tini.commands
 
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
-
-import net.dv8tion.jda.entities._
-
 import net.dv8tion.jda.entities.{Message, MessageChannel}
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.mal.api.MyAnimeListAPI

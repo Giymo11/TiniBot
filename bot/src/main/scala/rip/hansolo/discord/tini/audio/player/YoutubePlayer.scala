@@ -25,7 +25,7 @@ class YoutubePlayer(guild: Guild) extends BasicPlayer( guild = guild ) {
   val userAgent: String = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36 " + Requester.USER_AGENT;
   private var duration = 0.0
 
-  override def play(resource: String): Promise[Unit] = {
+  override def play(resource: String): Unit = {
     val conn = getJDAConnection(new URL(resource))
     val bufferedStream = new BufferedInputStream(conn.getInputStream)
 

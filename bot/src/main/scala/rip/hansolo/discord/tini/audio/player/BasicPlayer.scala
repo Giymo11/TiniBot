@@ -20,7 +20,7 @@ abstract class BasicPlayer(guild: Guild) extends Player {
   private var playing,paused,stopped = false
   private var audioStream: AudioInputStream = _
 
-  def play(resource: String): Promise[Unit] = ???
+  def play(resource: String): Unit = ???
   def load(resource: String): Unit = ???
 
   def load(byteOutputStream: ByteOutputStream,audioFMT: AudioFormat): Unit = {
