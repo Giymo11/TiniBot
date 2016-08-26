@@ -1,7 +1,11 @@
 package rip.hansolo.discord.tini.commands
+
+
 import com.typesafe.config.Config
+
 import net.dv8tion.jda.entities.Message
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
+
 
 /**
   * Created by: 
@@ -22,10 +26,9 @@ object NotACommand extends PrivateCommand {
     * @param message The message which
     */
   override def exec(args: String, message: Message): Unit = {
-    message.getChannel.sendMessageAsync(s"Tini is confused, there is no such a command.\nType `${Help.command}` to see the commands", null)
+    val msg = s"Tini is confused, there is no such a command: \n$args\nType `${Help.command}` to see the commands"
+    message.getChannel.sendMessageAsync(msg, null)
   }
 
-
-
-  override def exec(event: PrivateMessageReceivedEvent): Unit = exec(null, event.getMessage )
+  override def exec(event: PrivateMessageReceivedEvent): Unit = exec(null, event.getMessage)
 }
