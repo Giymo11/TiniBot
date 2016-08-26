@@ -17,6 +17,6 @@ object Say extends Command {
     * @param message The message which
     */
   override def exec(args: String, message: Message): Unit = {
-    message.getChannel.sendMessageAsync(args,null)
+    message.getChannel.sendMessageAsync(args, null)
   }
 }
