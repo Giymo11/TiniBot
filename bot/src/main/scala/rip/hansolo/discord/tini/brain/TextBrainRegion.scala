@@ -81,6 +81,6 @@ object TextBrainRegion extends ListenerAdapter {
   }
 
   def exec(args: List[String], message: Message, event: GuildMessageReceivedEvent) = {
-    channelCommands.getOrElse(args.head, NotACommand).exec(args.mkString(" "), message, event)
+    channelCommands.getOrElse(args.head, NotACommand).exec(args.tail.mkString(" "), message, event)
   }
 }
