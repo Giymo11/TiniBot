@@ -23,6 +23,9 @@ object ShitTiniSays {
   private[this] val catfacts = read.lines ! resource / "catfacts.txt"
   def catfact = oneOf(catfacts :_*)
 
+  private[this] val bofhFile = read.lines ! resource / "bofh.txt"
+  def bofh = oneOf(bofhFile : _*)
+
   def agreement = oneOf(
     "I disagree :raised_hand:",
     "I agree :ok_hand:"
@@ -54,6 +57,7 @@ object ShitTiniSays {
     |!be - make the bot impersonate someone
     |!image - the bot will send a random image from a secret Google Drive Directory hidden under a volcano
     |!repeat - the bot will repeat some messages
+    |!mal fetches anime info from MyAnimeList
   """.stripMargin
 
   def shutupResponse = oneOf(
@@ -94,5 +98,10 @@ object ShitTiniSays {
     """
       |Usage:
       |`!be <@mention> to make the bot impersonate the mentioned person`
+    """.stripMargin
+  val animelistUsage =
+    """
+      |Usage
+      |`!mal <showname> [score]
     """.stripMargin
 }

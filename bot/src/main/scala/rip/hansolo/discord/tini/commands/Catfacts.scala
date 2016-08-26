@@ -10,7 +10,7 @@ import rip.hansolo.discord.tini.resources.ShitTiniSays
   */
 object Catfacts extends Command {
 
-  override def prefix: String = "!catfacts"
+  override def prefix: String = "catfacts"
 
   /**
     *
@@ -26,4 +26,7 @@ object Catfacts extends Command {
     }
     message.getChannel.sendMessageAsync(response, null)
   }
+
+  override def longHelp: String = s"`$command` - Display a cat fact"
+  override def shortHelp: String =  s"`$command` - I will show you some catfacts. :cat2:"
 }

@@ -4,11 +4,17 @@ package rip.hansolo.discord.tini.commands
 import net.dv8tion.jda.entities.Message
 
 import rip.hansolo.discord.tini.Util
+import rip.hansolo.discord.tini.brain.TiniBrain
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
   * Created by Giymo11 on 12.08.2016.
   */
 trait Command {
+
+  final def command: String = TiniBrain.tiniPrefix.get + prefix
 
   // TODO: rewrite `Command` to be a class, making the objects currently inheriting only instances of this class.
   // TODO: Register to TiniBrain in constructor.
@@ -39,6 +45,11 @@ trait Command {
     * @param message The message which
     */
   def exec(args: String, message: Message = null)
+
+  def longHelp: String
+  def shortHelp: String
+
+  def registerCommand(): Unit = Future[Unit] { TiniBrain.register(this) }
 }
 
 object Command {
@@ -49,6 +60,7 @@ object Command {
     case Imitate(args) => Some(Imitate, args)
     case DriveImage(args) => Some(DriveImage, args)
     case Repeat(args) => Some(Repeat, args)
+    case Animelist(args) => Some(Animelist, args)
     case _ => None
   }
 }

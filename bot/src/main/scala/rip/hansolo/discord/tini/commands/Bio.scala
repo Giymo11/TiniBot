@@ -3,10 +3,9 @@ package rip.hansolo.discord.tini.commands
 import com.google.firebase.database.DatabaseReference.CompletionListener
 import com.google.firebase.database._
 import net.dv8tion.jda.entities._
+import rip.hansolo.discord.tini.Util._
 import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.resources.ShitTiniSays
-
-import rip.hansolo.discord.tini.Util._
 
 /**
   * Created by Giymo11 on 11.08.2016.
@@ -14,7 +13,7 @@ import rip.hansolo.discord.tini.Util._
 
 object Bio extends Command {
 
-  override def prefix: String = "!bio"
+  override def prefix: String = "bio"
 
   override def exec(args: String, message: Message): Unit = args match {
     case Bio.Set(arg) =>
@@ -51,6 +50,9 @@ object Bio extends Command {
 
       bioOf(author).setValue(args, errorCallback)
     }
+
+    override def longHelp: String = shortHelp
+    override def shortHelp: String = s"`${Bio.command} $prefix <biography>` - Sets your biography"
   }
 
   object Get extends Command{
@@ -93,7 +95,13 @@ object Bio extends Command {
           sendUsage(channel)
       }
     }
+
+    override def longHelp: String = shortHelp
+    override def shortHelp: String = s"`${Bio.command} $prefix<user>` - Gets the Bio of the User"
   }
+
+  override def longHelp: String = Get.longHelp + "\n" + Set.longHelp
+  override def shortHelp: String =  s"`$command` - to set your and display other biographies"
 }
 
 

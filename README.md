@@ -32,21 +32,27 @@ or
 Create a new application in your discord developer console (only the Name is needed).
 Make this a Bot user.
 
-Create two environment variables:
-* TINI_TOKEN - the bot token from your discord authorization site.
-* TINI_PASSWORD - the password with which you want to kill the bot.
+Create the `config/application.conf` File from the Template in `bot/config/application.conf` and set at least password and discord.token:
+* secret.password - the password with which you want to kill the bot.
+* secret.discord.token - the bot token from your discord authorization site.
 
-The Bot can optionally use the Google Drive to load images via the !image Command, for this some environment variables are needed:
+The Bot can optionally use the Google Drive to load images via the `!image`  Command.
 To use the gdrive api:
 * Go to https://console.cloud.google.com/flows/enableapi?apiid=drive&pli=1 and choose the project for your bot.
 * Create new Credentials for "Other UI"
-* Then continue with setting these environment variables: // TODO: !
-* TINI_GOOGLE_DRIVE - the image directory in google drive e.g `my-epic-colelction/images`
-* GDRIVE_CLIENT_ID - the client_id form the Google API Manager
-* GDRIVE_SECRET - the secret from the Google API Manager
-* TINI_LOGS - the folder where the logs for imitating people are stored.
+* Then continue with setting these settings in the `config/application.conf` file: 
+* config.gdrive.folder - the image directory in google drive e.g `my-epic-colelction/images`
+* config.gdrive.client-id - the client_id form the Google API Manager
+* config.gdrive.secret - the secret from the Google API Manager
 
 You will be asked to authorize your application at first startup, be sure not to miss it!
+
+To be able to use the `!be` Command the Bot must log some Messages of the Users, so a log Directory must be created:
+* config.log-dir - the folder where the logs for imitating people are stored.
+
+For the `!mal` Command you have to register a Account on MAL and set some things in the config file: 
+* secret.mal.user - Your MAL Username
+* secret.mal.password - the Password of the MAL user
 
 Create a new firebase app. 
 Go to "Permissions" and add a Service Account. 
@@ -92,11 +98,15 @@ Until now, Tini can:
 * commit seppuku when you PM it `!kill <password>` where you substitute the <password> with the one in your `TINI_PASSWORD` environment variable.
 * `!repeat <count> [timeout] <command> <command-args>` - Repeat the command multiple times with the arguments
 * `!image [image-type] [tags]*` - Send a random image with the image type (or any with image-type "all") from one of the directories specified with `tags`
-* `!be <user>`
+* `!be <user>` - Imitates the user
+* `!say <text>` - Tini says the text
+* `!mal <anime|manga> <name>` - Gives you some information about the anime / manga
+* `!bofh` - Gives you some Bastard Operator from Hell excuses
+* `!setchar <char>` - Changes the Command Prefix (`!`) to the parameter
+
 Wishlist
 -----------------
 
-* Repeat a command (every x minutes, etc)! <-- amazing technology!
 * Subscribe to MAL profiles for announcements of activity
   - should only updates been shown? i guess so
   - but then i have to store the already-known state. in DB? in memory?
@@ -109,7 +119,7 @@ Wishlist
   - !heist.
   - 8ball
   - etc
-* Display random files from my private EpicCollecshun(TM) (request by genre)
+* ~~Display random files from my private EpicCollecshun(TM) (request by genre)~~ (with `!image` Images can be viewed) 
 * Scrape and save the lewd pictures that get posted.
 * Check if a reddit thread exists for a given link, and post it.
 * Track the last time a given nick was in the channel, and the last time they spoke.

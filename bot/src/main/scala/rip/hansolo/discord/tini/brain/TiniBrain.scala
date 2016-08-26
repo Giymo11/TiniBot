@@ -3,21 +3,27 @@ package rip.hansolo.discord.tini.brain
 
 import java.io._
 
+import scala.concurrent.Promise
+
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase._
 
-import scala.concurrent.Promise
 import monix.execution.atomic.Atomic
+
 import rip.hansolo.discord.tini.commands._
 import rip.hansolo.discord.tini.gdrive._
 import rip.hansolo.discord.tini.resources.Reference
+
+
 
 
 /**
   * Contains the state of Tini's Brain
   */
 object TiniBrain {
-  def register(command: Command) = println("command registered: " + command)
+
+  def register(command: Command) = TextBrainRegion.channelCommands.put(command.prefix, command)
+  def registerPrivate(command: PrivateCommand) = TextBrainRegion.privateCommands.put(command.prefix, command)
 
   /**
     * If this promise is fulfilled, Tini will kill itself and take the JVM with her
@@ -27,7 +33,9 @@ object TiniBrain {
   val is8ball = Atomic(false)
   val isLoadingImages = Atomic(true)
   val isShowingTags = Atomic(false)
+  val tiniPrefix = Atomic("!")
   val isSelfAccouncing = Atomic(false)
+  val minimumRepeatDurationMins = Atomic(Reference.repeatMinimumDuration)
 
   def killYourself() = prophecy.success()
 
