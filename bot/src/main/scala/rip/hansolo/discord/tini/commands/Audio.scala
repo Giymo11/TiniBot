@@ -7,6 +7,7 @@ import net.dv8tion.jda.JDA
 import net.dv8tion.jda.audio.player.{Player, URLPlayer}
 import net.dv8tion.jda.entities.{Message, VoiceChannel}
 import rip.hansolo.discord.tini.audio.player.MP4UrlPlayer
+import rip.hansolo.discord.tini.audio.util.YoutubeUtil
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -39,7 +40,8 @@ object Audio extends Command {
         onlineChannels = onlineChannels :+ channel.get
         channel.get.getGuild.getAudioManager.openAudioConnection(channel.get)
 
-        val player = new MP4UrlPlayer(channel.get.getJDA,new URL(args.split(" ")(1)))
+        val uri: String = YoutubeUtil.getDownloadURL(args.split(" ")(1)).getOrElse(args.split(" ")(1))
+        val player = new MP4UrlPlayer(channel.get.getJDA,new URL(uri))
         player.play()
 
         channel.get.getGuild.getAudioManager.setSendingHandler(player)

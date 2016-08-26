@@ -29,6 +29,7 @@ object Reference {
   val malPass = config.getString("secret.mal.password")
 
   val repeatMinimumDuration = config.getInt("config.repeat.min")
+  val youtubedlBinary = config.getString("config.youtube-dl")
 
   object Permissions {
     val CREATE_INSTANT_INVITE	= 0x00000001	//Allows creation of instant invites
