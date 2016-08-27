@@ -47,12 +47,13 @@ object YoutubeUtil {
 
     content.foreach( x => println( x._1 + " -> " + URLDecoder.decode(x._2("type"),"UTF-8")  ))
 
-    /* mp4 coder does only support 18 and 22 */
+    /* mp4 coder does only support 18, 22, 140 */
     val iTag18 = content.get(18)
     val iTag22 = content.get(22)
+    val iTag140 = content.get(140)
 
-    if( iTag18.isEmpty && iTag22.isEmpty ) return None
-    Some(URLDecoder.decode(iTag18.getOrElse(iTag22.get)("url"),"UTF-8"))
+    if( iTag18.isEmpty && iTag22.isEmpty && iTag140.isEmpty ) return None
+    Some(URLDecoder.decode(iTag18.getOrElse(iTag22.getOrElse(iTag140.get))("url"),"UTF-8"))
   }
 
   /* from JDownloader starts from here: */
@@ -119,8 +120,8 @@ object YoutubeUtil {
 
     srcVidInfo.foreach( x => {
       SignatureRegex findFirstIn x._2 match {
-        case Some(sig) => newVidInfo += (x._1 -> (x._1 + "." + x._2.replace("/s/(.*?)/", "/signature/" + descrableSignature(sig,baseJS) + "/")) )
-        case None => newVidInfo += (x._1 -> (x._1 + "." + x._2))
+        case Some(sig) => newVidInfo += (x._1 -> ( x._2.replace("/s/(.*?)/", "/signature/" + descrableSignature(sig,baseJS) + "/")) )
+        case None => newVidInfo += (x._1 -> ( x._2))
       }
     })
 
@@ -147,6 +148,8 @@ object YoutubeUtil {
       val key = pp.split("=")(0)
       val value = pp.split("=")(1)
 
+      println(pp)
+
       if( dataBlock.contains(key) ) {
         dataBlocks += (dataBlock("itag").toInt -> dataBlock)
         dataBlock = Map.empty[String,String]
@@ -169,6 +172,10 @@ object YoutubeUtil {
     })
 
     content
+  }
+
+  def main(args: Array[String]): Unit = {
+    println( getDownloadURL("https://www.youtube.com/watch?v=_MkFtZIycNY") )
   }
 
 }
