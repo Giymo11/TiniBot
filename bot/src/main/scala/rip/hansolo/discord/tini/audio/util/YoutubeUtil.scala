@@ -58,9 +58,6 @@ object YoutubeUtil {
 
   /* from JDownloader starts from here: */
   def descrableSignature(signature: String,baseJS: String): String = {
-    //TODO: from youtube -> in head <script src="???" name="player/base">
-    val baseJS       = Source.fromFile(new File("D:/base.js")).getLines().mkString(" ")
-
     /* regex magic everything will crash if one thing is not found! */
     val DescrablerRegex = """set\(\"signature\",([\$\w]+)\([\w]+\)""".r
     val desc: Option[String] = for { DescrablerRegex(g1) <- DescrablerRegex findFirstIn baseJS } yield g1
@@ -120,8 +117,8 @@ object YoutubeUtil {
 
     srcVidInfo.foreach( x => {
       SignatureRegex findFirstIn x._2 match {
-        case Some(sig) => newVidInfo += (x._1 -> ( x._2.replace("/s/(.*?)/", "/signature/" + descrableSignature(sig,baseJS) + "/")) )
-        case None => newVidInfo += (x._1 -> ( x._2))
+        case Some(sig) => newVidInfo += (x._1 ->  x._2.replace("/s/(.*?)/", "/signature/" + descrableSignature(sig,baseJS) + "/") )
+        case None => newVidInfo += (x._1 ->  x._2)
       }
     })
 
@@ -172,10 +169,6 @@ object YoutubeUtil {
     })
 
     content
-  }
-
-  def main(args: Array[String]): Unit = {
-    println( getDownloadURL("https://www.youtube.com/watch?v=_MkFtZIycNY") )
   }
 
 }
