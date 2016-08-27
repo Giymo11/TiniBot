@@ -42,7 +42,8 @@ lazy val bot = project.in(file("bot"))
       "com.mashape.unirest" % "unirest-java" % "unirest-java",
       "com.github.kxbmap" %% "configs" % "0.4.2",
       "org.scala-lang.modules" %% "scala-xml" % "1.0.5",
-      "org.jsoup" %  "jsoup" % "1.9.2"
+      "org.jsoup" %  "jsoup" % "1.9.2",
+      "com.rometools" % "rome" % "1.7.0"
     ),
 
     mainClass in assembly := Some("rip.hansolo.discord.tini.Main"),

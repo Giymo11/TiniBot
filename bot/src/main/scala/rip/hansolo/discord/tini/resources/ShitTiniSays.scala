@@ -1,8 +1,6 @@
 package rip.hansolo.discord.tini.resources
 
 
-import scala.collection.JavaConverters._
-
 import ammonite.ops._
 
 import rip.hansolo.discord.tini.Util._
@@ -20,6 +18,9 @@ object ShitTiniSays {
 
   private[this] val bofhFile = read.lines ! resource / "bofh.txt"
   def bofh = oneOf(bofhFile : _*)
+
+  private[this] val insults = read.lines ! resource / "insults.txt"
+  def insult = oneOf(insults.filterNot(_.startsWith("//")) : _*)
 
   val eightBallAnswers = Reference.shitTiniSays.getStringList("eightBallAnswers").asScala
   def eightBallAnswer = oneOf(eightBallAnswers : _*)

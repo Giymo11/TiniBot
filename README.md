@@ -127,14 +127,15 @@ Wishlist
 * Play yandere simulator
 * Subscribe to RSS feeds?
 * Collect stats about the channels/guilds
-* insult/insult-add
 * sometimes just change its status to inappropriate stuff.
 * Play silly sounds (from collection?)
 * Linking discord and other profiles e.g. Steam and Batlle.net
 
 Afterthoughts:
-* custom "choose one of a list" commands using gist or pastebin (like catfacts, insult, etc) and access them via `!tell add <name> <url>` and then  `!tell <name>`
-  - maybe even over-engineer it an do "tell add" and "tell set" to differentiating adding e.g. additional car facts. This could also be done via just message, i guess.
+* custom "choose one of a list" commands using gist or pastebin (like catfacts, insult, etc) and access them via `!tell set <name> <url>` and then `!tell <name>`
+  - have cumulative lists (like !catfacts add <new fact>)
+  - remove stuff from lists (like `!catfacts remove last` or `!catfacts remove <old fact>`)
+  - overwrite the list (like `!catfacts load <url to txt file>` and similar
 * setting to change the bot-escape-char for one channel, e.g. `!setchar *` to now require `*command` all the time.
 * add points like NadekoFlowers to gamble in minigames
   - heist!

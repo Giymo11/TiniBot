@@ -36,6 +36,8 @@ object TiniBrain {
   val tiniPrefix = Atomic("!")
   val isSelfAccouncing = Atomic(false)
   val minimumRepeatDurationMins = Atomic(Reference.repeatMinimumDuration)
+  val embedRssLinks = Atomic(Reference.embedRssLinks)
+  val numberOfRssEntries = Atomic(Reference.numberOfRssEntries)
 
   def killYourself() = prophecy.success()
 
