@@ -14,9 +14,13 @@ dist
 /project/*-shim.sbt
 /activator-sbt-atmos-akka-shim.sbt
 /activator-sbt-atmos-play-shim.sbt
+*firebase.json
 activator
 activator-launch-1.0.0.jar
 activator.bat
-application.conf
 credentials
 shared/
+
+/drive-credentials
+config/
+*.conf
