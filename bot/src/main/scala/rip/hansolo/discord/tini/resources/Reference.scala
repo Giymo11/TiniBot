@@ -29,7 +29,6 @@ object Reference {
   val malPass = config.getString("secret.mal.password")
 
   val repeatMinimumDuration = config.getInt("config.repeat.min")
-  val youtubedlBinary = config.getString("config.youtube-dl")
 
   val embedRssLinks = config.getBoolean("config.rss.embedLinks")
   val numberOfRssEntries = config.getInt("config.rss.numberOfRssEntries")
