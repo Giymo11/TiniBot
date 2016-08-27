@@ -5,6 +5,8 @@ import ammonite.ops._
 
 import rip.hansolo.discord.tini.Util._
 
+import scala.collection.JavaConverters._
+
 
 // TODO: Rewrite in probably JSON? Something everyone can easily make changes
 

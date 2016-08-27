@@ -52,7 +52,7 @@ trait Command {
     *             Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  def exec(args: String, message: Message = null, event: GuildMessageReceivedEvent)
+  def exec(args: String, message: Message = null, event: GuildMessageReceivedEvent = null)
 
   //def longHelp: String
   //def shortHelp: String
