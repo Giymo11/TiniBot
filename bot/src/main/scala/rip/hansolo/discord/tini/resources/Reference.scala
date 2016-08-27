@@ -30,6 +30,9 @@ object Reference {
 
   val repeatMinimumDuration = config.getInt("config.repeat.min")
 
+  val embedRssLinks = config.getBoolean("config.rss.embedLinks")
+  val numberOfRssEntries = config.getInt("config.rss.numberOfRssEntries")
+
   val shitTiniSays = ConfigFactory.parseString(read ! cwd / "config" / "shitTiniSays.conf").resolve()
 
   object Permissions {
