@@ -5,10 +5,12 @@ import java.io._
 
 import scala.concurrent.Promise
 
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase._
-
 import monix.execution.atomic.Atomic
+
+import com.google.api.services.drive.model.File
+
+import com.google.firebase.database._
+import com.google.firebase._
 
 import rip.hansolo.discord.tini.commands._
 import rip.hansolo.discord.tini.gdrive._
@@ -24,19 +26,19 @@ object TiniBrain {
   val isLoadingImages = Atomic(true)
 
 
-  def register(command: Command) = TextBrainRegion.channelCommands.put(command.prefix, command)
-  def registerPrivate(command: PrivateCommand) = TextBrainRegion.privateCommands.put(command.prefix, command)
+  def register(command: Command): Unit = TextBrainRegion.channelCommands.put(command.prefix, command)
+  def registerPrivate(command: PrivateCommand): Unit = TextBrainRegion.privateCommands.put(command.prefix, command)
 
   /**
     * If this promise is fulfilled, Tini will kill itself and take the JVM with her
     */
-  val prophecy = Promise[Unit]
+  val prophecy: Promise[Unit] = Promise[Unit]
 
 
-  def killYourself() = prophecy.success()
+  def killYourself(): prophecy.type = prophecy.success()
 
   // no lazy because we want to know about failures at startup!
-  val firebaseApp = {
+  val firebaseApp: FirebaseApp = {
     val options = new FirebaseOptions.Builder()
       // if you want your own credentials here, follow the Guide at the firebase docs and then make sure to give the
       // ServiceAccount "Project -> Editor" permissions in the IAM settings (under Permissions in Firebase Console)
@@ -46,15 +48,15 @@ object TiniBrain {
 
     FirebaseApp.initializeApp(options)
   }
-  val firebaseDatabase = FirebaseDatabase.getInstance()
-  val users = firebaseDatabase.getReference("users")
+  val firebaseDatabase: FirebaseDatabase = FirebaseDatabase.getInstance()
+  val users: DatabaseReference = firebaseDatabase.getReference("users")
 
   val gDrive = new GoogleDrive(GoogleDriveBuilder.drive)
 
 
-  val filesWithNames = gDrive.initializeFiles(Reference.gdriveFolderName)
-  val files = filesWithNames.map{ case (file, parents) => file }
+  val filesWithNames: Vector[(File, Seq[String])] = gDrive.initializeFiles(Reference.gdriveFolderName)
+  val files: Vector[File] = filesWithNames.map{ case (file, parents) => file }
 
-  val imagesWithNames = filesWithNames.filter{ case (file, parents) => GoogleDrive.isImage(file) }
-  val images = files.filter(GoogleDrive.isImage)
+  val imagesWithNames: Vector[(File, Seq[String])] = filesWithNames.filter{ case (file, parents) => GoogleDrive.isImage(file) }
+  val images: Vector[File] = files.filter(GoogleDrive.isImage)
 }

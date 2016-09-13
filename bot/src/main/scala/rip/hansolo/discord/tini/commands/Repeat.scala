@@ -4,12 +4,16 @@ package rip.hansolo.discord.tini.commands
 import scala.collection.concurrent.TrieMap
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
+
 import cats.data.Xor
+
 import monix.eval.Task
 import monix.execution.CancelableFuture
 import monix.execution.Scheduler.Implicits.global
 import monix.execution.atomic.Atomic
+
 import net.dv8tion.jda.entities.Message
+
 import rip.hansolo.discord.tini.Util._
 import rip.hansolo.discord.tini.brain.{TextBrainRegion, TiniBrain}
 import rip.hansolo.discord.tini.resources.LocalSettings
@@ -30,7 +34,8 @@ object Repeat extends Command {
   private val repeatTasks = new TrieMap[String, ListBuffer[CancelableFuture[Unit]]]()
   private def minimumDuration(implicit brain: LocalSettings) = brain.minimumRepeatDurationMins
 
-  def charsToDrop(implicit brain: LocalSettings) = brain.tiniPrefix.length
+  // TODO: re-use more of TextBrainRegion
+  def charsToDrop(implicit brain: LocalSettings): Int = brain.tiniPrefix.length
 
   /**
     * @param args    The return of its unapply. It's the String needed for the execution of the command
@@ -83,5 +88,5 @@ object Repeat extends Command {
     case Some(channel) => channel foreach { _.cancel() }
     case _ =>
   }
-  def shutup() = repeatTasks foreach { _._2 foreach { _.cancel() } }
+  def shutup(): Unit = repeatTasks foreach { _._2 foreach { _.cancel() } }
 }

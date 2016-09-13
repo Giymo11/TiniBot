@@ -1,8 +1,10 @@
 package rip.hansolo.discord.tini.resources
 
-import com.typesafe.config.ConfigFactory
+
+import com.typesafe.config.{Config, ConfigFactory}
 
 import ammonite.ops._
+
 
 /**
   * Created by Giymo11 on 08.08.2016.
@@ -15,25 +17,25 @@ object Reference {
 
   val logPath: String = config.getString("config.log-dir")
 
-  val gdriveFolderName = config.getString("config.gdrive.folder")
-  val gdriveIgnore = config.getString("config.gdrive.ignore")
-  val gdriveCredentialsDir = config.getString("config.gdrive.credentials-dir")
+  val gdriveFolderName: String = config.getString("config.gdrive.folder")
+  val gdriveIgnore: String = config.getString("config.gdrive.ignore")
+  val gdriveCredentialsDir: String = config.getString("config.gdrive.credentials-dir")
 
-  val gdriveClientID = config.getString("secret.gdrive.client-id")
-  val gdriveSecret = config.getString("secret.gdrive.secret")
+  val gdriveClientID: String = config.getString("secret.gdrive.client-id")
+  val gdriveSecret: String = config.getString("secret.gdrive.secret")
 
-  val firebaseJson = config.getString("config.firebase.json")
-  val firebaseUrl = config.getString("secret.firebase.database-url")
+  val firebaseJson: String = config.getString("config.firebase.json")
+  val firebaseUrl: String = config.getString("secret.firebase.database-url")
 
-  val malUser = config.getString("secret.mal.user")
-  val malPass = config.getString("secret.mal.password")
+  val malUser: String = config.getString("secret.mal.user")
+  val malPass: String = config.getString("secret.mal.password")
 
-  val repeatMinimumDuration = config.getInt("config.repeat.min")
+  val repeatMinimumDuration: Int = config.getInt("config.repeat.min")
 
-  val embedRssLinks = config.getBoolean("config.rss.embedLinks")
-  val numberOfRssEntries = config.getInt("config.rss.numberOfRssEntries")
+  val embedRssLinks: Boolean = config.getBoolean("config.rss.embedLinks")
+  val numberOfRssEntries: Int = config.getInt("config.rss.numberOfRssEntries")
 
-  val shitTiniSays = ConfigFactory.parseString(read ! cwd / "config" / "shitTiniSays.conf").resolve()
+  val shitTiniSays: Config = ConfigFactory.parseString(read ! cwd / "config" / "shitTiniSays.conf").resolve()
 
   object Permissions {
     val CREATE_INSTANT_INVITE	= 0x00000001	//Allows creation of instant invites
@@ -61,7 +63,7 @@ object Reference {
     val MANAGE_ROLES = 0x10000000  // *	Allows management and editing of roles
 
 
-    val usedPermission = READ_MESSAGES ^ SEND_MESSAGES ^ CONNECT ^ SPEAK ^ SEND_TTS_MESSAGES
+    val usedPermission: Int = READ_MESSAGES ^ SEND_MESSAGES ^ CONNECT ^ SPEAK ^ SEND_TTS_MESSAGES
     // wanted = 3152896
     // https://discordapp.com/oauth2/authorize?client_id=211993132529614849&scope=bot&permissions=3152896
 

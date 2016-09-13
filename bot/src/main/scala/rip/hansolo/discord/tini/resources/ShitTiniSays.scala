@@ -3,6 +3,8 @@ package rip.hansolo.discord.tini.resources
 
 import scala.collection.JavaConverters._
 
+import scala.collection.mutable
+
 import ammonite.ops._
 
 import rip.hansolo.discord.tini.Util._
@@ -16,26 +18,26 @@ import rip.hansolo.discord.tini.Util._
 object ShitTiniSays {
 
   private[this] val catfacts = read.lines ! resource / "catfacts.txt"
-  def catfact = oneOf(catfacts : _*)
+  def catfact: String = oneOf(catfacts : _*)
 
   private[this] val bofhFile = read.lines ! resource / "bofh.txt"
-  def bofh = oneOf(bofhFile : _*)
+  def bofh: String = oneOf(bofhFile : _*)
 
   private[this] val insults = read.lines ! resource / "insults.txt"
-  def insult = oneOf(insults.filterNot(_.startsWith("//")) : _*)
+  def insult: String = oneOf(insults.filterNot(_.startsWith("//")) : _*)
 
-  val eightBallAnswers = Reference.shitTiniSays.getStringList("eightBallAnswers").asScala
-  def eightBallAnswer = oneOf(eightBallAnswers : _*)
+  private[this] val eightBallAnswers: mutable.Buffer[String] = Reference.shitTiniSays.getStringList("eightBallAnswers").asScala
+  def eightBallAnswer: String = oneOf(eightBallAnswers : _*)
 
-  val selfAnnouncements = Reference.shitTiniSays.getStringList("selfAnnouncements").asScala
-  def selfAnnouncement = oneOf(selfAnnouncements : _*)
+  private[this] val selfAnnouncements: mutable.Buffer[String] = Reference.shitTiniSays.getStringList("selfAnnouncements").asScala
+  def selfAnnouncement: String = oneOf(selfAnnouncements : _*)
 
-  val shutupResponses = Reference.shitTiniSays.getStringList("shutupResponses").asScala
-  def shutupResponse = oneOf(shutupResponses : _*)
+  private[this] val shutupResponses: mutable.Buffer[String] = Reference.shitTiniSays.getStringList("shutupResponses").asScala
+  def shutupResponse: String = oneOf(shutupResponses : _*)
 
-  val rollResponses = Reference.shitTiniSays.getStringList("rollResponses").asScala
-  def rollResponse = oneOf(rollResponses : _*)
+  private[this] val rollResponses: mutable.Buffer[String] = Reference.shitTiniSays.getStringList("rollResponses").asScala
+  def rollResponse: String = oneOf(rollResponses : _*)
 
-  val imageResponses = Reference.shitTiniSays.getStringList("imageResponses").asScala
-  def imageResponse = oneOf(imageResponses : _*)
+  private[this] val imageResponses: mutable.Buffer[String] = Reference.shitTiniSays.getStringList("imageResponses").asScala
+  def imageResponse: String = oneOf(imageResponses : _*)
 }

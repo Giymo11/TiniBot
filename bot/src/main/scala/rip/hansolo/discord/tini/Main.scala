@@ -1,9 +1,8 @@
 package rip.hansolo.discord.tini
 
 
-
 import monix.eval._
-import monix.execution.Cancelable
+import monix.execution.{Cancelable, CancelableFuture}
 
 import net.dv8tion.jda.events.ReadyEvent
 import net.dv8tion.jda.hooks.ListenerAdapter
@@ -11,6 +10,7 @@ import net.dv8tion.jda._
 
 import rip.hansolo.discord.tini.brain._
 import rip.hansolo.discord.tini.resources._
+
 import monix.execution.Scheduler.Implicits.global
 
 
@@ -51,7 +51,7 @@ object Main extends TaskApp{
     }
   }
 
-  val gdriveLoader = Task {
+  val gdriveLoader: CancelableFuture[Unit] = Task {
     TiniBrain.isLoadingImages.set(true)
     println("FileNames. " + TiniBrain.filesWithNames.take(20).map(_._2.mkString(", ")).mkString("\n"))
     println("MimeTypes: " + TiniBrain.files.map(_.getMimeType).toSet.mkString("\n"))

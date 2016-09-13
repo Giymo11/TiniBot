@@ -2,7 +2,9 @@ package rip.hansolo.discord.tini.commands
 
 
 import net.dv8tion.jda.entities.Message
-import rip.hansolo.discord.tini.resources.{LocalSettings, Reference, ShitTiniSays}
+
+import rip.hansolo.discord.tini.resources._
+
 
 /**
   * Created by Giymo11 on 12.08.2016.
@@ -26,5 +28,5 @@ object Catfacts extends Command {
     message.getChannel.sendMessageAsync(response, null)
   }
 
-  val credits = config.getString("credits")
+  val credits: String = config.getString("credits")
 }

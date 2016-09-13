@@ -1,6 +1,5 @@
 package rip.hansolo.discord.tini.resources
 
-import rip.hansolo.discord.tini.brain.SettingsBrain
 
 /**
 	* Created by Giymo11 on 9/12/2016 at 2:55 PM.

@@ -1,10 +1,14 @@
 package rip.hansolo.discord.tini.commands
 
 
+import com.typesafe.config.Config
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Try
+
 import net.dv8tion.jda.entities.Message
+
 import rip.hansolo.discord.tini.Util
 import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.resources.{LocalSettings, Reference}
@@ -22,7 +26,7 @@ trait Command {
 
   final def command(implicit brain: LocalSettings): String = brain.tiniPrefix + prefix
 
-  lazy val config = Reference.shitTiniSays.getConfig("commands." + prefix)
+  lazy val config: Config = Reference.shitTiniSays.getConfig("commands." + prefix)
 
   def shortHelp(implicit brain: LocalSettings): String =  s"`${command(brain)}` - " + config.getString("help.short")
   def longHelp(implicit brain: LocalSettings): String = Try(s"`${command(brain)}` " + config.getString("help.long")).getOrElse(shortHelp(brain))
@@ -55,15 +59,3 @@ trait Command {
   def registerCommand(): Unit = Future[Unit] { TiniBrain.register(this) }
 }
 
-object Command {
-  def unapply(command: String): Option[(Command, String)] = command match {
-    case Bio(args) => Some(Bio, args)
-    case Roll(args) => Some(Roll, args)
-    case Catfacts(args) => Some(Catfacts, args)
-    case Imitate(args) => Some(Imitate, args)
-    case DriveImage(args) => Some(DriveImage, args)
-    case Repeat(args) => Some(Repeat, args)
-    case Animelist(args) => Some(Animelist, args)
-    case _ => None
-  }
-}

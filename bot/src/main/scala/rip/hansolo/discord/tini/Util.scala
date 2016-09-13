@@ -16,7 +16,7 @@ import scala.language.implicitConversions
   */
 object Util {
 
-  def oneOf[T](xs: T*) = xs.apply(Random.nextInt(xs.size))
+  def oneOf[T](xs: T*): T = xs.apply(Random.nextInt(xs.size))
 
   /**
     * Extracts an Int out of a String
@@ -36,7 +36,7 @@ object Util {
   implicit def functionToPredicate[T](func: T => Boolean): java.util.function.Predicate[T] =
     scala.compat.java8.FunctionConverters.asJavaPredicate(func)
 
-  val isWhitespace = (char: Char) => char == ' ' || System.lineSeparator().contains(char) || char == '\n'
+  val isWhitespace: Char => Boolean = (char: Char) => char == ' ' || System.lineSeparator().contains(char) || char == '\n'
 
   def isEnvSet(name: String): Boolean = System.getenv(name) != null && System.getenv(name).nonEmpty
 }

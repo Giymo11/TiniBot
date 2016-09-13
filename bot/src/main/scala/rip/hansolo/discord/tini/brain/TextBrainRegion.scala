@@ -24,7 +24,7 @@ object TextBrainRegion extends ListenerAdapter {
   val channelCommands: TrieMap[String, Command] = new TrieMap[String, Command]
   val privateCommands: TrieMap[String, PrivateCommand] = new TrieMap[String, PrivateCommand]
 
-  def charsToDrop(implicit brain: LocalSettings) = brain.tiniPrefix.length
+  def charsToDrop(implicit brain: LocalSettings): Int = brain.tiniPrefix.length
 
   override def onGuildMessageReceived(event: GuildMessageReceivedEvent): Unit = {
 
@@ -66,7 +66,7 @@ object TextBrainRegion extends ListenerAdapter {
     *
     * @param channel The TextChannel the conversation takes place. Because of this, we are in Guild territory
     */
-  def handleMessage(message: Message, channel: TextChannel)(implicit brain: LocalSettings) = {
+  def handleMessage(message: Message, channel: TextChannel)(implicit brain: LocalSettings): Unit = {
 
     // TODO: Use a logger
     val timer = (myMessage: Message) => println("Sent response at " + myMessage.getTime + ", after " + ChronoUnit.MILLIS.between(myMessage.getTime, message.getTime))
@@ -86,7 +86,7 @@ object TextBrainRegion extends ListenerAdapter {
     }
   }
 
-  def exec(args: List[String], message: Message)(implicit brain: LocalSettings) = {
+  def exec(args: List[String], message: Message)(implicit brain: LocalSettings): Unit = {
     channelCommands.getOrElse(args.head, NotACommand).exec(args.tail.mkString(" "), message)
   }
 }
