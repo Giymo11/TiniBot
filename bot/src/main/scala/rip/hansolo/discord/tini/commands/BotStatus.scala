@@ -1,7 +1,7 @@
 package rip.hansolo.discord.tini.commands
 import net.dv8tion.jda.entities.Message
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
-import rip.hansolo.discord.tini.resources.Reference
+import rip.hansolo.discord.tini.resources.{LocalSettings, Reference}
 
 /**
   * Created by: 
@@ -10,7 +10,7 @@ import rip.hansolo.discord.tini.resources.Reference
   * @version 17.08.2016
   */
 object BotStatus extends PrivateCommand {
-  override def exec(event: PrivateMessageReceivedEvent): Unit = {
+  override def exec(event: PrivateMessageReceivedEvent)(implicit brain: LocalSettings): Unit = {
     val client = event.getJDA
     val content = event.getMessage.getContent.trim
 
@@ -30,7 +30,7 @@ object BotStatus extends PrivateCommand {
     *                Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  override def exec(args: String, message: Message): Unit = {
+  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
     message.getChannel.sendMessageAsync(" *Tini listens to loud music and can't hear you screaming* :musical_note: ",null)
   }
 }

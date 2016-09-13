@@ -1,6 +1,7 @@
 package rip.hansolo.discord.tini.commands
 import net.dv8tion.jda.entities.Message
 import rip.hansolo.discord.tini.brain.{TextBrainRegion, TiniBrain}
+import rip.hansolo.discord.tini.resources.LocalSettings
 
 /**
   * Created by: 
@@ -16,7 +17,7 @@ object Help extends Command {
     *                Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  override def exec(args: String, message: Message): Unit = {
+  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
     val arguments = args.trim.split(" ").toList
 
     val emptyOrNil = (str: String) => str == null || str.isEmpty

@@ -24,9 +24,12 @@ object TextBrainRegion extends ListenerAdapter {
   val channelCommands: TrieMap[String, Command] = new TrieMap[String, Command]
   val privateCommands: TrieMap[String, PrivateCommand] = new TrieMap[String, PrivateCommand]
 
-  def charsToDrop = TiniBrain.tiniPrefix.get.length
+  def charsToDrop(implicit brain: LocalSettings) = brain.tiniPrefix.length
 
   override def onGuildMessageReceived(event: GuildMessageReceivedEvent): Unit = {
+
+    implicit val brain = SettingsBrain.getFor(event.getGuild.getId)
+
     val channel = event.getChannel
     val message = event.getMessage
 
@@ -38,12 +41,15 @@ object TextBrainRegion extends ListenerAdapter {
   }
 
   override def onPrivateMessageReceived(event: PrivateMessageReceivedEvent): Unit = {
+
+    implicit val brain = SettingsBrain.getForPrivate(event.getAuthor.getId)
+
     val message = event.getMessage
 
     val rawContent = message.getRawContent.trim
 
     rawContent match {
-      case x if x.startsWith(TiniBrain.tiniPrefix.get) =>
+      case x if x.startsWith(brain.tiniPrefix) =>
         val args = rawContent.dropWhile(isWhitespace).drop(charsToDrop).dropWhile(isWhitespace).replace("\n", " ").split(" ")
         println("Prefix: " + args.head)
         privateCommands.getOrElse(args.head, NotACommand).exec(event)
@@ -60,7 +66,7 @@ object TextBrainRegion extends ListenerAdapter {
     *
     * @param channel The TextChannel the conversation takes place. Because of this, we are in Guild territory
     */
-  def handleMessage(message: Message, channel: TextChannel) = {
+  def handleMessage(message: Message, channel: TextChannel)(implicit brain: LocalSettings) = {
 
     // TODO: Use a logger
     val timer = (myMessage: Message) => println("Sent response at " + myMessage.getTime + ", after " + ChronoUnit.MILLIS.between(myMessage.getTime, message.getTime))
@@ -68,11 +74,11 @@ object TextBrainRegion extends ListenerAdapter {
     val rawContent = message.getRawContent.trim
 
     rawContent match {
-      case x if x.startsWith(TiniBrain.tiniPrefix.get)=>
+      case x if x.startsWith(brain.tiniPrefix)=>
         val args = rawContent.dropWhile(isWhitespace).drop(charsToDrop).dropWhile(isWhitespace).replace("\n", " ").split(" ")
         println("Prefix: " + args.head)
         exec(args.toList, message)
-      case _ if TiniBrain.is8ball.get =>
+      case _ if brain.is8ball =>
         val response = new MessageBuilder().appendString(ShitTiniSays.eightBallAnswer).setTTS(true).build()
         channel.sendMessageAsync(response, timer)
       case _ =>
@@ -80,7 +86,7 @@ object TextBrainRegion extends ListenerAdapter {
     }
   }
 
-  def exec(args: List[String], message: Message) = {
+  def exec(args: List[String], message: Message)(implicit brain: LocalSettings) = {
     channelCommands.getOrElse(args.head, NotACommand).exec(args.tail.mkString(" "), message)
   }
 }

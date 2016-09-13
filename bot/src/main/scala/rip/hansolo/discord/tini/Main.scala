@@ -44,7 +44,9 @@ object Main extends TaskApp{
       println("I am in guild " + guild.getName)
       val channel = guild.getPublicChannel
 
-      if(TiniBrain.isSelfAccouncing.get)
+      implicit val brain = SettingsBrain.getFor(guild.getId)
+
+      if(brain.isSelfAnnouncing)
         channel.sendMessageAsync(ShitTiniSays.selfAnnouncement, null)
     }
   }

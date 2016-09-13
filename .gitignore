@@ -22,7 +22,3 @@ activator.bat
 application.conf
 credentials
 shared/
-
-/drive-credentials
-config/
-*.conf

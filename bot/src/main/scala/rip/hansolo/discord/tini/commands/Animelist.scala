@@ -3,12 +3,10 @@ package rip.hansolo.discord.tini.commands
 
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
-
 import net.dv8tion.jda.entities._
-
 import rip.hansolo.discord.tini.mal.api.MyAnimeListAPI
 import rip.hansolo.discord.tini.mal.model._
-import rip.hansolo.discord.tini.resources._
+import rip.hansolo.discord.tini.resources.{LocalSettings, _}
 
 
 /**
@@ -21,7 +19,7 @@ object Animelist extends Command {
 
   lazy val api = new MyAnimeListAPI(Reference.malUser, Reference.malPass)
 
-  def sendUsage(channel: MessageChannel): Unit = {
+  def sendUsage(channel: MessageChannel)(implicit brain: LocalSettings): Unit = {
     channel.sendMessageAsync(longHelp, null)
   }
 
@@ -44,7 +42,7 @@ object Animelist extends Command {
        """.stripMargin('.')
     channel.sendMessageAsync(response, null)
   }
-  override def exec(args: String, message: Message): Unit = {
+  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
     val arguments = args.split(" ")
     if(arguments.isEmpty)
       sendUsage(message.getChannel)

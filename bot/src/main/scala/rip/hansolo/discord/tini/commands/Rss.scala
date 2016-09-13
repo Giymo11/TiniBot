@@ -6,6 +6,7 @@ import com.rometools.rome.feed.synd._
 import com.rometools.rome.io.{SyndFeedInput, XmlReader}
 import net.dv8tion.jda.entities.Message
 import rip.hansolo.discord.tini.brain.TiniBrain
+import rip.hansolo.discord.tini.resources.LocalSettings
 
 /**
   * Created by Giymo11 on 8/27/2016 at 2:29 AM.
@@ -18,7 +19,7 @@ object Rss extends Command{
     *                Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  override def exec(args: String, message: Message): Unit = {
+  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
     // TODO: add possibility to restrict items and enable embedding of links
     Xor.catchNonFatal {
       val feedUrl: URL = new URL(args)
@@ -31,13 +32,13 @@ object Rss extends Command{
       println("getting stuff for " + args)
 
       val title = feed.getTitle
-      val entries = feed.getEntries.asScala.take(TiniBrain.numberOfRssEntries.get)
+      val entries = feed.getEntries.asScala.take(brain.numberOfRssEntries)
 
       def getFirstLine(str: String) = str.dropWhile(_.isWhitespace).split("\n").head
 
       // the '<' and '>' around the link disable embedding.
       val entryStrings = for(entry <- entries) yield {
-        val link = if(TiniBrain.embedRssLinks.get) entry.getLink else s"<${entry.getLink}>"
+        val link = if(brain.embedRssLinks) entry.getLink else s"<${entry.getLink}>"
         getFirstLine(entry.getTitle) + "\n" + link
       }
       val text = title + "\n" + feed.getLink + "\n\n" + entryStrings.mkString("\n\n")

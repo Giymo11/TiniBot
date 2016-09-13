@@ -2,10 +2,9 @@ package rip.hansolo.discord.tini.commands
 
 
 import scala.util.Random
-
 import net.dv8tion.jda.entities.Message
-
 import rip.hansolo.discord.tini.Util._
+import rip.hansolo.discord.tini.resources.LocalSettings
 
 
 /**
@@ -15,7 +14,7 @@ object Roll extends Command {
 
   override def prefix: String = "roll"
 
-  override def exec(args: String, message: Message): Unit = {
+  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
     val argList = args.split(" ").toList
     message.getChannel.sendMessageAsync( format(rollTheDice(argList)), null)
   }
@@ -24,7 +23,7 @@ object Roll extends Command {
     * @param args The arguments to rolling the dice (without the command)
     * @return The list of results
     */
-  def rollTheDice(args: List[String]): List[Int] = args match {
+  def rollTheDice(args: List[String])(implicit brain: LocalSettings): List[Int] = args match {
     case dice :: Nil if dice.contains("d") =>
       rollDndDice(dice)
     case StringInt(upper) :: Nil =>
@@ -39,7 +38,7 @@ object Roll extends Command {
     * @param dice A string of the form <count>d<sides>, for example `2d6`
     * @return The results of rolling them
     */
-  private def rollDndDice(dice: String): List[Int] = dice.split("d").toList match {
+  private def rollDndDice(dice: String)(implicit brain: LocalSettings): List[Int] = dice.split("d").toList match {
     case StringInt(count) :: StringInt(sides) :: Nil => for(i <- (1 to count).toList) yield Random.nextInt(sides) + 1
     case _ => Nil
   }
@@ -47,7 +46,7 @@ object Roll extends Command {
   /**
     * Formats the List of dice rolls
     */
-  private def format(rolls: List[Int]): String = rolls match{
+  private def format(rolls: List[Int])(implicit brain: LocalSettings): String = rolls match{
     case Nil => longHelp
     case roll :: Nil => s"**$roll**"
     case _ => s"( ${rolls.mkString(" + ")} ) = **${rolls.sum}**"

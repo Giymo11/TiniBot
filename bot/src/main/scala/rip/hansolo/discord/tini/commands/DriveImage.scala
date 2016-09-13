@@ -19,7 +19,7 @@ import org.json._
 import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.Util._
 import monix.execution.Scheduler.Implicits.global
-import rip.hansolo.discord.tini.resources.ShitTiniSays
+import rip.hansolo.discord.tini.resources.{LocalSettings, ShitTiniSays}
 
 
 /**
@@ -38,7 +38,7 @@ object DriveImage extends Command {
     *                Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  override def exec(args: String, message: Message): Unit = {
+  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
 
     Task.create[Unit] { (_, _) =>
       if(TiniBrain.isLoadingImages.get)
@@ -63,7 +63,7 @@ object DriveImage extends Command {
           new MessageBuilder()
             .appendString(ShitTiniSays.imageResponse + getTagsString(tags))
             .build()
-        def getTagsString(tags: Seq[String]) = if(TiniBrain.isShowingTags.get) "\nTags: " + tags.mkString(", ") else ""
+        def getTagsString(tags: Seq[String]) = if(brain.isShowingTags) "\nTags: " + tags.mkString(", ") else ""
 
         streamWithName match {
           case Some( (fileStream, name, tags) ) =>

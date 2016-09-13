@@ -21,6 +21,8 @@ import rip.hansolo.discord.tini.resources.Reference
   * Contains the state of Tini's Brain
   */
 object TiniBrain {
+  val isLoadingImages = Atomic(true)
+
 
   def register(command: Command) = TextBrainRegion.channelCommands.put(command.prefix, command)
   def registerPrivate(command: PrivateCommand) = TextBrainRegion.privateCommands.put(command.prefix, command)
@@ -30,14 +32,6 @@ object TiniBrain {
     */
   val prophecy = Promise[Unit]
 
-  val is8ball = Atomic(false)
-  val isLoadingImages = Atomic(true)
-  val isShowingTags = Atomic(false)
-  val tiniPrefix = Atomic("!")
-  val isSelfAccouncing = Atomic(false)
-  val minimumRepeatDurationMins = Atomic(Reference.repeatMinimumDuration)
-  val embedRssLinks = Atomic(Reference.embedRssLinks)
-  val numberOfRssEntries = Atomic(Reference.numberOfRssEntries)
 
   def killYourself() = prophecy.success()
 

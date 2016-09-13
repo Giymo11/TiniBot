@@ -4,17 +4,15 @@ package rip.hansolo.discord.tini.commands
 import scala.collection.concurrent.TrieMap
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
-
 import cats.data.Xor
-
 import monix.eval.Task
 import monix.execution.CancelableFuture
 import monix.execution.Scheduler.Implicits.global
 import monix.execution.atomic.Atomic
 import net.dv8tion.jda.entities.Message
-
 import rip.hansolo.discord.tini.Util._
 import rip.hansolo.discord.tini.brain.{TextBrainRegion, TiniBrain}
+import rip.hansolo.discord.tini.resources.LocalSettings
 
 import scala.language.postfixOps
 
@@ -30,16 +28,16 @@ object Repeat extends Command {
   override def prefix: String = "repeat"
 
   private val repeatTasks = new TrieMap[String, ListBuffer[CancelableFuture[Unit]]]()
-  private def minimumDuration = TiniBrain.minimumRepeatDurationMins.get
+  private def minimumDuration(implicit brain: LocalSettings) = brain.minimumRepeatDurationMins
 
-  def charsToDrop = TiniBrain.tiniPrefix.get.length
+  def charsToDrop(implicit brain: LocalSettings) = brain.tiniPrefix.length
 
   /**
     * @param args    The return of its unapply. It's the String needed for the execution of the command
     *                Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  override def exec(args: String, message: Message): Unit = {
+  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
     val arguments = args.dropWhile(isWhitespace).split(" ")
     println("Prefix: " + arguments.head)
 

@@ -2,9 +2,8 @@ package rip.hansolo.discord.tini.commands
 
 
 import net.dv8tion.jda.entities.Message
-
-import rip.hansolo.discord.tini.brain.TiniBrain
-import rip.hansolo.discord.tini.resources.ShitTiniSays
+import rip.hansolo.discord.tini.brain.{SettingsBrain, TiniBrain}
+import rip.hansolo.discord.tini.resources.{LocalSettings, ShitTiniSays}
 
 /**
   * Created by: 
@@ -21,8 +20,10 @@ object BallMode extends Command {
     *                Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  override def exec(args: String, message: Message): Unit = {
-    TiniBrain.is8ball.set(true)
+  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
+
+    SettingsBrain.update(brain.copy(is8ball = true))
+
     message.getChannel.sendMessageAsync(ShitTiniSays.eightBallAnswer, null)
   }
 }

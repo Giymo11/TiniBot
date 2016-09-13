@@ -3,13 +3,11 @@ package rip.hansolo.discord.tini.commands
 
 import com.google.firebase.database.DatabaseReference.CompletionListener
 import com.google.firebase.database._
-
 import com.typesafe.config.Config
-
 import net.dv8tion.jda.entities._
-
 import rip.hansolo.discord.tini.Util._
 import rip.hansolo.discord.tini.brain.TiniBrain
+import rip.hansolo.discord.tini.resources.LocalSettings
 
 
 /**
@@ -20,9 +18,9 @@ object Bio extends Command {
 
   override def prefix: String = "bio"
 
-  override def longHelp: String = Get.longHelp + "\n" + Set.longHelp
+  override def longHelp(implicit brain: LocalSettings): String = Get.longHelp + "\n" + Set.longHelp
 
-  override def exec(args: String, message: Message): Unit = args match {
+  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = args match {
     case Bio.Set(arg) =>
       Bio.Set.exec(arg, message)
     case Bio.Get(_) =>
@@ -31,7 +29,7 @@ object Bio extends Command {
       sendUsage(message.getChannel)
   }
 
-  def sendUsage(channel: MessageChannel): Unit = channel.sendMessageAsync(longHelp, null)
+  def sendUsage(channel: MessageChannel)(implicit brain: LocalSettings): Unit = channel.sendMessageAsync(longHelp, null)
 
   def bioOf(user: User): DatabaseReference = TiniBrain.users.child(user.getId + "/bio")
 
@@ -39,7 +37,7 @@ object Bio extends Command {
 
     def prefix = "set"
 
-    override def exec(args: String, message: Message): Unit = {
+    override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
       val author = message.getAuthor
       val channel = message.getChannel
 
@@ -58,8 +56,8 @@ object Bio extends Command {
     }
 
     override lazy val config: Config = null
-    override def longHelp: String = shortHelp
-    override def shortHelp: String = s"`${Bio.command} $prefix <biography text>` - Sets your biography"
+    override def longHelp(implicit brain: LocalSettings): String = shortHelp
+    override def shortHelp(implicit brain: LocalSettings): String = s"`${Bio.command} $prefix <biography text>` - Sets your biography"
   }
 
   object Get extends Command{
@@ -73,7 +71,7 @@ object Bio extends Command {
       */
     override def unapply(command: String): Option[String] = matchesPrefix(command)
 
-    override def exec(args: String, message: Message): Unit = {
+    override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
 
       val channel = message.getChannel
 
@@ -103,8 +101,8 @@ object Bio extends Command {
       }
     }
     override lazy val config: Config = null
-    override def longHelp: String = shortHelp
-    override def shortHelp: String = s"`${Bio.command} <@user>` - Gets the Bio of the User"
+    override def longHelp(implicit brain: LocalSettings): String = shortHelp
+    override def shortHelp(implicit brain: LocalSettings): String = s"`${Bio.command} <@user>` - Gets the Bio of the User"
   }
 }
 

@@ -2,11 +2,9 @@ package rip.hansolo.discord.tini.commands
 
 
 import net.dv8tion.jda.entities.Message
-
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
-
-import rip.hansolo.discord.tini.brain.TiniBrain
-import rip.hansolo.discord.tini.resources.Reference
+import rip.hansolo.discord.tini.brain.{SettingsBrain, TiniBrain}
+import rip.hansolo.discord.tini.resources.{LocalSettings, Reference}
 
 
 /**
@@ -24,16 +22,18 @@ object SetTiniPrefix extends PrivateCommand {
     *                Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  override def exec(args: String, message: Message): Unit = {
+  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
     message.getChannel.sendMessageAsync(":rolling_eyes:  *Tini won't change clothes here ...*", null)
   }
 
-  override def exec(event: PrivateMessageReceivedEvent): Unit = {
+  override def exec(event: PrivateMessageReceivedEvent)(implicit brain: LocalSettings): Unit = {
     val args = event.getMessage.getRawContent.trim.split(" ")
 
     if( args.length == 3 && args(1) == Reference.authorPassword ) {
       val toBeMention = args(2)
-      TiniBrain.tiniPrefix.set(toBeMention)
+
+      SettingsBrain.update(brain.copy(tiniPrefix = toBeMention))
+
       event.getMessage.getChannel.sendMessageAsync("New char: " + toBeMention, null)
       println(toBeMention)
     } else {

@@ -4,12 +4,10 @@ package rip.hansolo.discord.tini.commands
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Try
-
 import net.dv8tion.jda.entities.Message
-
 import rip.hansolo.discord.tini.Util
 import rip.hansolo.discord.tini.brain.TiniBrain
-import rip.hansolo.discord.tini.resources.Reference
+import rip.hansolo.discord.tini.resources.{LocalSettings, Reference}
 
 
 /**
@@ -22,12 +20,12 @@ trait Command {
 
   def prefix: String
 
-  final def command: String = TiniBrain.tiniPrefix.get + prefix
+  final def command(implicit brain: LocalSettings): String = brain.tiniPrefix + prefix
 
   lazy val config = Reference.shitTiniSays.getConfig("commands." + prefix)
 
-  def shortHelp: String =  s"`$command` - " + config.getString("help.short")
-  def longHelp: String = Try(s"`$command` " + config.getString("help.long")).getOrElse(shortHelp)
+  def shortHelp(implicit brain: LocalSettings): String =  s"`${command(brain)}` - " + config.getString("help.short")
+  def longHelp(implicit brain: LocalSettings): String = Try(s"`${command(brain)}` " + config.getString("help.long")).getOrElse(shortHelp(brain))
 
   /**
     * @param command the full command (excluding signal-character)
@@ -52,7 +50,7 @@ trait Command {
     *             Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  def exec(args: String, message: Message = null)
+  def exec(args: String, message: Message = null)(implicit brain: LocalSettings)
 
   def registerCommand(): Unit = Future[Unit] { TiniBrain.register(this) }
 }
