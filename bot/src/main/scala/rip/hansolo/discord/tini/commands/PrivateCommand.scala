@@ -16,6 +16,9 @@ import rip.hansolo.discord.tini.resources.LocalSettings
   */
 trait PrivateCommand extends Command {
 
+  // TODO: Think about how we change channel stuff
+  // Probably a permission-based approach would be best
+
   def exec(event: PrivateMessageReceivedEvent)(implicit brain: LocalSettings)
 
   override def registerCommand(): Unit = Future[Unit] {

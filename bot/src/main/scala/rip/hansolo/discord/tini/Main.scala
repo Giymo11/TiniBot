@@ -42,6 +42,9 @@ object Main extends TaskApp{
     import scala.collection.JavaConversions._
     for(guild <- client.getGuilds) {
       println("I am in guild " + guild.getName)
+
+      SettingsBrain.init
+
       val channel = guild.getPublicChannel
 
       implicit val brain = SettingsBrain.getFor(guild.getId)

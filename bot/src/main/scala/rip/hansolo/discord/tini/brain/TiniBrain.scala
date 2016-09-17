@@ -17,8 +17,6 @@ import rip.hansolo.discord.tini.gdrive._
 import rip.hansolo.discord.tini.resources.Reference
 
 
-
-
 /**
   * Contains the state of Tini's Brain
   */
@@ -50,9 +48,9 @@ object TiniBrain {
   }
   val firebaseDatabase: FirebaseDatabase = FirebaseDatabase.getInstance()
   val users: DatabaseReference = firebaseDatabase.getReference("users")
+  val settings: DatabaseReference = firebaseDatabase.getReference("settings")
 
   val gDrive = new GoogleDrive(GoogleDriveBuilder.drive)
-
 
   val filesWithNames: Vector[(File, Seq[String])] = gDrive.initializeFiles(Reference.gdriveFolderName)
   val files: Vector[File] = filesWithNames.map{ case (file, parents) => file }
