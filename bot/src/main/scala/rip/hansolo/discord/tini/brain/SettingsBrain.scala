@@ -1,11 +1,11 @@
 package rip.hansolo.discord.tini.brain
 
 
-import com.google.firebase.database.{ChildEventListener, DataSnapshot, DatabaseError, ValueEventListener}
-
-import scala.collection.mutable
 import scala.collection.concurrent.TrieMap
-import rip.hansolo.discord.tini.resources.{LocalSettings, Reference}
+
+import com.google.firebase.database._
+
+import rip.hansolo.discord.tini.resources._
 
 
 /**
@@ -17,21 +17,16 @@ object SettingsBrain {
 
 		def useData(dataSnapshot: DataSnapshot) = {
 			import scala.collection.JavaConverters._
-			println("In useData")
-			println(dataSnapshot)
 			val id = dataSnapshot.getKey
 			val valueMap: Map[String, Object] = dataSnapshot.getValue().asInstanceOf[java.util.Map[String, Object]].asScala.toMap
-			println(valueMap)
-			println(valueMap.values.map(x => x.getClass))
 			val settings = LocalSettings.fromMap(id, valueMap)
-			println(settings)
-			update(settings)
+			updateMap(settings)
 		}
 
 		println("WHADDAP")
 
 		TiniBrain.settings.addChildEventListener(new ChildEventListener {
-			override def onChildRemoved(dataSnapshot: DataSnapshot) = update(LocalSettings(dataSnapshot.getKey))
+			override def onChildRemoved(dataSnapshot: DataSnapshot) = updateMap(LocalSettings(dataSnapshot.getKey))
 
 			override def onChildMoved(dataSnapshot: DataSnapshot, previousChildName: String) = ()
 
@@ -43,17 +38,30 @@ object SettingsBrain {
 		})
 	}
 
-
-	// TODO: read settings from firebase!
-	// TODO: persist settings to firebase!
 	// TODO: listen for changes of settings from firebase! (for future web-use)
 
+	import scala.collection.mutable
 	val map: mutable.Map[String, LocalSettings] = TrieMap[String, LocalSettings]().withDefault(id => LocalSettings(id))
 
 	def getFor(id: String): LocalSettings = map(id)
 	def getForPrivate(id: String): LocalSettings = map(id)
 
-	def update(value: LocalSettings): map.type = {
+	def update(value: LocalSettings): Unit = {
+		import scala.collection.JavaConverters._
+
+		val map = value.toMap
+		val defaults = LocalSettings(value.id).toMap
+		val differenceToDefaults: Map[String, Object] = map.toSeq.diff(defaults.toSeq).toMap
+		val same: Map[String, Object] = map.toSeq.intersect(defaults.toSeq).toMap.mapValues(_ => null)
+
+		println(map)
+		println(defaults)
+		println(differenceToDefaults)
+
+		TiniBrain.settings.child(value.id).updateChildren((differenceToDefaults ++ same).asJava)
+	}
+
+	def updateMap(value: LocalSettings): map.type = {
 		map += (value.id -> value)
 	}
 }
