@@ -1,10 +1,12 @@
 package rip.hansolo.discord.tini.commands
 
 
-import net.dv8tion.jda.entities.Message
+import net.dv8tion.jda.entities._
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
-import rip.hansolo.discord.tini.brain.{SettingsBrain, TiniBrain}
-import rip.hansolo.discord.tini.resources.{LocalSettings, Reference}
+import net.dv8tion.jda.Permission
+import rip.hansolo.discord.tini.Util
+import rip.hansolo.discord.tini.brain._
+import rip.hansolo.discord.tini.resources._
 
 
 /**
@@ -13,31 +15,26 @@ import rip.hansolo.discord.tini.resources.{LocalSettings, Reference}
   * @author Raphael
   * @version 17.08.2016
   */
-object SetTiniPrefix extends PrivateCommand {
+object SetTiniPrefix extends ServerManagerCommand with PrivateCommand {
 
   override def prefix: String = "setTiniPrefix"
 
-  /**
-    * @param args    The return of its unapply. It's the String needed for the execution of the command
-    *                Mostly here for convenience reasons, subject to change
-    * @param message The message which
-    */
-  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
-    message.getChannel.sendMessageAsync(":rolling_eyes:  *Tini won't change clothes here ...*", null)
-  }
+  override def execute(args: String, message: Message)(implicit brain: LocalSettings): Unit =
+    doIt(message.getRawContent, message.getChannel)
 
   override def exec(event: PrivateMessageReceivedEvent)(implicit brain: LocalSettings): Unit = {
-    val args = event.getMessage.getRawContent.trim.split(" ")
+    doIt(event.getMessage.getRawContent, event.getChannel)
+  }
 
-    if( args.length == 3 && args(1) == Reference.authorPassword ) {
-      val toBeMention = args(2)
+  def doIt(rawContent: String, channel: MessageChannel)(implicit brain: LocalSettings): Unit = {
+    val newPrefix = rawContent
+      .drop(brain.tiniPrefix.length)
+      .dropWhile(Util.isWhitespace)
+      .drop(prefix.length)
+      .dropWhile(Util.isWhitespace)
+    SettingsBrain.update(brain.copy(tiniPrefix = newPrefix))
 
-      SettingsBrain.update(brain.copy(tiniPrefix = toBeMention))
-
-      event.getMessage.getChannel.sendMessageAsync("New char: " + toBeMention, null)
-      println(toBeMention)
-    } else {
-      event.getMessage.getChannel.sendMessageAsync("Tini can't set the command prefix :robot:", null)
-    }
+    channel.sendMessageAsync("New prefix: " + newPrefix, null)
+    println(newPrefix)
   }
 }

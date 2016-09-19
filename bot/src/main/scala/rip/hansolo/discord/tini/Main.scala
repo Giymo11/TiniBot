@@ -54,6 +54,7 @@ object Main extends TaskApp{
     }
   }
 
+  // TODO: change stuff around so every channel can have his own way to access images on a gdrive
   val gdriveLoader: CancelableFuture[Unit] = Task {
     TiniBrain.isLoadingImages.set(true)
     println("FileNames. " + TiniBrain.filesWithNames.take(20).map(_._2.mkString(", ")).mkString("\n"))

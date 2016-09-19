@@ -38,8 +38,6 @@ object SettingsBrain {
 		})
 	}
 
-	// TODO: listen for changes of settings from firebase! (for future web-use)
-
 	import scala.collection.mutable
 	val map: mutable.Map[String, LocalSettings] = TrieMap[String, LocalSettings]().withDefault(id => LocalSettings(id))
 

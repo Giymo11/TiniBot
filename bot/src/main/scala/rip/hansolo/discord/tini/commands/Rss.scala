@@ -21,6 +21,7 @@ object Rss extends Command{
     */
   override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
     // TODO: add possibility to restrict items and enable embedding of links
+    // TODO: save "last updated" date and dont show newer than this stuff.
     Xor.catchNonFatal {
       val feedUrl: URL = new URL(args)
 

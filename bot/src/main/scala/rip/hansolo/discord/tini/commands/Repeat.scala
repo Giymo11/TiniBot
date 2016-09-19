@@ -31,6 +31,7 @@ object Repeat extends Command {
 
   override def prefix: String = "repeat"
 
+  // TODO: save this kinda stuff on the firebase.
   private val repeatTasks = new TrieMap[String, ListBuffer[CancelableFuture[Unit]]]()
   private def minimumDuration(implicit brain: LocalSettings) = brain.minimumRepeatDurationMins
 
