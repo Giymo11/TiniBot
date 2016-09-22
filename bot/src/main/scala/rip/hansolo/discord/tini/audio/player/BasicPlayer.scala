@@ -1,12 +1,13 @@
 package rip.hansolo.discord.tini.audio.player
 
+import java.net.{InetSocketAddress, Proxy, URL, URLConnection}
 import javax.sound.sampled.{AudioFormat, AudioInputStream}
 
 import com.sun.xml.internal.messaging.saaj.util.{ByteInputStream, ByteOutputStream}
 import net.dv8tion.jda.audio.player.Player
 import net.dv8tion.jda.entities.Guild
-
-import scala.concurrent.Promise
+import net.dv8tion.jda.requests.Requester
+import org.apache.http.HttpHost
 
 /**
   * Created by: 
@@ -15,9 +16,10 @@ import scala.concurrent.Promise
   * @version 26.08.2016
   */
 abstract class BasicPlayer(guild: Guild) extends Player {
+  val userAgent: String = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36 " + Requester.USER_AGENT
 
-  private var isRegisterd = false
-  private var playing,paused,stopped = false
+  protected var isRegisterd = false
+  protected var playing,paused,stopped = false
   private var audioStream: AudioInputStream = _
 
   def play(resource: String): Unit = ???
@@ -84,4 +86,27 @@ abstract class BasicPlayer(guild: Guild) extends Player {
   def destroy(): Unit = audioStream.close()
   def getDuration: Double = (audioStream.getFrameLength+0.0) / audioStream.getFormat.getFrameRate
 
+  protected def getJDAConnection(urlOfResource: URL): URLConnection = {
+    var conn: URLConnection  = null
+    val jdaProxy: HttpHost   = guild.getJDA.getGlobalProxy
+
+    if (jdaProxy != null)
+    {
+      val proxyAddress = new InetSocketAddress(jdaProxy.getHostName, jdaProxy.getPort)
+      val proxy = new Proxy(Proxy.Type.HTTP, proxyAddress)
+      conn = urlOfResource.openConnection(proxy)
+    } else {
+      conn = urlOfResource.openConnection()
+    }
+
+    if (conn == null)
+      throw new IllegalArgumentException("The provided URL resulted in a null URLConnection! Does the resource exist?")
+
+    //conn.setConnectTimeout(10)
+    //conn.setReadTimeout(10)
+    conn.setRequestProperty("user-agent", userAgent)
+    conn.connect()
+
+    conn
+  }
 }

@@ -35,6 +35,8 @@ object Reference {
 
   val shitTiniSays = ConfigFactory.parseString(read ! cwd / "config" / "shitTiniSays.conf").resolve()
 
+  val ffmpegBinary = config.getString("config.ffmpeg")
+
   object Permissions {
     val CREATE_INSTANT_INVITE	= 0x00000001	//Allows creation of instant invites
     val KICK_MEMBERS = 0x00000002  // *	Allows kicking members

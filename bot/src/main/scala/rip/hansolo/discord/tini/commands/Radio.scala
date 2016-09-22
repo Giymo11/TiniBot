@@ -2,24 +2,22 @@ package rip.hansolo.discord.tini.commands
 
 import cats.data.Xor
 import monix.eval.Task
-import monix.execution.Scheduler.Implicits.global
 import net.dv8tion.jda.entities.{Message, VoiceChannel}
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
-import rip.hansolo.discord.tini.audio.player.{BasicPlayer, YoutubePlayer}
-import rip.hansolo.discord.tini.audio.util.YoutubeUtil
+import rip.hansolo.discord.tini.audio.player.{BasicPlayer, RadioPlayer, YoutubePlayer}
 
 import scala.collection.concurrent.TrieMap
-import scala.concurrent.duration._
-
+import monix.execution.Scheduler.Implicits.global
+import rip.hansolo.discord.tini.audio.util.WebRadioFfmpegStream
 
 /**
   * Created by: 
   *
   * @author Raphael
-  * @version 26.08.2016
+  * @version 29.08.2016
   */
-object Audio extends Command {
-  override def prefix: String = "sound"
+object Radio extends Command {
+  override def prefix: String = "radio"
 
   private val onlinePlayers: TrieMap[String,BasicPlayer] = new TrieMap[String,BasicPlayer]()
 
@@ -37,30 +35,25 @@ object Audio extends Command {
         event.getGuild.getAudioManager.closeAudioConnection()
         return
       }
-
-
       val userVoice = event.getGuild.getVoiceStatusOfUser(event.getAuthor)
-      val uri       = YoutubeUtil.getDownloadURL(resource)
-      println(uri)
-
 
       userVoice.getChannel match {
         case null => message.getChannel.sendMessageAsync("Join a Voice Channel so i can speak with you",null)
         case _ if event.getGuild.getAudioManager.getConnectedChannel == userVoice =>
           val player = onlinePlayers(userVoice.getChannel.getId)
-          this.playResource(uri, player, message, event, userVoice.getChannel)
+          this.playResource(resource, player, message, event, userVoice.getChannel)
 
         case _ if event.getGuild.getAudioManager.getConnectedChannel != userVoice =>
           val player = onlinePlayers.get(userVoice.getChannel.getId)
 
           player match {
-            case Some(p) if p.isStopped => playResource(uri, p, message, event, userVoice.getChannel)
+            case Some(p) if p.isStopped => playResource(resource, p, message, event, userVoice.getChannel)
             case Some(p) if p.isPlaying => p.stop() //message.getChannel.sendMessageAsync("*Tini is allready speaking ...*",null)
             case _ =>
-              val newPlayer = new YoutubePlayer(event.getGuild)
+              val newPlayer = new RadioPlayer(g = event.getGuild)
               onlinePlayers.put(userVoice.getChannel.getId,newPlayer)
 
-              playResource(uri, newPlayer, message, event, userVoice.getChannel)
+              playResource(resource, newPlayer, message, event, userVoice.getChannel)
           }
       }
 
@@ -73,21 +66,17 @@ object Audio extends Command {
   private def getVoiceChannel(msg: Message,name: String): Option[VoiceChannel] = {
     Xor.catchNonFatal( msg.getJDA.getVoiceChannelByName(name).get(0) ).toOption
   }
-  private def playResource(resource: Option[String],player: BasicPlayer,message: Message,event: GuildMessageReceivedEvent,userVoice: VoiceChannel): Unit = {
-    resource match {
-      case Some(uri) =>
-        Task {
-          event.getGuild.getAudioManager.closeAudioConnection()
+  private def playResource(resource: String,player: BasicPlayer,message: Message,event: GuildMessageReceivedEvent,userVoice: VoiceChannel): Unit = {
+    Task {
+      event.getGuild.getAudioManager.closeAudioConnection()
 
-          player.load(uri)
-          event.getGuild.getAudioManager.openAudioConnection( userVoice )
-          player.play()
+      player.load(resource)
+      event.getGuild.getAudioManager.openAudioConnection( userVoice )
+      player.play()
 
-        }.runAsync
+    }.runAsync
 
-        message.getChannel.sendMessageAsync("There you go ",null)
-      case _ => message.getChannel.sendMessageAsync("Can't get Video content from link :/",null)
-    }
+    message.getChannel.sendMessageAsync("There you go ",null)
   }
 
 }

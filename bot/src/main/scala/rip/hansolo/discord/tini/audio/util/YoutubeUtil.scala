@@ -45,7 +45,10 @@ object YoutubeUtil {
     val streamMap = getVideoStreamMap( vidInfo , baseJS )
     val content   = compileContentMap(streamMap)
 
+
+    println("Audio Formats: ")
     content.foreach( x => println( x._1 + " -> " + URLDecoder.decode(x._2("type"),"UTF-8")  ))
+    println("--END--")
 
     /* mp4 coder does only support 18, 22, 140 */
     val iTag18 = content.get(18)
@@ -93,6 +96,8 @@ object YoutubeUtil {
       .header("User-Agent",USER_AGENT)
       .ignoreContentType(true)
       .execute()
+
+    println(info.body())
 
     info.statusCode() match {
       case 200 => Some(getURLParameter(info.body(),headless = true))
@@ -142,10 +147,10 @@ object YoutubeUtil {
     val urlParamPairs = url.replace(",","&").split("&")
 
     for( pp <- urlParamPairs ) {
-      val key = pp.split("=")(0)
-      val value = pp.split("=")(1)
-
       println(pp)
+
+      val key = pp.split("=")(0)
+      val value = Xor.catchNonFatal(pp.split("=")(1)).getOrElse("")
 
       if( dataBlock.contains(key) ) {
         dataBlocks += (dataBlock("itag").toInt -> dataBlock)
@@ -164,6 +169,7 @@ object YoutubeUtil {
 
     streamMap.foreach(x => {
       if( x._1.contains("fmt") ) {
+        println(x._1)
         content ++= decodeFMTUrl(URLDecoder.decode(x._2, "UTF-8"))
       }
     })
