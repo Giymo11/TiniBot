@@ -126,13 +126,6 @@ abstract class FFMPEG(port: Int,out: ConcurrentLinkedQueue[Array[Byte]],notify: 
   }
   var feederTask = contentFeeder.runAsync
 
-  val ctl = Task {
-    while( true ) {
-      FFMPEG.offset.synchronized { FFMPEG.offset.wait() }
-      out.clear()
-    }
-  }
-
   private val stdErrReader = Task {
     while( ffmpegProcess.isAlive )
       Source.fromInputStream(ffmpegProcess.getErrorStream).foreach( print )
@@ -182,39 +175,4 @@ class WebRadioFfmpegStream(internalServerPort: Int,url: String,out: ConcurrentLi
 
     pb.start()
   }
-}
-
-object FFMPEG {
-  var offset = Atomic(100)
-  val housetime = "http://listen.housetime.fm/tunein-aacisdn-pls"
-  val input = "D:\\Users\\Raphael\\Downloads\\seq_2.ts"
-
-  def main(args: Array[String]): Unit = {
-    val serverPort = new Random().nextInt(40000)+20000
-    val audioData = new ConcurrentLinkedQueue[Array[Byte]]()
-
-    val pipedOutputStream = new PipedOutputStream()
-    val pipedInputStream = new PipedInputStream(pipedOutputStream)
-
-
-    println("create WebRadioFFmpegStream")
-    var webradio: WebRadioFfmpegStream = null
-    webradio = new WebRadioFfmpegStream(serverPort,input,audioData,Task {
-                      println("Audio Stream got ready ... " + audioData.size())
-                      webradio.bufferEmpty.set(true)
-                    })
-
-
-    while( StdIn.readLine() != "exit" ) { }
-    pipedOutputStream.close()
-
-    println("Press any key to halt stream")
-    StdIn.readLine()
-    webradio.close()
-
-
-  }
-
-  def consume( char: Char ): Unit = { }
-
 }

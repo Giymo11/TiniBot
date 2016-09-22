@@ -88,5 +88,5 @@ class MTSPacket(buffer: ByteBuffer) {
     }
   }
   val adaptionField: Option[AdaptionField] = if( adaptionPresent ) Some(new AdaptionField) else None
-  val payload: Option[ByteBuffer]       = if( payloadPresent ) Some( buffer.slice() ) else None
+  val payload: Option[ByteBuffer]          = if( payloadPresent  ) Some( buffer.slice()  ) else None
 }

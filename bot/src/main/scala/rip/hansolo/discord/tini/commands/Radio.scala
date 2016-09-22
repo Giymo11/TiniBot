@@ -70,7 +70,7 @@ object Radio extends Command {
     Task {
       event.getGuild.getAudioManager.closeAudioConnection()
 
-      player.load("I:\\Program Files\\ffmpeg\\bin\\out.ts")//resource)
+      player.load(resource)
       event.getGuild.getAudioManager.openAudioConnection( userVoice )
       player.play()
 

@@ -18,8 +18,8 @@ import scala.concurrent.duration._
   * @author Raphael
   * @version 26.08.2016
   */
-object Audio extends Command {
-  override def prefix: String = "sound"
+object Youtube extends Command {
+  override def prefix: String = "youtube"
 
   private val onlinePlayers: TrieMap[String,BasicPlayer] = new TrieMap[String,BasicPlayer]()
 
