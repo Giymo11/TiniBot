@@ -23,7 +23,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class RadioPlayer(g: Guild) extends BasicPlayer(guild = g) {
 
-  var buffersize = 50 // should be 1 sec or so
+  var buffersize = 5
   var ffmpeg: WebRadioFfmpegStream = _
 
   val ready = Atomic(false)
@@ -50,6 +50,7 @@ class RadioPlayer(g: Guild) extends BasicPlayer(guild = g) {
   override def getDuration: Double = Double.PositiveInfinity
 
 
+  var time = System.currentTimeMillis()
   override def provide20MsAudio(): Array[Byte] = {
     //var data = new Array[Byte]( AudioConnection.OPUS_FRAME_SIZE )
 
@@ -57,8 +58,8 @@ class RadioPlayer(g: Guild) extends BasicPlayer(guild = g) {
     //else ffmpeg.bufferEmpty.set(true)
 
     //System.err.println( "Opus Packets in buffer " + audioBuffer.size() )
-    if( audioBuffer.size() < 15 ) {
-      buffersize += 50
+    if( audioBuffer.size() < 1 ) {
+      buffersize += 5
       ffmpeg.bufferEmpty.set(true)
       System.err.println( "Must increase buffer: " + buffersize + " / " + audioBuffer.size() )
       ready.set(false)
@@ -73,7 +74,7 @@ class RadioPlayer(g: Guild) extends BasicPlayer(guild = g) {
 
   override def canProvide: Boolean = ready.get
 
-  override def isOpus: Boolean = true
+  override def isOpus: Boolean = false
 
   override def play(): Unit = {
     if( !isRegisterd ) {

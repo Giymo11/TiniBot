@@ -30,7 +30,7 @@ import scala.collection.JavaConverters._
 abstract class FFMPEG(port: Int,out: ConcurrentLinkedQueue[Array[Byte]],notify: Task[Unit]) {
 
   private val MPEG_TS_PACKET_LEN = 188 // mpegts packet size //AudioConnection.OPUS_FRAME_SIZE * 4 + FFMPEG.offset.get
-  private val AUDIO_FRAME_LEN    = 96 * 20
+  private val AUDIO_FRAME_LEN    = AudioConnection.OPUS_FRAME_SIZE * 4 //960
 
   protected val contentServer     = new ServerSocket(port)
   protected var ffmpegConnection: Socket = _
@@ -44,6 +44,7 @@ abstract class FFMPEG(port: Int,out: ConcurrentLinkedQueue[Array[Byte]],notify: 
     val payloadBuffer = new scala.collection.mutable.Queue[Byte]
 
     var running = true
+    var pktCounter = 0
     while( running ){
       var opusPacket = new Array[Byte](0)
 
@@ -56,30 +57,49 @@ abstract class FFMPEG(port: Int,out: ConcurrentLinkedQueue[Array[Byte]],notify: 
         opusPacket ++= oPB
       }
 
-      //System.err.println("Inital OpusLen: " + opusPacket.length)
+      //System.err.println("Inital OpusLen : " + opusPacket.length)
       //System.err.println("Payload Backlog: " + payloadBuffer.length)
 
       /* discord needs fixed sized packet */
-      while( opusPacket.length < AUDIO_FRAME_LEN ) {
+      while( opusPacket.length < AUDIO_FRAME_LEN && running ) {
         /* buffer of mpeg-ts packet */
         val rawPacket = new Array[Byte]( MPEG_TS_PACKET_LEN )
-        //System.err.println("Starting to read FFMPEG stdout")
+        //System.err.println("Starting to read FFMPEG stdout ( " + ffmpegProcess.getInputStream.available() + " bytes available )")
 
         /* read packet -> EOF is corrupted  one, don't play that on discord */
-        if( ffmpegProcess.getInputStream.read(rawPacket) != MPEG_TS_PACKET_LEN ) running = false
-        else {
-          //System.err.println("ByteBuffer.wrap(_)")
-          /* parse packet and set load */
-          val mts1 = new MTSPacket(ByteBuffer.wrap(rawPacket))
-          //System.err.println("Magic: " + mts1.magic.asInstanceOf[Char])
-          //System.err.println("Payload len: " + mts1.payload.length)
+        if( ffmpegProcess.getInputStream.read(rawPacket) != MPEG_TS_PACKET_LEN ) {
+          //System.err.println("ERROR: STREAM HAS COME TO AN END!")
+          running = false
+        } else {
+          //System.err.println(s"ByteBuffer.wrap( ${rawPacket.length} )")
 
-          if( mts1.payloadPresent )
-            opusPacket ++= mts1.payload
+          try {
+            /* parse packet and set load */
+            val mts1 = new MTSPacket(ByteBuffer.wrap(rawPacket))
+            //System.err.println("=> PKT_NUM : " + pktCounter)
+
+            //System.err.println("Magic      : " + mts1.magic.asInstanceOf[Char])
+            //System.err.println("Payload len: " + mts1.payload.get.array().length)
+            //System.err.println("PID        : " + mts1.pid)
+            //System.err.println("PayloadInd : " + mts1.payloadPresent)
+            //System.err.println("Counter    : " + mts1.counter)
+            //System.err.println("AdaptionFi : " + mts1.adaptionPresent)
+
+
+            if (mts1.payloadPresent && mts1.pid == 256)
+              opusPacket ++= mts1.payload.get.array()
+
+          } catch {
+            case all: Exception =>
+              all.printStackTrace()
+              throw all
+          }
         }
 
         //System.err.println("Current OpusPacket len: " + opusPacket.length)
         //System.err.println("Run Status: " + running)
+
+        pktCounter += 1
       }
 
       //System.err.println("Ensure Opus len 960")
@@ -93,7 +113,7 @@ abstract class FFMPEG(port: Int,out: ConcurrentLinkedQueue[Array[Byte]],notify: 
       //System.err.println("Current opus len: " + opusPacket.length)
 
       if( !ffmpegProcess.isAlive ) running = false
-      else out.add(opusPacket) //drop header
+      else out.add(opusPacket)
 
       if( bufferEmpty.get ) {
         bufferEmpty.lazySet(false)
@@ -115,7 +135,7 @@ abstract class FFMPEG(port: Int,out: ConcurrentLinkedQueue[Array[Byte]],notify: 
 
   private val stdErrReader = Task {
     while( ffmpegProcess.isAlive )
-      Source.fromInputStream(ffmpegProcess.getErrorStream).foreach( print(_) )
+      Source.fromInputStream(ffmpegProcess.getErrorStream).foreach( print )
 
     System.err.println("STDERR: Eof ? ")
   }.runAsync
@@ -155,7 +175,7 @@ class WebRadioFfmpegStream(internalServerPort: Int,url: String,out: ConcurrentLi
   def spawnProcess(): Process = {
     contentServer.close()
     println("Spawn process")
-    val pb = new ProcessBuilder(Reference.ffmpegBinary,"-i",url,"-acodec","opus","-vn","-ar","48000","-b:a","96k","-f","mpegts","-loglevel","verbose","-nostdin","-stats","-hide_banner","-vbr","off","-y","-")
+    val pb = new ProcessBuilder(Reference.ffmpegBinary,"-i",url,"-acodec","pcm_s16be","-vn","-ar","48000","-f","mpegts","-loglevel","verbose","-nostdin","-stats","-hide_banner","-vbr","on","-frame_duration","20","-y","-")
     val env = pb.environment()
     env.put("AV_LOG_FORCE_NOCOLOR","AV_LOG_FORCE_NOCOLOR")
     println(pb.command().asScala.mkString(" "))
@@ -179,36 +199,22 @@ object FFMPEG {
 
     println("create WebRadioFFmpegStream")
     var webradio: WebRadioFfmpegStream = null
-    webradio = new WebRadioFfmpegStream(serverPort,housetime,audioData,Task {
+    webradio = new WebRadioFfmpegStream(serverPort,input,audioData,Task {
                       println("Audio Stream got ready ... " + audioData.size())
-                      val data = audioData.peek()
-
-
-                         while (!audioData.isEmpty) {
-                           println("read")
-                           pipedOutputStream.write(audioData.poll())
-                         }
-
-                         webradio.bufferEmpty.set(true)
-
-
-      println("finished reading")
+                      webradio.bufferEmpty.set(true)
                     })
 
 
-
-
-    StdIn.readLine()
+    while( StdIn.readLine() != "exit" ) { }
     pipedOutputStream.close()
-    println("AUDIO SYSTEM: ")
-    val stream = AudioSystem.getAudioInputStream(new File("./out"))
-    println("format:" + stream.getFormat )
-
-    //webradio.startFFMPEG()
 
     println("Press any key to halt stream")
     StdIn.readLine()
     webradio.close()
+
+
   }
+
+  def consume( char: Char ): Unit = { }
 
 }
