@@ -73,20 +73,29 @@ object Youtube extends Command {
   private def getVoiceChannel(msg: Message,name: String): Option[VoiceChannel] = {
     Xor.catchNonFatal( msg.getJDA.getVoiceChannelByName(name).get(0) ).toOption
   }
-  private def playResource(resource: Option[String],player: BasicPlayer,message: Message,event: GuildMessageReceivedEvent,userVoice: VoiceChannel): Unit = {
-    resource match {
-      case Some(uri) =>
-        Task {
-          event.getGuild.getAudioManager.closeAudioConnection()
+  private def playResource(resource: List[String],player: BasicPlayer,message: Message,event: GuildMessageReceivedEvent,userVoice: VoiceChannel): Unit = {
+    Task {
+      event.getGuild.getAudioManager.closeAudioConnection()
 
-          player.load(uri)
-          event.getGuild.getAudioManager.openAudioConnection( userVoice )
-          player.play()
+      if( resource.dropWhile( x => tryLoadYTLink(x,player) ).nonEmpty ) {
+        println("Playing: " + resource.head)
+        event.getGuild.getAudioManager.openAudioConnection(userVoice)
+        player.play()
+      } else {
+        message.getChannel.sendMessageAsync("Sorry Tini can't play the Video :cry:",null)
+      }
 
-        }.runAsync
+    }.runAsync
+  }
 
-        message.getChannel.sendMessageAsync("There you go ",null)
-      case _ => message.getChannel.sendMessageAsync("Can't get Video content from link :/",null)
+  private def tryLoadYTLink(link: String,player: BasicPlayer): Boolean = {
+    try {
+      player.load(link)
+      false
+    } catch {
+      case all: Exception =>
+        all.printStackTrace()
+        true
     }
   }
 

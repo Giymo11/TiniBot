@@ -86,7 +86,7 @@ abstract class FFMPEG(port: Int,out: ConcurrentLinkedQueue[Array[Byte]],notify: 
             //System.err.println("AdaptionFi : " + mts1.adaptionPresent)
 
 
-            if (mts1.payloadPresent && mts1.pid == 256)
+            if (mts1.payloadPresent && mts1.pid == 256) // pid seems to be audio channel
               opusPacket ++= mts1.payload.get.array()
 
           } catch {
@@ -168,7 +168,7 @@ class WebRadioFfmpegStream(internalServerPort: Int,url: String,out: ConcurrentLi
   def spawnProcess(): Process = {
     contentServer.close()
     println("Spawn process")
-    val pb = new ProcessBuilder(Reference.ffmpegBinary,"-i",url,"-acodec","pcm_s16be","-vn","-ar","48000","-f","mpegts","-loglevel","verbose","-nostdin","-stats","-hide_banner","-vbr","on","-frame_duration","20","-y","-")
+    val pb = new ProcessBuilder(Reference.ffmpegBinary,"-i",url,"-acodec","pcm_s16be","-vn","-ar","48000","-b:a","96k","-f","mpegts","-loglevel","verbose","-nostdin","-stats","-hide_banner","-vbr","off",/*"-frame_duration","20",*/"-y","-")
     val env = pb.environment()
     env.put("AV_LOG_FORCE_NOCOLOR","AV_LOG_FORCE_NOCOLOR")
     println(pb.command().asScala.mkString(" "))

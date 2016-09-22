@@ -70,10 +70,10 @@ class YoutubePlayer(guild: Guild) extends BasicPlayer( guild = guild ) {
     this.duration = mp4Container.getMovie.getDuration
 
     /* local testing ... */
-    val line = javax.sound.sampled.AudioSystem.getSourceDataLine(audioFMT)
+    /*val line = javax.sound.sampled.AudioSystem.getSourceDataLine(audioFMT)
     line.open()
     line.start()
-
+     */
 
     val sBuffer = new ByteOutputStream()
     val decoder = new Decoder(track.getDecoderSpecificInfo)
@@ -84,7 +84,7 @@ class YoutubePlayer(guild: Guild) extends BasicPlayer( guild = guild ) {
 
       decoder.decodeFrame(frame.getData,buffer)
       sBuffer.write( buffer.getData )
-      line.write(buffer.getData,0,buffer.getData.length)
+      //line.write(buffer.getData,0,buffer.getData.length) //<-- this will block everything
     }
 
     println("Stream loaded and converted")

@@ -32,7 +32,7 @@ object YoutubeUtil {
     else url.split("v=")(1)
   }
 
-  def getDownloadURL(url: String): Option[String] = {
+  def getDownloadURL(url: String,codec: String = "mp4a"): List[String] = {
     val videoID = extractYoutubeIDFromUrl(url)
 
     val doc    = Jsoup.connect( YOUTUBE_URI + "/watch" ).data("v", videoID ).get()
@@ -51,12 +51,17 @@ object YoutubeUtil {
     println("--END--")
 
     /* mp4 coder does only support 18, 22, 140 */
+    /*
     val iTag18 = content.get(18)
     val iTag22 = content.get(22)
     val iTag140 = content.get(140)
 
     if( iTag18.isEmpty && iTag22.isEmpty && iTag140.isEmpty ) return None
     Some(URLDecoder.decode(iTag18.getOrElse(iTag22.getOrElse(iTag140.get))("url"),"UTF-8"))
+    */
+
+    content.filter( x => URLDecoder.decode(x._2("type"),"UTF-8").contains(codec) )
+           .map( y => URLDecoder.decode(y._2("url"),"UTF-8") ).toList
   }
 
   /* from JDownloader starts from here: */
@@ -97,7 +102,7 @@ object YoutubeUtil {
       .ignoreContentType(true)
       .execute()
 
-    println(info.body())
+    //println(info.body())
 
     info.statusCode() match {
       case 200 => Some(getURLParameter(info.body(),headless = true))

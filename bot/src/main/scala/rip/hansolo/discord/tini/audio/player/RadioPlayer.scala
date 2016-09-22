@@ -28,8 +28,6 @@ class RadioPlayer(g: Guild) extends BasicPlayer(guild = g) {
 
   val ready = Atomic(false)
   val audioBuffer = new ConcurrentLinkedQueue[Array[Byte]]()
-  val out = new PipedOutputStream()
-  val in  = new PipedInputStream(out)
 
   override def play(resource: String): Unit = super.play(resource)
 
@@ -49,28 +47,14 @@ class RadioPlayer(g: Guild) extends BasicPlayer(guild = g) {
 
   override def getDuration: Double = Double.PositiveInfinity
 
-
-  var time = System.currentTimeMillis()
   override def provide20MsAudio(): Array[Byte] = {
-    //var data = new Array[Byte]( AudioConnection.OPUS_FRAME_SIZE )
-
-    //if( this.canProvide ) for( i <- 1 to buffersize ) data = data ++ audioBuffer.poll()
-    //else ffmpeg.bufferEmpty.set(true)
-
-    //System.err.println( "Opus Packets in buffer " + audioBuffer.size() )
-    if( audioBuffer.size() < 1 ) {
-      buffersize += 5
+    if( audioBuffer.size() == 0 ) {
       ffmpeg.bufferEmpty.set(true)
-      System.err.println( "Must increase buffer: " + buffersize + " / " + audioBuffer.size() )
       ready.set(false)
     }
-    //AudioConnection.OPUS_FRAME_SIZE
 
-    //println("Send Frame: " + data.length)
     audioBuffer.poll()
-    //data
   }
-
 
   override def canProvide: Boolean = ready.get
 
