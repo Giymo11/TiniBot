@@ -23,6 +23,9 @@ object ShitTiniSays {
   private[this] val bofhFile = read.lines ! resource / "bofh.txt"
   def bofh: String = oneOf(bofhFile : _*)
 
+  private[this] val ponderingFile = read.lines ! resource / "pondering.txt"
+  def pondering: String = oneOf(ponderingFile : _*)
+
   private[this] val insults = read.lines ! resource / "insults.txt"
   def insult: String = oneOf(insults.filterNot(_.startsWith("//")) : _*)
 
