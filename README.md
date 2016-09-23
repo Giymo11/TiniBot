@@ -54,6 +54,13 @@ For the `!mal` Command you have to register a Account on MAL and set some things
 * secret.mal.user - Your MAL Username
 * secret.mal.password - the Password of the MAL user
 
+For the  `!radio` command a external dependency is needed:
+* install ffmpeg and make sure the bot has privileges to launch the ffmpeg process and open sockets 
+* config.ffmpeg - The Path to the FFmpeg binary should be placed here
+
+For the `!youtube` command there are currently no dependencies needed. In 
+the Future we might allow the use youtube-dl to acquire the direct media links from youtube. 
+
 Create a new firebase app. 
 Go to "Permissions" and add a Service Account. 
 Make sure to give it the role "Project Editor". 
@@ -67,7 +74,7 @@ You can use the following ways to run the bot:
 * To build a docker image: `sbt bot/docker` and then `docker run -d -e "TINI_TOKEN=xxx" -e "TINI_PASSWORD=xxx" giymo11/tinibot`
   - Of course you have to replace every `giymo11` with your own docker name (see build.sbt)
   - Don't forget to mount your `tinbot-firebase.json` on the appropriate volume!
-  
+
 Finally, to make your bot join, modify and then open this link: `https://discordapp.com/oauth2/authorize?client_id=<CLIENT_ID from discord>&scope=bot&permissions=3152896`
 Example: `https://discordapp.com/oauth2/authorize?client_id=211993132529614849&scope=bot&permissions=3152896`
 
@@ -103,6 +110,8 @@ Until now, Tini can:
 * `!mal <anime|manga> <name>` - Gives you some information about the anime / manga
 * `!bofh` - Gives you some Bastard Operator from Hell excuses
 * `!setchar <char>` - Changes the Command Prefix (`!`) to the parameter
+* `!youtube <url>` - Plays the Youtube Video in the sound channel in which the currently is (Live Streams are currently not supported)
+* `!radio <url>` - Uses FFMPEG to decode the audio stream and plays the audio in the sound channel of the user
 
 Wishlist
 -----------------
@@ -181,7 +190,7 @@ To discuss:
 * Use the equivalent of "NadekoFlowers" for cpu/bandwidth intensive stuff
 * lets try actors?
 * rewrite to be using monix Observables?
-* Use HOCON for configs
+* ~~Use HOCON for configs~~ (We are using them already)
 
 Libraries used
 -----------------

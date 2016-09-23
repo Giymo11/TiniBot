@@ -68,8 +68,8 @@ class MTSPacket(buffer: ByteBuffer) {
 
       def getValue: Long              = base * 300 + extension // magic from spec
     }
-    val pcr: Option[PCR]                = if( pcrPresent ) Some(new PCR) else None
-    val opcr: Option[PCR]               = if( pcrPresent ) Some(new PCR) else None
+    val pcr: Option[PCR]                = if( pcrPresent  ) Some(new PCR) else None
+    val opcr: Option[PCR]               = if( opcrPresent ) Some(new PCR) else None
 
     val spliceCountdown                 = if( splicingPointFlag ) buffer.get else 0
     val transportData:Option[Array[Byte]] = if( privateTransportFlag ) Some( extractData ) else None
