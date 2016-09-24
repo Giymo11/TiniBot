@@ -1,17 +1,13 @@
 package rip.hansolo.discord.tini.audio.player
 
-import java.io._
-import java.util.Random
-import java.util.concurrent.ConcurrentLinkedQueue
-import javax.sound.sampled.{AudioFileFormat, AudioSystem}
+import java.io.InputStream
 
 import monix.eval.Task
+import monix.execution.Scheduler.Implicits.global
 import monix.execution.atomic.Atomic
 import net.dv8tion.jda.audio.AudioConnection
 import net.dv8tion.jda.entities.Guild
-import rip.hansolo.discord.tini.audio.util.WebRadioFfmpegStream
-
-import scala.concurrent.ExecutionContext.Implicits.global
+import rip.hansolo.discord.tini.audio.util.FFmpegMediaServer
 
 
 
@@ -23,37 +19,38 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class RadioPlayer(g: Guild) extends BasicPlayer(guild = g) {
 
-  var buffersize = 5
-  var ffmpeg: WebRadioFfmpegStream = _
-
+  val bufferTime = 5000
   val ready = Atomic(false)
-  val audioBuffer = new ConcurrentLinkedQueue[Array[Byte]]()
+  var stream: InputStream = _
 
   override def play(resource: String): Unit = super.play(resource)
 
   override def load(resource: String): Unit = {
-    ffmpeg = new WebRadioFfmpegStream(new Random().nextInt(40000)+20000,resource,audioBuffer, Task { doReadyState() })
-    ffmpeg.streamReady.future.onSuccess { case x => doReadyState() }
-  }
+    Task.fromFuture(FFmpegMediaServer.addMediaResource("RADIO_INSTANCE",resource).future)
+      .runAsync
+      .andThen { case mediaData =>
+          stream = mediaData.get.socket.getInputStream
 
-  private def doReadyState(): Unit = {
-    if( audioBuffer.size() > buffersize ) {
-      ready.set( true )
-      play()
-    } else {
-      ffmpeg.bufferEmpty.set(true)
-    }
+          Thread.sleep( bufferTime ) // saveguard for slow streams
+          ready.set( true )
+      }
   }
 
   override def getDuration: Double = Double.PositiveInfinity
 
   override def provide20MsAudio(): Array[Byte] = {
-    if( audioBuffer.size() == 0 ) {
-      ffmpeg.bufferEmpty.set(true)
-      ready.set(false)
+    val d = new Array[Byte](AudioConnection.OPUS_FRAME_SIZE * 4)
+
+    if( stream.available() < AudioConnection.OPUS_FRAME_SIZE * 4 * 2 ) {
+      System.err.println("Warning Stream buffer is very low: " + stream.available() + " Bytes")
     }
 
-    audioBuffer.poll()
+    if( stream.read( d ) != AudioConnection.OPUS_FRAME_SIZE * 4 ) {
+      System.err.println("Stream stopped, could not read enough data ...")
+      stop()
+    }
+
+    d
   }
 
   override def canProvide: Boolean = ready.get
@@ -69,5 +66,13 @@ class RadioPlayer(g: Guild) extends BasicPlayer(guild = g) {
     playing = true
     stopped = false
     paused = false
+  }
+
+  override def stop(): Unit = {
+
+    FFmpegMediaServer.deleteMediaResource("RADIO_INSTANCE")
+    ready.set( false )
+
+    super.stop()
   }
 }
