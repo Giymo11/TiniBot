@@ -70,7 +70,7 @@ object Radio extends Command {
     Task {
       event.getGuild.getAudioManager.closeAudioConnection()
 
-      message.getChannel.sendMessageAsync("Loading Radio Stream. (Buffering ...)",null)
+      message.getChannel.sendMessageAsync("Loading Radio Stream. (Buffering ~5 seconds)",null)
       player.load(resource)
 
       event.getGuild.getAudioManager.openAudioConnection( userVoice )
