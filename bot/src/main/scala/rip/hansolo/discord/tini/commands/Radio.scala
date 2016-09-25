@@ -2,13 +2,12 @@ package rip.hansolo.discord.tini.commands
 
 import cats.data.Xor
 import monix.eval.Task
+import monix.execution.Scheduler.Implicits.global
 import net.dv8tion.jda.entities.{Message, VoiceChannel}
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
-import rip.hansolo.discord.tini.audio.player.{BasicPlayer, RadioPlayer, YoutubePlayer}
-
+import rip.hansolo.discord.tini.audio.player.{BasicPlayer, RadioPlayer}
+import scala.concurrent.duration._
 import scala.collection.concurrent.TrieMap
-import monix.execution.Scheduler.Implicits.global
-import rip.hansolo.discord.tini.audio.util.WebRadioFfmpegStream
 
 /**
   * Created by: 
@@ -66,17 +65,22 @@ object Radio extends Command {
   private def getVoiceChannel(msg: Message,name: String): Option[VoiceChannel] = {
     Xor.catchNonFatal( msg.getJDA.getVoiceChannelByName(name).get(0) ).toOption
   }
+
   private def playResource(resource: String,player: BasicPlayer,message: Message,event: GuildMessageReceivedEvent,userVoice: VoiceChannel): Unit = {
     Task {
       event.getGuild.getAudioManager.closeAudioConnection()
 
+      message.getChannel.sendMessageAsync("Loading Radio Stream. (Buffering ...)",null)
       player.load(resource)
+
       event.getGuild.getAudioManager.openAudioConnection( userVoice )
       player.play()
-
     }.runAsync
 
-    message.getChannel.sendMessageAsync("There you go ",null)
+    Task {
+      message.getChannel.sendMessageAsync("Radio Stream loaded",null)
+    }.delayExecution(4.5 seconds)
+     .runAsync
   }
 
 }

@@ -26,7 +26,7 @@ class RadioPlayer(g: Guild) extends BasicPlayer(guild = g) {
   override def play(resource: String): Unit = super.play(resource)
 
   override def load(resource: String): Unit = {
-    Task.fromFuture(FFmpegMediaServer.addMediaResource("RADIO_INSTANCE",resource).future)
+    Task.fromFuture(FFmpegMediaServer.addMediaResource(g.getId,resource).future)
       .runAsync
       .andThen { case mediaData =>
           stream = mediaData.get.socket.getInputStream
@@ -70,7 +70,7 @@ class RadioPlayer(g: Guild) extends BasicPlayer(guild = g) {
 
   override def stop(): Unit = {
 
-    FFmpegMediaServer.deleteMediaResource("RADIO_INSTANCE")
+    FFmpegMediaServer.deleteMediaResource(g.getId)
     ready.set( false )
 
     super.stop()

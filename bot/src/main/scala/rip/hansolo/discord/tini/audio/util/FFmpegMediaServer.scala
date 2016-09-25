@@ -92,7 +92,7 @@ object FFmpegMediaServer {
                                ,"-ar","48000"
                                ,"-b:a","96k"
                                ,"-f","s16be"
-                               ,"-loglevel","verbose"
+                               ,"-loglevel","quiet"
                                ,"-nostdin"
                                ,"-stats"
                                ,"-hide_banner"
