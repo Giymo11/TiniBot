@@ -5,7 +5,7 @@ import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import net.dv8tion.jda.entities.{Message, VoiceChannel}
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
-import rip.hansolo.discord.tini.audio.player.{BasicPlayer, RadioPlayer}
+import rip.hansolo.discord.tini.audio.player.{BasicPlayer, FFmpegPlayer}
 import scala.concurrent.duration._
 import scala.collection.concurrent.TrieMap
 
@@ -49,7 +49,7 @@ object Radio extends Command {
             case Some(p) if p.isStopped => playResource(resource, p, message, event, userVoice.getChannel)
             case Some(p) if p.isPlaying => p.stop() //message.getChannel.sendMessageAsync("*Tini is allready speaking ...*",null)
             case _ =>
-              val newPlayer = new RadioPlayer(g = event.getGuild)
+              val newPlayer = new FFmpegPlayer(g = event.getGuild)
               onlinePlayers.put(userVoice.getChannel.getId,newPlayer)
 
               playResource(resource, newPlayer, message, event, userVoice.getChannel)

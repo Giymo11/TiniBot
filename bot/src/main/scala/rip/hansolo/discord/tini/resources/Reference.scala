@@ -35,8 +35,14 @@ object Reference {
 
   val shitTiniSays = ConfigFactory.parseString(read ! cwd / "config" / "shitTiniSays.conf").resolve()
 
-  val ffmpegBinary = config.getString("config.ffmpeg")
-  val mediaServerPort = 45455
+  val ffmpegBinary = config.getString("config.media-server.ffmpeg")
+  val mediaServerPort = config.getInt("config.media-server.port")
+  val proxyServerProt = config.getInt("config.media-server.proxy")
+
+  val useYoutubeDL = config.getBoolean("config.youtube.use-youtube-dl")
+  val useMediaServerForYoutube = config.getBoolean("config.youtube.use-media-server")
+
+  val proxyUserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36"
 
   object Permissions {
     val CREATE_INSTANT_INVITE	= 0x00000001	//Allows creation of instant invites

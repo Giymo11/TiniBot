@@ -5,11 +5,12 @@ import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import net.dv8tion.jda.entities.{Message, VoiceChannel}
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
-import rip.hansolo.discord.tini.audio.player.{BasicPlayer, YoutubePlayer}
+import rip.hansolo.discord.tini.audio.player.{BasicPlayer, FFmpegPlayer, YoutubePlayer}
 import rip.hansolo.discord.tini.audio.util.YoutubeUtil
+import rip.hansolo.discord.tini.resources.Reference
 
 import scala.collection.concurrent.TrieMap
-import scala.concurrent.duration._
+import scala.concurrent.Await
 
 
 /**
@@ -40,14 +41,14 @@ object Youtube extends Command {
 
 
       val userVoice = event.getGuild.getVoiceStatusOfUser(event.getAuthor)
-      val uri       = YoutubeUtil.getDownloadURL(resource)
-      println(uri)
-
+      val uri       = if( Reference.useMediaServerForYoutube ) YoutubeUtil.getDownloadURL(resource,"opus") else YoutubeUtil.getDownloadURL(resource)
+      //println(uri)
 
       userVoice.getChannel match {
         case null => message.getChannel.sendMessageAsync("Join a Voice Channel so i can speak with you",null)
         case _ if event.getGuild.getAudioManager.getConnectedChannel == userVoice =>
           val player = onlinePlayers(userVoice.getChannel.getId)
+          player.stop()
           this.playResource(uri, player, message, event, userVoice.getChannel)
 
         case _ if event.getGuild.getAudioManager.getConnectedChannel != userVoice =>
@@ -55,9 +56,9 @@ object Youtube extends Command {
 
           player match {
             case Some(p) if p.isStopped => playResource(uri, p, message, event, userVoice.getChannel)
-            case Some(p) if p.isPlaying => p.stop() //message.getChannel.sendMessageAsync("*Tini is allready speaking ...*",null)
+            case Some(p) => p.stop() //message.getChannel.sendMessageAsync("*Tini is allready speaking ...*",null)
             case _ =>
-              val newPlayer = new YoutubePlayer(event.getGuild)
+              val newPlayer = if( Reference.useMediaServerForYoutube ) new FFmpegPlayer(event.getGuild,true) else new YoutubePlayer(event.getGuild)
               onlinePlayers.put(userVoice.getChannel.getId,newPlayer)
 
               playResource(uri, newPlayer, message, event, userVoice.getChannel)
@@ -90,12 +91,11 @@ object Youtube extends Command {
 
   private def tryLoadYTLink(link: String,player: BasicPlayer): Boolean = {
     try {
-      player.load(link)
-      false
+      import scala.concurrent.duration._
+      Await.result(player.load(link).future, 0 nanos)
+      true
     } catch {
-      case all: Exception =>
-        all.printStackTrace()
-        true
+      case a: Exception => false
     }
   }
 

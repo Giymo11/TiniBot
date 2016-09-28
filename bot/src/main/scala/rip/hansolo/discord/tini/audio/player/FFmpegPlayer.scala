@@ -9,6 +9,9 @@ import net.dv8tion.jda.audio.AudioConnection
 import net.dv8tion.jda.entities.Guild
 import rip.hansolo.discord.tini.audio.util.FFmpegMediaServer
 
+import scala.concurrent.Promise
+import scala.util.{Failure, Success}
+
 
 
 /**
@@ -17,7 +20,7 @@ import rip.hansolo.discord.tini.audio.util.FFmpegMediaServer
   * @author Raphael
   * @version 28.08.2016
   */
-class RadioPlayer(g: Guild) extends BasicPlayer(guild = g) {
+class FFmpegPlayer(g: Guild,useHTTPProxy: Boolean = false) extends BasicPlayer(guild = g) {
 
   val bufferTime = 5000
   val ready = Atomic(false)
@@ -25,15 +28,23 @@ class RadioPlayer(g: Guild) extends BasicPlayer(guild = g) {
 
   override def play(resource: String): Unit = super.play(resource)
 
-  override def load(resource: String): Unit = {
-    Task.fromFuture(FFmpegMediaServer.addMediaResource(g.getId,resource).future)
+  override def load(resource: String): Promise[Unit] = {
+    val state = Promise[Unit]
+
+    Task.fromFuture(FFmpegMediaServer.addMediaResource(g.getId,resource,useHTTPProxy).future)
       .runAsync
-      .andThen { case mediaData =>
-          stream = mediaData.get.socket.getInputStream
+      .andThen {
+        case Success(mediaData) =>
+          stream = mediaData.socket.getInputStream
 
           Thread.sleep( bufferTime ) // saveguard for slow streams
           ready.set( true )
+
+          state.success()
+        case Failure(ext) => state.failure(ext)
       }
+
+    state
   }
 
   override def getDuration: Double = Double.PositiveInfinity

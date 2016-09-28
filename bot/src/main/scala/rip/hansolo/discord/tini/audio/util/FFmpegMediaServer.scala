@@ -1,6 +1,7 @@
 package rip.hansolo.discord.tini.audio.util
 
-import java.net.{ServerSocket, Socket}
+import java.io.BufferedInputStream
+import java.net.{ServerSocket, Socket, URL, URLConnection}
 
 import monix.eval.Task
 import monix.execution.atomic.Atomic
@@ -19,14 +20,30 @@ import scala.io.Source
   * @version 24.09.2016
   */
 object FFmpegMediaServer {
-  case class MediaInstance(process: Process,socket: Socket)
+  class MediaInstance(p: Process,s: Socket) {
+
+    def process: Process = p
+    def socket: Socket = s
+
+    def destroy(): Unit = {
+      socket.close()
+      process.destroy()
+    }
+  }
+  class ProxyMediaInstance(process: Process,socket: Socket,proxySource: ProxyStream) extends MediaInstance(process,socket) {
+    override def destroy(): Unit = {
+      proxySource.destroy()
+      super.destroy()
+    }
+  }
 
   private val serverSocket: ServerSocket = new ServerSocket(Reference.mediaServerPort)
+  private val proxyServerSocket: ServerSocket = new ServerSocket(Reference.proxyServerProt)
 
   private val server: TrieMap[String,MediaInstance] = new TrieMap[String,MediaInstance]()
   private val canConnect = Atomic(true)
 
-  def addMediaResource(name: String,resource: String): Promise[MediaInstance] = synchronized {
+  def addMediaResource(name: String,resource: String,useProxy: Boolean = false): Promise[MediaInstance] = {
     val completion = Promise[MediaInstance]
 
     /* block call otherwise other instance might connect to our socket ... */
@@ -37,11 +54,32 @@ object FFmpegMediaServer {
     canConnect.set( false )
 
     var ffmpegSocket: Socket = null
+    var proxySocket: Socket  = null
+    var proxy: ProxyStream   = null
+
     val networkTask = Task {
       ffmpegSocket = this.serverSocket.accept()
     }.runAsync
 
-    val ffmpegProcess: Process = startFFMPEGSlave(resource,Reference.mediaServerPort)
+    val ffmpegResource = if( useProxy ) s"tcp://127.0.0.1:${Reference.proxyServerProt}" else resource
+    val mediaProxy: URLConnection  = useProxy match {
+      case true => // Do proxy stuff
+        val httpConnection = new URL( resource ).openConnection()
+        httpConnection.setRequestProperty("user-agent",Reference.proxyUserAgent)
+        httpConnection.connect()
+
+        httpConnection
+      case false => null
+    }
+
+    Task {
+      if( useProxy ) {
+        proxySocket = proxyServerSocket.accept()
+        proxy = new ProxyStream(mediaProxy,proxySocket)
+      }
+    }.runAsync
+
+    val ffmpegProcess: Process = startFFMPEGSlave(ffmpegResource,Reference.mediaServerPort)
     networkTask.onComplete { x =>
       /* notify other instances of release block */
       canConnect.set( true )
@@ -50,13 +88,15 @@ object FFmpegMediaServer {
       )
 
       /* register server */
-      server.put( name, MediaInstance(ffmpegProcess,ffmpegSocket) )
-      completion.success( server(name) )
+      server.put( name, if( useProxy ) new ProxyMediaInstance(ffmpegProcess,ffmpegSocket,proxy) else new MediaInstance(ffmpegProcess,ffmpegSocket) )
+
+      if( ffmpegProcess.isAlive ) completion.success( server(name) )
+      else completion.failure( new RuntimeException("Something bad has happened and ffmpeg crashed") )
     }
 
     /* read stdout from ffmpeg (should be disabled in production mode) */
     Task {
-      println("starting reading IO")
+      println("[MediaServer] Starting reading FFMPEG Stdout / Stderr")
 
       try {
         while (ffmpegProcess.isAlive)
@@ -73,9 +113,7 @@ object FFmpegMediaServer {
 
   def deleteMediaResource(name: String): Unit = {
     server.get(name) match {
-      case Some(res) =>
-        res.socket.close()
-        res.process.destroy()
+      case Some(res) => res.destroy()
       case None => /* ok, i'm done already */
     }
 
@@ -92,10 +130,10 @@ object FFmpegMediaServer {
                                ,"-ar","48000"
                                ,"-b:a","96k"
                                ,"-f","s16be"
-                               ,"-loglevel","quiet"
+                               ,"-loglevel","debug"
                                ,"-nostdin"
                                ,"-stats"
-                               ,"-hide_banner"
+                               //,"-hide_banner"
                                ,"-y"
                                ,"tcp://127.0.0.1:"+serverPort)
 

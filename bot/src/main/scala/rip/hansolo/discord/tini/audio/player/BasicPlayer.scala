@@ -8,6 +8,9 @@ import net.dv8tion.jda.audio.player.Player
 import net.dv8tion.jda.entities.Guild
 import net.dv8tion.jda.requests.Requester
 import org.apache.http.HttpHost
+import rip.hansolo.discord.tini.resources.Reference
+
+import scala.concurrent.Promise
 
 /**
   * Created by: 
@@ -16,14 +19,14 @@ import org.apache.http.HttpHost
   * @version 26.08.2016
   */
 abstract class BasicPlayer(guild: Guild) extends Player {
-  val userAgent: String = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36 " + Requester.USER_AGENT
+  val userAgent: String = s"${Reference.proxyUserAgent} ${Requester.USER_AGENT}"
 
   protected var isRegisterd = false
   protected var playing,paused,stopped = false
   private var audioStream: AudioInputStream = _
 
   def play(resource: String): Unit = ???
-  def load(resource: String): Unit = ???
+  def load(resource: String): Promise[Unit] = ???
 
   def load(byteOutputStream: ByteOutputStream,audioFMT: AudioFormat): Unit = {
     val inStream = new ByteInputStream(byteOutputStream.getBytes,byteOutputStream.getCount)
