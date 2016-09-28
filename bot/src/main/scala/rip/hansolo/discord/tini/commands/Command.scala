@@ -33,7 +33,7 @@ trait Command {
 
   /**
     * @param command the full command (excluding signal-character)
-    * @return Some(args) with args being the parameter for the exec method. None if it did not match thisi Command
+    * @return Some(args) with args being the parameter for the exec method. None if it did not match this Command
     */
   def unapply(command: String): Option[String] = command match {
     case valid if command.startsWith(prefix + " ") || command.startsWith(prefix + System.lineSeparator()) || command.startsWith(prefix + "\n") || command == prefix =>

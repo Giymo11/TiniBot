@@ -20,13 +20,17 @@ object Bio extends Command {
 
   override def longHelp(implicit brain: LocalSettings): String = Get.longHelp + "\n" + Set.longHelp
 
-  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = args match {
-    case Bio.Set(arg) =>
-      Bio.Set.exec(arg, message)
-    case Bio.Get(_) =>
-      Bio.Get.exec(null, message)
-    case _ =>
-      sendUsage(message.getChannel)
+  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
+    println(prefix + " " + args)
+
+    args match {
+      case Bio.Set(arg) =>
+        Bio.Set.exec(arg, message)
+      case Bio.Get(arg) =>
+        Bio.Get.exec(arg, message)
+      case _ =>
+        sendUsage(message.getChannel)
+    }
   }
 
   def sendUsage(channel: MessageChannel)(implicit brain: LocalSettings): Unit = channel.sendMessageAsync(longHelp, null)
@@ -38,6 +42,7 @@ object Bio extends Command {
     def prefix = "set"
 
     override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
+      println(prefix + " " + args)
       val author = message.getAuthor
       val channel = message.getChannel
 
@@ -62,7 +67,7 @@ object Bio extends Command {
 
   object Get extends Command{
 
-    override def prefix: String = "@"
+    override def prefix: String = "<@"
 
     /**
       *
@@ -72,6 +77,7 @@ object Bio extends Command {
     override def unapply(command: String): Option[String] = matchesPrefix(command)
 
     override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
+      val userId = args.takeWhile(_ != '>')
 
       val channel = message.getChannel
 
@@ -79,8 +85,9 @@ object Bio extends Command {
         import scala.collection.JavaConverters._
         val mentions = message.getMentionedUsers.asScala.toList
 
-        val isSelf = (user: User) => user.getId == message.getJDA.getSelfInfo.getId
-        mentions.filterNot(isSelf)
+        //val isSelf = (user: User) => user.getId == message.getJDA.getSelfInfo.getId
+        //mentions.filterNot(isSelf)
+        mentions
       }
 
       class BioEventListener(user: User) extends ValueEventListener {
@@ -94,10 +101,11 @@ object Bio extends Command {
       }
 
       otherMentions match {
-        case user :: Nil =>
-          bioOf(user).addListenerForSingleValueEvent(new BioEventListener(user))
-        case _ =>
+        case Nil =>
           sendUsage(channel)
+        case users =>
+          users.foreach(user => bioOf(user).addListenerForSingleValueEvent(new BioEventListener(user)))
+
       }
     }
     override lazy val config: Config = null
