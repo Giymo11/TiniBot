@@ -41,7 +41,7 @@ object Youtube extends Command {
 
 
       val userVoice = event.getGuild.getVoiceStatusOfUser(event.getAuthor)
-      val uri       = if( Reference.useMediaServerForYoutube ) YoutubeUtil.getDownloadURL(resource,"opus") else YoutubeUtil.getDownloadURL(resource)
+      val uri       = if( Reference.useMediaServerForYoutube ) findYTLinks(resource) else YoutubeUtil.getDownloadURL(resource)
       //println(uri)
 
       userVoice.getChannel match {
@@ -97,6 +97,23 @@ object Youtube extends Command {
     } catch {
       case a: Exception => false
     }
+  }
+
+  /* dirty */
+  private def findYTLinks(resource: String): List[String] = {
+    var urls = YoutubeUtil.getDownloadURL(resource,"opus")
+    if( urls.nonEmpty ) return urls
+
+    urls = YoutubeUtil.getDownloadURL(resource,"vorbis")
+    if( urls.nonEmpty ) return urls
+
+    urls = YoutubeUtil.getDownloadURL(resource,"vp9")
+    if( urls.nonEmpty ) return urls
+
+    urls = YoutubeUtil.getDownloadURL(resource,"mp4")
+    if( urls.nonEmpty ) return urls
+
+    YoutubeUtil.getDownloadURL(resource)
   }
 
 }
