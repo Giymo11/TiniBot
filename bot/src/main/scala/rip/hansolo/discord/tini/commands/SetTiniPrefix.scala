@@ -19,7 +19,7 @@ object SetTiniPrefix extends ServerManagerCommand with PrivateCommand {
 
   override def prefix: String = "setTiniPrefix"
 
-  override def execute(args: String, message: Message)(implicit brain: LocalSettings): Unit =
+  override def execute(args: String, message: MessageData)(implicit brain: LocalSettings): Unit =
     doIt(message.getRawContent, message.getChannel)
 
   override def exec(event: PrivateMessageReceivedEvent)(implicit brain: LocalSettings): Unit = {

@@ -1,7 +1,7 @@
 package rip.hansolo.discord.tini.commands
 
 import net.dv8tion.jda.entities.Message
-import rip.hansolo.discord.tini.resources.{LocalSettings, ShitTiniSays}
+import rip.hansolo.discord.tini.resources.{LocalSettings, MessageData, ShitTiniSays}
 
 /**
 	* Created by Giymo11 on 9/22/2016 at 6:26 PM.
@@ -14,7 +14,7 @@ object Pondering extends Command {
 		*                Mostly here for convenience reasons, subject to change
 		* @param message The message which
 		*/
-	override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
+	override def exec(args: String, message: MessageData)(implicit brain: LocalSettings): Unit = {
 		message.getChannel.sendMessageAsync(ShitTiniSays.pondering, null)
 	}
 }

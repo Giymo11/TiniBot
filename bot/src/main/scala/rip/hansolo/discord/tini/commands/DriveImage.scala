@@ -19,7 +19,7 @@ import org.json._
 import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.Util._
 import monix.execution.Scheduler.Implicits.global
-import rip.hansolo.discord.tini.resources.{LocalSettings, ShitTiniSays}
+import rip.hansolo.discord.tini.resources.{LocalSettings, MessageData, ShitTiniSays}
 
 
 /**
@@ -38,7 +38,7 @@ object DriveImage extends Command {
     *                Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
+  override def exec(args: String, message: MessageData)(implicit brain: LocalSettings): Unit = {
 
     Task.create[Unit] { (_, _) =>
       if(TiniBrain.isLoadingImages.get)
@@ -78,7 +78,7 @@ object DriveImage extends Command {
     }.runAsync
   }
 
-  def argsToTags(args: String) = {
+  def argsToTags(args: String): Array[String] = {
     val parts = args.split("\"")
     println(parts.mkString(", "))
     parts

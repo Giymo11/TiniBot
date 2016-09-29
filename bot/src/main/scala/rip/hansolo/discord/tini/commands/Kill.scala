@@ -2,7 +2,7 @@ package rip.hansolo.discord.tini.commands
 import net.dv8tion.jda.entities.Message
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
 import rip.hansolo.discord.tini.brain.TiniBrain
-import rip.hansolo.discord.tini.resources.{LocalSettings, Reference}
+import rip.hansolo.discord.tini.resources.{LocalSettings, MessageData, Reference}
 
 /**
   * Created by: 
@@ -30,7 +30,7 @@ object Kill extends PrivateCommand {
     *                Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
+  override def exec(args: String, message: MessageData)(implicit brain: LocalSettings): Unit = {
     message.getChannel.sendMessageAsync(" *Too many People are watching, you can't kill Tini here* ",null)
   }
 }

@@ -1,9 +1,9 @@
 package rip.hansolo.discord.tini.brain
 
 
-import scala.collection.concurrent.TrieMap
-
 import java.time.temporal.ChronoUnit
+
+import scala.collection.concurrent.TrieMap
 
 import net.dv8tion.jda.MessageBuilder
 import net.dv8tion.jda.entities._
@@ -77,7 +77,7 @@ object TextBrainRegion extends ListenerAdapter {
       case x if x.startsWith(brain.tiniPrefix)=>
         val args = rawContent.dropWhile(isWhitespace).drop(charsToDrop).dropWhile(isWhitespace).replace("\n", " ").split(" ")
         println("Prefix: " + args.head)
-        exec(args.toList, message)
+        exec(args.toList, MessageData.from(message))
       case _ if brain.is8ball =>
         val response = new MessageBuilder().appendString(ShitTiniSays.eightBallAnswer).setTTS(true).build()
         channel.sendMessageAsync(response, timer)
@@ -86,7 +86,7 @@ object TextBrainRegion extends ListenerAdapter {
     }
   }
 
-  def exec(args: List[String], message: Message)(implicit brain: LocalSettings): Unit = {
+  def exec(args: List[String], message: MessageData)(implicit brain: LocalSettings): Unit = {
     channelCommands.getOrElse(args.head, NotACommand).exec(args.tail.mkString(" "), message)
   }
 }

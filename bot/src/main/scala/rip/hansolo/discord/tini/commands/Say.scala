@@ -1,6 +1,6 @@
 package rip.hansolo.discord.tini.commands
 import net.dv8tion.jda.entities.Message
-import rip.hansolo.discord.tini.resources.LocalSettings
+import rip.hansolo.discord.tini.resources.{LocalSettings, MessageData}
 
 /**
   * Created by: 
@@ -17,7 +17,7 @@ object Say extends Command {
     *                Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
+  override def exec(args: String, message: MessageData)(implicit brain: LocalSettings): Unit = {
     message.getChannel.sendMessageAsync(args, null)
   }
 }

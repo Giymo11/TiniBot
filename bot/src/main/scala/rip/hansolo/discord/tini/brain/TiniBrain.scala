@@ -49,6 +49,7 @@ object TiniBrain {
   val firebaseDatabase: FirebaseDatabase = FirebaseDatabase.getInstance()
   val users: DatabaseReference = firebaseDatabase.getReference("users")
   val settings: DatabaseReference = firebaseDatabase.getReference("settings")
+  val repeat: DatabaseReference = firebaseDatabase.getReference("repeat")
 
   val gDrive = new GoogleDrive(GoogleDriveBuilder.drive)
 

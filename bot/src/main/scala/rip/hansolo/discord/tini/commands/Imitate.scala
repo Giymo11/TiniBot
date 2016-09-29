@@ -5,7 +5,7 @@ import scala.util.Random
 import better.files._
 import malakov.Markov
 import net.dv8tion.jda.entities.Message
-import rip.hansolo.discord.tini.resources.{LocalSettings, _}
+import rip.hansolo.discord.tini.resources.{LocalSettings, MessageData, _}
 
 
 /**
@@ -17,7 +17,7 @@ object Imitate extends Command {
 
   override def prefix:String = "be"
 
-  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
+  override def exec(args: String, message: MessageData)(implicit brain: LocalSettings): Unit = {
     val mentions = {
       import scala.collection.JavaConverters._
       message.getMentionedUsers.asScala.toList

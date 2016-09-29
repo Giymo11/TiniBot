@@ -19,7 +19,7 @@ import monix.execution.Scheduler.Implicits.global
   */
 object Main extends TaskApp{
 
-  val clientReadyTask: Task[JDA] = Task.create[JDA] {
+  val jdaTask: Task[JDA] = Task.create[JDA] {
     (scheduler, callback) => {
 
       CommandResolver.registerAllCommands()
@@ -38,12 +38,12 @@ object Main extends TaskApp{
   }.memoize
 
   // here: the stuff you want to initiate yourself
-  val work: Task[Unit] = for(client <- clientReadyTask) yield {
+  val work: Task[Unit] = for(client <- jdaTask) yield {
     import scala.collection.JavaConversions._
     for(guild <- client.getGuilds) {
       println("I am in guild " + guild.getName)
 
-      SettingsBrain.init
+      SettingsBrain.init()
 
       val channel = guild.getPublicChannel
 

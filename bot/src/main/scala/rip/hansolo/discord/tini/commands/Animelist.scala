@@ -6,7 +6,7 @@ import monix.execution.Scheduler.Implicits.global
 import net.dv8tion.jda.entities._
 import rip.hansolo.discord.tini.mal.api.MyAnimeListAPI
 import rip.hansolo.discord.tini.mal.model._
-import rip.hansolo.discord.tini.resources.{LocalSettings, _}
+import rip.hansolo.discord.tini.resources.{LocalSettings, MessageData, _}
 
 
 /**
@@ -42,7 +42,7 @@ object Animelist extends Command {
        """.stripMargin('.')
     channel.sendMessageAsync(response, null)
   }
-  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
+  override def exec(args: String, message: MessageData)(implicit brain: LocalSettings): Unit = {
     val arguments = args.split(" ")
     if(arguments.isEmpty)
       sendUsage(message.getChannel)

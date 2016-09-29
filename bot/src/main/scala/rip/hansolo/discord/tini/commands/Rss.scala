@@ -6,7 +6,7 @@ import com.rometools.rome.feed.synd._
 import com.rometools.rome.io.{SyndFeedInput, XmlReader}
 import net.dv8tion.jda.entities.Message
 import rip.hansolo.discord.tini.brain.TiniBrain
-import rip.hansolo.discord.tini.resources.LocalSettings
+import rip.hansolo.discord.tini.resources.{LocalSettings, MessageData}
 
 /**
   * Created by Giymo11 on 8/27/2016 at 2:29 AM.
@@ -19,7 +19,7 @@ object Rss extends Command{
     *                Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
+  override def exec(args: String, message: MessageData)(implicit brain: LocalSettings): Unit = {
     // TODO: add possibility to restrict items and enable embedding of links
     // TODO: save "last updated" date and dont show newer than this stuff.
     Xor.catchNonFatal {

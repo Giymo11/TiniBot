@@ -4,7 +4,7 @@ package rip.hansolo.discord.tini.commands
 import com.typesafe.config.Config
 import net.dv8tion.jda.entities.Message
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
-import rip.hansolo.discord.tini.resources.LocalSettings
+import rip.hansolo.discord.tini.resources.{LocalSettings, MessageData}
 
 
 /**
@@ -25,10 +25,10 @@ object NotACommand extends PrivateCommand {
     *                Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
+  override def exec(args: String, message: MessageData)(implicit brain: LocalSettings): Unit = {
     val msg = s"Tini is confused, there is no such a command: \n$args\nType `${Help.command}` to see the commands"
     message.getChannel.sendMessageAsync(msg, null)
   }
 
-  override def exec(event: PrivateMessageReceivedEvent)(implicit brain: LocalSettings): Unit = exec(null, event.getMessage)
+  override def exec(event: PrivateMessageReceivedEvent)(implicit brain: LocalSettings): Unit = exec(null, MessageData.from(event.getMessage))
 }

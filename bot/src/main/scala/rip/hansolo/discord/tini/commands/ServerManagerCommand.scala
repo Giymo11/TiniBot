@@ -2,7 +2,7 @@ package rip.hansolo.discord.tini.commands
 
 import net.dv8tion.jda.Permission
 import net.dv8tion.jda.entities.{Message, TextChannel}
-import rip.hansolo.discord.tini.resources.LocalSettings
+import rip.hansolo.discord.tini.resources.{LocalSettings, MessageData}
 
 /**
 	* Created by Giymo11 on 9/19/2016 at 11:29 PM.
@@ -14,7 +14,7 @@ trait ServerManagerCommand extends Command {
 		*                Mostly here for convenience reasons, subject to change
 		* @param message The message which
 		*/
-	override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
+	override def exec(args: String, message: MessageData)(implicit brain: LocalSettings): Unit = {
 		//message.getChannel.sendMessageAsync(":rolling_eyes:  *Tini won't change clothes here ...*", null)
 		import scala.collection.JavaConverters._
 		val author = message.getAuthor
@@ -28,5 +28,5 @@ trait ServerManagerCommand extends Command {
 			channel.sendMessageAsync("Tini won't change clothes for a plebeian like you! :crown:", null)
 	}
 
-	def execute(args: String, message: Message)(implicit brain: LocalSettings)
+	def execute(args: String, message: MessageData)(implicit brain: LocalSettings)
 }

@@ -1,24 +1,14 @@
 package rip.hansolo.discord.tini.commands
 
 
-import scala.collection.concurrent.TrieMap
-import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 import cats.data.Xor
 
-import monix.eval.Task
-import monix.execution.CancelableFuture
-import monix.execution.Scheduler.Implicits.global
-import monix.execution.atomic.Atomic
-
-import net.dv8tion.jda.entities.Message
-
 import rip.hansolo.discord.tini.Util._
-import rip.hansolo.discord.tini.brain.{TextBrainRegion, TiniBrain}
-import rip.hansolo.discord.tini.resources.LocalSettings
-
-import scala.language.postfixOps
+import rip.hansolo.discord.tini.brain._
+import rip.hansolo.discord.tini.resources._
 
 
 /**
@@ -32,7 +22,6 @@ object Repeat extends Command {
   override def prefix: String = "repeat"
 
   // TODO: save this kinda stuff on the firebase.
-  private val repeatTasks = new TrieMap[String, ListBuffer[CancelableFuture[Unit]]]()
   private def minimumDuration(implicit brain: LocalSettings) = brain.minimumRepeatDurationMins
 
   // TODO: re-use more of TextBrainRegion
@@ -43,51 +32,32 @@ object Repeat extends Command {
     *                Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
+  override def exec(args: String, message: MessageData)(implicit brain: LocalSettings): Unit = {
     val arguments = args.dropWhile(isWhitespace).split(" ")
     println("Prefix: " + arguments.head)
 
     if( arguments.length >= 2 ) {
-      val count = Atomic(arguments.head.toInt - 1)
-      var isRescheduled = false
-      val duration = Xor.catchNonFatal(
-        if (arguments(1).toInt > minimumDuration)
-          arguments(1).toInt
-        else {
-          isRescheduled = true
-          minimumDuration
-        }).toOption
+      val count = arguments(0).toInt - 1
 
-      val cmdStart = if( duration.isEmpty ) 1 else 2
+      val originalDuration = Xor.catchNonFatal(arguments(1).toInt).toOption
 
-      val newArgs = args.dropWhile(isWhitespace)
-        .split(" ").drop(cmdStart).mkString(" ")
-        .dropWhile(isWhitespace)
-        .split(" ")
+      val (duration, numberOfParameters, wasRescheduled) = if(originalDuration.isEmpty)
+        (minimumDuration, 1, false)
+      else if(originalDuration.get >= minimumDuration)
+        (originalDuration.get, 2, false)
+      else
+        (minimumDuration, 2, true)
 
-      val repTask = Task {
-        TextBrainRegion.exec(newArgs.toList, message)
-      }
+      val toRepeat = arguments.drop(numberOfParameters)
+        .mkString(" ").dropWhile(isWhitespace)
 
-      message.getChannel.sendMessageAsync(s"Tini will repeat `${newArgs.mkString(" ")}` " +
-        s"***${count.get + 1}*** times and every ***${duration.getOrElse(minimumDuration) minutes}***" +
-        (if(isRescheduled) " (rescheduled to minimum duration)" else ""), null)
+      message.getChannel.sendMessageAsync(s"Tini will repeat `$toRepeat` " +
+        s"***${count + 1}*** times and every ***${duration minutes}***" +
+        (if(wasRescheduled) " (rescheduled to minimum duration)" else ""), null)
 
-      repTask.runAsync
-      val tasks  = repeatTasks.getOrElseUpdate(message.getChannelId, new ListBuffer[CancelableFuture[Unit]])
-      val future = repTask.delayExecution(duration.getOrElse(minimumDuration) minutes)
-                          .restartUntil((Unit) => { count.getAndDecrement(1) == 1 } ) // because this gets the value before updating it
-                          .runAsync
-
-      future andThen { case _ => repeatTasks(message.getChannelId) -= future } // can't use onFinish from Task cuz variable is not fully set
-      tasks += future
+      RepeatBrain.startRepeatTask(toRepeat, message, count, duration, "")
     } else
       message.getChannel.sendMessageAsync("Usage: " + longHelp, null)
   }
 
-  def stopRepeat(channelID: String): Unit = repeatTasks.get(channelID) match {
-    case Some(channel) => channel foreach { _.cancel() }
-    case _ =>
-  }
-  def shutup(): Unit = repeatTasks foreach { _._2 foreach { _.cancel() } }
 }

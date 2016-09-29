@@ -4,7 +4,7 @@ package rip.hansolo.discord.tini.commands
 import scala.util.Random
 import net.dv8tion.jda.entities.Message
 import rip.hansolo.discord.tini.Util._
-import rip.hansolo.discord.tini.resources.LocalSettings
+import rip.hansolo.discord.tini.resources.{LocalSettings, MessageData}
 
 
 /**
@@ -14,7 +14,7 @@ object Roll extends Command {
 
   override def prefix: String = "roll"
 
-  override def exec(args: String, message: Message)(implicit brain: LocalSettings): Unit = {
+  override def exec(args: String, message: MessageData)(implicit brain: LocalSettings): Unit = {
     val argList = args.split(" ").toList
     message.getChannel.sendMessageAsync( format(rollTheDice(argList)), null)
   }

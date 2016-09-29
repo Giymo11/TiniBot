@@ -6,12 +6,10 @@ import com.typesafe.config.Config
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Try
-
 import net.dv8tion.jda.entities.Message
-
 import rip.hansolo.discord.tini.Util
 import rip.hansolo.discord.tini.brain.TiniBrain
-import rip.hansolo.discord.tini.resources.{LocalSettings, Reference}
+import rip.hansolo.discord.tini.resources.{LocalSettings, MessageData, Reference}
 
 
 /**
@@ -54,7 +52,7 @@ trait Command {
     *             Mostly here for convenience reasons, subject to change
     * @param message The message which
     */
-  def exec(args: String, message: Message = null)(implicit brain: LocalSettings)
+  def exec(args: String, message: MessageData = null)(implicit brain: LocalSettings)
 
   def registerCommand(): Unit = Future[Unit] { TiniBrain.register(this) }
 }

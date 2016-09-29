@@ -23,18 +23,16 @@ object SettingsBrain {
 			updateMap(settings)
 		}
 
-		println("WHADDAP")
-
 		TiniBrain.settings.addChildEventListener(new ChildEventListener {
-			override def onChildRemoved(dataSnapshot: DataSnapshot) = updateMap(LocalSettings(dataSnapshot.getKey))
+			override def onChildRemoved(dataSnapshot: DataSnapshot): Unit = updateMap(LocalSettings(dataSnapshot.getKey))
 
-			override def onChildMoved(dataSnapshot: DataSnapshot, previousChildName: String) = ()
+			override def onChildMoved(dataSnapshot: DataSnapshot, previousChildName: String): Unit = ()
 
-			override def onChildChanged(dataSnapshot: DataSnapshot, previousChildName: String) = useData(dataSnapshot)
+			override def onChildChanged(dataSnapshot: DataSnapshot, previousChildName: String): Unit = useData(dataSnapshot)
 
-			override def onCancelled(databaseError: DatabaseError) = ()
+			override def onCancelled(databaseError: DatabaseError): Unit = ()
 
-			override def onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String) = useData(dataSnapshot)
+			override def onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String): Unit = useData(dataSnapshot)
 		})
 	}
 
