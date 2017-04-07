@@ -37,7 +37,7 @@ class Greeter extends Actor {
 
 
 
-object Main extends App {
+object Main { // extends App
   import scala.concurrent.ExecutionContext.Implicits.global
   import scala.concurrent.duration._
   implicit val timeout = Timeout(5 seconds)
@@ -60,7 +60,7 @@ object Main extends App {
         case ex => ex.getMessage
       }
       done <- {
-        println(s"result: $greeting");
+        println(s"result: $greeting")
         system.terminate()
       }
     } println("system terminated")
@@ -82,7 +82,7 @@ object Main extends App {
         case ex => ex.getMessage
       }
       done <- {
-        println(s"result: $greeting");
+        println(s"result: $greeting")
         system.terminate()
       }
     } println("system terminated")
