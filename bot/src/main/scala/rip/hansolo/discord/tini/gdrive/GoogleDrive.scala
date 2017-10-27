@@ -99,8 +99,6 @@ class GoogleDrive(drive: Drive) {
       Vector.empty
     } else getFileFromPath(folderPath) match {
       case Some(parentFile) =>
-        println(parentFile)
-
         println("Master folder: " + parentFile.getName)
         val files = getFilesForParent(parentFile, Seq.empty)
         println(s"Found ${files.size} Files in Google Drive Folder")
