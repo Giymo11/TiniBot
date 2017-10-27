@@ -28,7 +28,11 @@ object GoogleDrive {
   */
 class GoogleDrive(drive: Drive) {
 
-  def getFileFromPath(path: String): Option[File] = searchPathInParent(path.dropWhile(_ == '/').split("/"), "root").headOption
+  def getFileFromPath(path: String): Option[File] =
+    searchPathInParent(
+      path.dropWhile(_ == '/').split("/"),
+      "root"
+    ).find(_.getMimeType.equals(GoogleDrive.folderType))
 
   def searchPathInParent(pathElements: Seq[String], parentId: String): Seq[File] = pathElements.toList match {
     case Nil =>
@@ -98,6 +102,8 @@ class GoogleDrive(drive: Drive) {
       Vector.empty
     } else getFileFromPath(folderPath) match {
       case Some(parentFile) =>
+        println(parentFile)
+
         println("Master folder: " + parentFile.getName)
         val files = getFilesForParent(parentFile, Seq.empty)
         println(s"Found ${files.size} Files in Google Drive Folder")
