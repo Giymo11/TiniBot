@@ -29,10 +29,7 @@ object GoogleDrive {
 class GoogleDrive(drive: Drive) {
 
   def getFileFromPath(path: String): Option[File] =
-    searchPathInParent(
-      path.dropWhile(_ == '/').split("/"),
-      "root"
-    ).find(_.getMimeType.equals(GoogleDrive.folderType))
+    searchPathInParent(path.dropWhile(_ == '/').split("/"), "root").find(GoogleDrive.isFolder)
 
   def searchPathInParent(pathElements: Seq[String], parentId: String): Seq[File] = pathElements.toList match {
     case Nil =>
