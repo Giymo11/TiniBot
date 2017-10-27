@@ -6,6 +6,7 @@ import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import monix.execution.atomic.Atomic
 
+import scala.concurrent.Promise
 import scala.concurrent.duration._
 
 /**
@@ -14,50 +15,61 @@ import scala.concurrent.duration._
   * @author Raphael
   * @version 28.09.2016
   */
-class ProxyStream(media: URLConnection,proxy: Socket) {
+class ProxyStream(media: URLConnection,proxy: Socket,fatalErrorPromise: Promise[Unit]) {
+
 
   private val bufferSize: Int = 4096  // Bytes
-  private val readDelay: Long = 2  // ms
+  private val readDelay: Long = 10    // ms
   private val noDataLeft      = Atomic( false )
+  private val buffer: Array[Byte] = new Array[Byte]( bufferSize )
 
-  val recvTask = Task {
+  val recvTask = Task { tryReadConnection() }
+                      .restartUntil( (Unit) => noDataLeft.get )
+                      .delayExecution( readDelay millisecond )
+                      .runAsync
 
+  def tryReadConnection(): Boolean = {
     try {
-      val buffer = new Array[Byte]( bufferSize )
       val rBytes = media.getInputStream.read(buffer,0,bufferSize)
 
-      if( rBytes == 0 ) {
-        destroy()
-        println(s"END_OF_STREAM read $rBytes bytes ")
-      } else {
-        proxy.getOutputStream.write( buffer , 0 , rBytes )
-      }
+      if( rBytes <= 0 ) destroy()
+      else proxy.getOutputStream.write( buffer , 0 , rBytes )
+
+      true
     } catch {
       case all: Exception =>
-        all.printStackTrace()
+        System.err.println("There was a error!")
+        //all.printStackTrace()
         destroy()
 
-        throw all
+        System.err.println("There was a error! (2)")
+        fatalErrorPromise.failure( all )
+        fatalErrorPromise.success()
+
+        System.err.println("There was a error! (3)")
+        false
     }
+  }
 
-  }.restartUntil( (Unit) => noDataLeft.get )
-   .delayExecution( readDelay millisecond )
-   .runAsync
-
+  /*
   private val httpJunkReaderTask = Task {
     val buffer = new Array[Byte]( bufferSize )
     proxy.getInputStream.read(buffer)
     buffer.foreach(  x=>print(x.asInstanceOf[Char]) )
   }.runAsync
+  */
 
   def destroy(): Unit = {
-    recvTask.cancel()
-    httpJunkReaderTask.cancel()
+    printf("Called ProxyStream.destroy()")
+    try {
+      recvTask.cancel()
+      //httpJunkReaderTask.cancel()
 
-    noDataLeft.set( true )
+      noDataLeft.set(true)
 
-    media.getInputStream.close()
-    proxy.close()
+      media.getInputStream.close()
+      proxy.close()
+    } catch { case _: Exception => /* do nothing */ }
   }
 
 }

@@ -32,11 +32,11 @@ object YoutubeUtil {
     else url.split("v=")(1)
   }
 
-  def getDownloadURL(url: String,codec: String = "mp4a"): List[String] = {
+  def getDownloadURL(url: String, codec: String = "audio"): List[String] = {
     val videoID = extractYoutubeIDFromUrl(url)
 
     val doc    = Jsoup.connect( YOUTUBE_URI + "/watch" ).data("v", videoID ).get()
-    val baseJS = Jsoup.connect( "https:"+doc.select("script[name='player/base']").attr("src") )
+    val baseJS = Jsoup.connect( YOUTUBE_URI + doc.select("script[name='player/base']").attr("src") )
                       .ignoreContentType(true)
                       .execute()
                       .body().replace("\n"," ")
@@ -152,7 +152,7 @@ object YoutubeUtil {
     val urlParamPairs = url.replace(",","&").split("&")
 
     for( pp <- urlParamPairs ) {
-      println(pp)
+      //println(pp)
 
       val key = pp.split("=")(0)
       val value = Xor.catchNonFatal(pp.split("=")(1)).getOrElse("")
@@ -174,7 +174,7 @@ object YoutubeUtil {
 
     streamMap.foreach(x => {
       if( x._1.contains("fmt") ) {
-        println(x._1)
+        //println(x._1)
         content ++= decodeFMTUrl(URLDecoder.decode(x._2, "UTF-8"))
       }
     })

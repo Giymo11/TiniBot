@@ -8,9 +8,11 @@ import monix.execution.atomic.Atomic
 import net.dv8tion.jda.audio.AudioConnection
 import net.dv8tion.jda.entities.Guild
 import rip.hansolo.discord.tini.audio.util.FFmpegMediaServer
+import rip.hansolo.discord.tini.audio.util.FFmpegMediaServer.MediaInstance
 
 import scala.concurrent.Promise
 import scala.util.{Failure, Success}
+import scala.concurrent.duration._
 
 
 
@@ -25,6 +27,7 @@ class FFmpegPlayer(g: Guild,useHTTPProxy: Boolean = false) extends BasicPlayer(g
   val bufferTime = 5000
   val ready = Atomic(false)
   var stream: InputStream = _
+  var media: MediaInstance = _
 
   override def play(resource: String): Unit = super.play(resource)
 
@@ -32,14 +35,16 @@ class FFmpegPlayer(g: Guild,useHTTPProxy: Boolean = false) extends BasicPlayer(g
     val state = Promise[Unit]
 
     Task.fromFuture(FFmpegMediaServer.addMediaResource(g.getId,resource,useHTTPProxy).future)
+      .delayExecution( bufferTime millisecond )
       .runAsync
       .andThen {
         case Success(mediaData) =>
           stream = mediaData.socket.getInputStream
 
-          Thread.sleep( bufferTime ) // saveguard for slow streams
+          //Thread.sleep( bufferTime ) // slow streams may have to buffer some data
           ready.set( true )
 
+          media = mediaData
           state.success()
         case Failure(ext) => state.failure(ext)
       }

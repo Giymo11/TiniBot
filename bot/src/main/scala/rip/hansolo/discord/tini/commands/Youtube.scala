@@ -1,16 +1,14 @@
 package rip.hansolo.discord.tini.commands
 
-import cats.data.Xor
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
-import net.dv8tion.jda.entities.{Message, VoiceChannel}
+import net.dv8tion.jda.entities.Message
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
-import rip.hansolo.discord.tini.audio.player.{BasicPlayer, FFmpegPlayer, YoutubePlayer}
-import rip.hansolo.discord.tini.audio.util.YoutubeUtil
-import rip.hansolo.discord.tini.resources.Reference
+import rip.hansolo.discord.tini.audio.player.BasicPlayer
+import rip.hansolo.discord.tini.audio.util.{AudioManager, YoutubeUtil}
 
 import scala.collection.concurrent.TrieMap
-import scala.concurrent.Await
+import scala.util.{Failure, Success}
 
 
 /**
@@ -32,37 +30,19 @@ object Youtube extends Command {
   override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit = {
     val arguments = args.split(" ")
     if( arguments.length == 1 ) {
+
       val resource  = arguments(0)
-      if( resource == "exit" ) {
-        message.getChannel.sendMessageAsync("Ok, Tini will leave the VoiceChannel",null)
-        event.getGuild.getAudioManager.closeAudioConnection()
-        return
-      }
+      if( resource == "stop" ) {
+        AudioManager.requestStop(event)
+      } else {
 
+        var currentIndex = 0
+        var yturls = YoutubeUtil.getDownloadURL(resource)
+        if (yturls.isEmpty)
+          yturls = YoutubeUtil.getDownloadURL(resource, "video/webm")
 
-      val userVoice = event.getGuild.getVoiceStatusOfUser(event.getAuthor)
-      val uri       = if( Reference.useMediaServerForYoutube ) findYTLinks(resource) else YoutubeUtil.getDownloadURL(resource)
-      //println(uri)
-
-      userVoice.getChannel match {
-        case null => message.getChannel.sendMessageAsync("Join a Voice Channel so i can speak with you",null)
-        case _ if event.getGuild.getAudioManager.getConnectedChannel == userVoice =>
-          val player = onlinePlayers(userVoice.getChannel.getId)
-          player.stop()
-          this.playResource(uri, player, message, event, userVoice.getChannel)
-
-        case _ if event.getGuild.getAudioManager.getConnectedChannel != userVoice =>
-          val player = onlinePlayers.get(userVoice.getChannel.getId)
-
-          player match {
-            case Some(p) if p.isStopped => playResource(uri, p, message, event, userVoice.getChannel)
-            case Some(p) => p.stop() //message.getChannel.sendMessageAsync("*Tini is allready speaking ...*",null)
-            case _ =>
-              val newPlayer = if( Reference.useMediaServerForYoutube ) new FFmpegPlayer(event.getGuild,true) else new YoutubePlayer(event.getGuild)
-              onlinePlayers.put(userVoice.getChannel.getId,newPlayer)
-
-              playResource(uri, newPlayer, message, event, userVoice.getChannel)
-          }
+        println(yturls)
+        tryPlayYoutubeVideo(yturls,0,event)
       }
 
     } else {
@@ -70,50 +50,23 @@ object Youtube extends Command {
     }
   }
 
-  /* will join the first VoiceChannel with that name! */
-  private def getVoiceChannel(msg: Message,name: String): Option[VoiceChannel] = {
-    Xor.catchNonFatal( msg.getJDA.getVoiceChannelByName(name).get(0) ).toOption
-  }
-  private def playResource(resource: List[String],player: BasicPlayer,message: Message,event: GuildMessageReceivedEvent,userVoice: VoiceChannel): Unit = {
-    Task {
-      event.getGuild.getAudioManager.closeAudioConnection()
+ private def tryPlayYoutubeVideo(yturls: List[String], currentIndex: Int, event: GuildMessageReceivedEvent): Unit = {
+   if (currentIndex == yturls.length) {
+     println("nope can't play video!")
+     return
+   }
 
-      if( resource.dropWhile( x => tryLoadYTLink(x,player) ).nonEmpty ) {
-        println("Playing: " + resource.head)
-        event.getGuild.getAudioManager.openAudioConnection(userVoice)
-        player.play()
-      } else {
-        message.getChannel.sendMessageAsync("Sorry Tini can't play the Video :cry:",null)
-      }
+   println("Try to play: ("+currentIndex+"/"+yturls.length+")" + yturls(currentIndex) )
 
-    }.runAsync
-  }
-
-  private def tryLoadYTLink(link: String,player: BasicPlayer): Boolean = {
-    try {
-      import scala.concurrent.duration._
-      Await.result(player.load(link).future, 0 nanos)
-      true
-    } catch {
-      case a: Exception => false
-    }
-  }
-
-  /* dirty */
-  private def findYTLinks(resource: String): List[String] = {
-    var urls = YoutubeUtil.getDownloadURL(resource,"opus")
-    if( urls.nonEmpty ) return urls
-
-    urls = YoutubeUtil.getDownloadURL(resource,"vorbis")
-    if( urls.nonEmpty ) return urls
-
-    urls = YoutubeUtil.getDownloadURL(resource,"vp9")
-    if( urls.nonEmpty ) return urls
-
-    urls = YoutubeUtil.getDownloadURL(resource,"mp4")
-    if( urls.nonEmpty ) return urls
-
-    YoutubeUtil.getDownloadURL(resource)
-  }
+   if( currentIndex >= yturls.length ) event.getMessage.getChannel.sendMessageAsync("Tini can not play the video :cry:",null)
+   else
+   Task.fromFuture( AudioManager.requestPlay( yturls(currentIndex) , event , useProxy = false ).future )
+       .runAsync
+       .andThen {
+         case Success(status) if !status => tryPlayYoutubeVideo(yturls, currentIndex + 1,event)
+         case Success(stats) if stats => println("Seems to work, will play this one") /* it worked nothing to do ... */
+         case Failure(ex) => ex.printStackTrace() /* nothing to do, hard crash on this one ... */
+     }
+ }
 
 }

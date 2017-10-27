@@ -86,7 +86,7 @@ abstract class BasicPlayer(guild: Guild) extends Player {
   override def isStarted: Boolean = true
   override def isPlaying: Boolean = playing
 
-  def destroy(): Unit = audioStream.close()
+  def destroy(): Unit = if( audioStream != null ) audioStream.close()
   def getDuration: Double = (audioStream.getFrameLength+0.0) / audioStream.getFormat.getFrameRate
 
   protected def getJDAConnection(urlOfResource: URL): URLConnection = {

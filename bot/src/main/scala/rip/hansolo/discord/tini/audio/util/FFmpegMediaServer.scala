@@ -12,6 +12,7 @@ import scala.collection.concurrent.TrieMap
 import scala.collection.JavaConverters._
 import scala.concurrent.Promise
 import scala.io.Source
+import scala.util.{Failure, Success}
 
 /**
   * Created by: 
@@ -21,9 +22,26 @@ import scala.io.Source
   */
 object FFmpegMediaServer {
   class MediaInstance(p: Process,s: Socket) {
+    val dead = Promise[MediaInstance]
 
     def process: Process = p
     def socket: Socket = s
+
+    /* read stdout from ffmpeg */
+    val stdoutReader =
+      Task {
+        println("[MediaServer] Starting reading FFMPEG Stdout / Stderr")
+
+        try {
+          while (p.isAlive)
+            Source.fromInputStream(p.getErrorStream).foreach(print)
+        } catch {
+          case all: Exception => all.printStackTrace()
+        }
+
+        println("[MediaServer] Stdout was closed!")
+        dead.success( this )
+      }.runAsync
 
     def destroy(): Unit = {
       socket.close()
@@ -31,6 +49,8 @@ object FFmpegMediaServer {
     }
   }
   class ProxyMediaInstance(process: Process,socket: Socket,proxySource: ProxyStream) extends MediaInstance(process,socket) {
+    if( stdoutReader.isCompleted ) println( "Completed before started? ")
+
     override def destroy(): Unit = {
       proxySource.destroy()
       super.destroy()
@@ -57,9 +77,10 @@ object FFmpegMediaServer {
     var proxySocket: Socket  = null
     var proxy: ProxyStream   = null
 
-    val networkTask = Task {
+    val networkTask = Task.fork( Task {
       ffmpegSocket = this.serverSocket.accept()
-    }.runAsync
+      println("Accepted Socket")
+    } ).runAsync
 
     val ffmpegResource = if( useProxy ) s"tcp://127.0.0.1:${Reference.proxyServerProt}" else resource
     val mediaProxy: URLConnection  = useProxy match {
@@ -72,14 +93,39 @@ object FFmpegMediaServer {
       case false => null
     }
 
-    Task {
-      if( useProxy ) {
-        proxySocket = proxyServerSocket.accept()
-        proxy = new ProxyStream(mediaProxy,proxySocket)
-      }
-    }.runAsync
+    /* set up network, must be done cuz ffmpeg does not open output of source is not available */
+    val fErr = Promise[Unit]
+    fErr.future.onComplete {
+      case Success(u) =>
+        println("Fatal Error in Proxy reader!")
+
+        val data = server.get(name)
+        if( data.isDefined ) data.get.destroy()
+
+        println("Success!")
+      case Failure(ex) => println("Failure!"); completion.failure( ex )
+    }
+
+    //val t =
+    try {
+
+      Task.fork( Task {
+        if (useProxy) {
+          proxySocket = proxyServerSocket.accept()
+          proxy = new ProxyStream(mediaProxy, proxySocket, fErr)
+
+          println(s"finish proxy stuff ${proxy.tryReadConnection()}")
+        }
+      } ).runAsync
+
+
+    } catch {
+      case all: Exception => all.printStackTrace()
+    }
 
     val ffmpegProcess: Process = startFFMPEGSlave(ffmpegResource,Reference.mediaServerPort)
+    println("Started Process")
+
     networkTask.onComplete { x =>
       /* notify other instances of release block */
       canConnect.set( true )
@@ -87,26 +133,28 @@ object FFmpegMediaServer {
         canConnect.notifyAll()
       )
 
+      println("Register in Server")
+
       /* register server */
-      server.put( name, if( useProxy ) new ProxyMediaInstance(ffmpegProcess,ffmpegSocket,proxy) else new MediaInstance(ffmpegProcess,ffmpegSocket) )
+      server.put( name,
+        if( useProxy ) new ProxyMediaInstance(ffmpegProcess,ffmpegSocket,proxy)
+        else new MediaInstance(ffmpegProcess,ffmpegSocket)
+      )
 
-      if( ffmpegProcess.isAlive ) completion.success( server(name) )
-      else completion.failure( new RuntimeException("Something bad has happened and ffmpeg crashed") )
-    }
-
-    /* read stdout from ffmpeg (should be disabled in production mode) */
-    Task {
-      println("[MediaServer] Starting reading FFMPEG Stdout / Stderr")
-
-      try {
-        while (ffmpegProcess.isAlive)
-          Source.fromInputStream(ffmpegProcess.getErrorStream).foreach(print)
-      } catch {
-        case all: Exception => all.printStackTrace()
+      println(" Try read connection ")
+      if( proxy != null && !proxy.tryReadConnection() ) {
+        println(" fatal error")
+        //Fatal Error!
+        ffmpegProcess.destroyForcibly()
+        completion.failure( new RuntimeException("Something was wrong with the Proxy!") )
       }
 
-      println("[MediaServer] Stdout was closed!")
-    }.runAsync
+      println(" check of ffmpeg is alive")
+      if( ffmpegProcess.isAlive ) completion.success( server(name) )
+      else completion.failure( new RuntimeException("Something bad has happened and ffmpeg crashed") )
+
+      println(" finished network task.onComplete")
+    }
 
     completion
   }
@@ -124,13 +172,14 @@ object FFmpegMediaServer {
 
   private def startFFMPEGSlave(resource: String,serverPort: Int): Process = {
     val pb = new ProcessBuilder(Reference.ffmpegBinary
+                               ,"-re"
                                ,"-i",resource
                                ,"-acodec","pcm_s16be"
                                ,"-vn"
                                ,"-ar","48000"
                                ,"-b:a","96k"
                                ,"-f","s16be"
-                               ,"-loglevel","quiet"
+                               ,"-loglevel","verbose"
                                ,"-nostdin"
                                ,"-stats"
                                //,"-hide_banner"
