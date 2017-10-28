@@ -103,7 +103,9 @@ object FFmpegMediaServer {
         if( data.isDefined ) data.get.destroy()
 
         println("Success!")
-      case Failure(ex) => println("Failure!"); completion.failure( ex )
+      case Failure(ex) =>
+        println("Failure!")
+        completion.failure( ex )
     }
 
     //val t =
@@ -124,7 +126,7 @@ object FFmpegMediaServer {
     }
 
     val ffmpegProcess: Process = startFFMPEGSlave(ffmpegResource,Reference.mediaServerPort)
-    println("Started Process")
+    println("[FFmpegMediaServer] Started Process: " + ffmpegProcess.isAlive)
 
     networkTask.onComplete { x =>
       /* notify other instances of release block */
@@ -173,7 +175,7 @@ object FFmpegMediaServer {
   private def startFFMPEGSlave(resource: String,serverPort: Int): Process = {
     val pb = new ProcessBuilder(Reference.ffmpegBinary
                                ,"-re"
-                               ,"-i",resource
+                               ,"-i", "\""+ resource + "\""
                                ,"-acodec","pcm_s16be"
                                ,"-vn"
                                ,"-ar","48000"

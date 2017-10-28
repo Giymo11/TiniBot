@@ -1,19 +1,19 @@
 package rip.hansolo.discord.tini.commands
 
 
-import scala.collection.concurrent.TrieMap
-import scala.collection.mutable.ListBuffer
-import scala.concurrent.duration._
 import cats.data.Xor
 import monix.eval.Task
 import monix.execution.CancelableFuture
 import monix.execution.Scheduler.Implicits.global
 import monix.execution.atomic.Atomic
-import net.dv8tion.jda.entities.Message
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.Util._
 import rip.hansolo.discord.tini.brain.{TextBrainRegion, TiniBrain}
 
+import scala.collection.concurrent.TrieMap
+import scala.collection.mutable.ListBuffer
+import scala.concurrent.duration._
 import scala.language.postfixOps
 
 
@@ -63,25 +63,26 @@ object Repeat extends Command {
         TextBrainRegion.exec(newArgs.toList, message, event)
       }
 
-      message.getChannel.sendMessageAsync(s"Tini will repeat `${newArgs.mkString(" ")}` " +
+      message.getChannel.sendMessage(s"Tini will repeat `${newArgs.mkString(" ")}` " +
         s"***${count.get + 1}*** times and every ***${duration.getOrElse(minimumDuration) minutes}***" +
-        (if(isRescheduled) " (rescheduled to minimum duration)" else ""), null)
+        (if(isRescheduled) " (rescheduled to minimum duration)" else "")).queue()
 
       repTask.runAsync
-      val tasks  = repeatTasks.getOrElseUpdate(message.getChannelId, new ListBuffer[CancelableFuture[Unit]])
+      val tasks  = repeatTasks.getOrElseUpdate(message.getChannel.getId, new ListBuffer[CancelableFuture[Unit]])
       val future = repTask.delayExecution(duration.getOrElse(minimumDuration) minutes)
                           .restartUntil((Unit) => { count.getAndDecrement(1) == 1 } ) // because this gets the value before updating it
                           .runAsync
 
-      future andThen { case _ => repeatTasks(message.getChannelId) -= future } // can't use onFinish from Task cuz variable is not fully set
+      future andThen { case _ => repeatTasks(message.getChannel.getId) -= future } // can't use onFinish from Task cuz variable is not fully set
       tasks += future
     } else
-      message.getChannel.sendMessageAsync("Usage: " + longHelp, null)
+      message.getChannel.sendMessage("Usage: " + longHelp).queue()
   }
 
   def stopRepeat(channelID: String): Unit = repeatTasks.get(channelID) match {
     case Some(channel) => channel foreach { _.cancel() }
     case _ =>
   }
-  def shutup() = repeatTasks foreach { _._2 foreach { _.cancel() } }
+
+  def shutup(): Unit = repeatTasks foreach { _._2 foreach { _.cancel() } }
 }

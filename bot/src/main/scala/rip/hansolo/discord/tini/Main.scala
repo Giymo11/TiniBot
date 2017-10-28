@@ -4,14 +4,13 @@ package rip.hansolo.discord.tini
 
 import monix.eval._
 import monix.execution.Cancelable
-
-import net.dv8tion.jda.events.ReadyEvent
-import net.dv8tion.jda.hooks.ListenerAdapter
-import net.dv8tion.jda._
-
+import net.dv8tion.jda.core._
 import rip.hansolo.discord.tini.brain._
 import rip.hansolo.discord.tini.resources._
 import monix.execution.Scheduler.Implicits.global
+import net.dv8tion.jda.core.events.{Event, ReadyEvent}
+import net.dv8tion.jda.core.hooks.EventListener
+import net.dv8tion.jda.core.requests.SessionReconnectQueue
 
 
 /**
@@ -24,15 +23,22 @@ object Main extends TaskApp{
 
       CommandResolver.registerAllCommands()
 
-      new JDABuilder()
-        .setBotToken(Reference.token)
-        // here: the stuff you want to react to
-        .addListener(new ListenerAdapter { // TODO: this could probably be written in a more scala-esque way
-          override def onReady(event: ReadyEvent): Unit = callback.onSuccess(event.getJDA)
-        })
-        .addListener(TextBrainRegion)
-        .buildAsync()
+      val jda = new JDABuilder(AccountType.BOT)
+        .setToken(Reference.token)
+        .setReconnectQueue(new SessionReconnectQueue())
 
+      // here: the stuff you want to react to
+      jda.addEventListener(
+        new EventListener {
+          override def onEvent(event: Event): Unit = event match {
+            case _ : ReadyEvent => callback.onSuccess(event.getJDA)
+            case _ => /* nothing that we are interested in ... */
+          }
+        },
+        TextBrainRegion
+      )
+
+      jda.buildAsync()
       Cancelable.empty
     }
   }.memoize
@@ -44,8 +50,9 @@ object Main extends TaskApp{
       println("I am in guild " + guild.getName)
       val channel = guild.getPublicChannel
 
-      if(TiniBrain.isSelfAccouncing.get)
-        channel.sendMessageAsync(ShitTiniSays.selfAnnouncement, null)
+      if(TiniBrain.isSelfAccouncing.get) {
+        channel.sendMessage(ShitTiniSays.selfAnnouncement).queue()
+      }
     }
   }
 

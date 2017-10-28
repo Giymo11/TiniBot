@@ -2,13 +2,13 @@ package rip.hansolo.discord.tini.commands
 
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
-import net.dv8tion.jda.entities.Message
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.audio.player.BasicPlayer
 import rip.hansolo.discord.tini.audio.util.{AudioManager, YoutubeUtil}
 
 import scala.collection.concurrent.TrieMap
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
 
 /**
@@ -46,19 +46,14 @@ object Youtube extends Command {
       }
 
     } else {
-      message.getChannel.sendMessageAsync(longHelp,null)
+      message.getChannel.sendMessage(longHelp).queue()
     }
   }
 
  private def tryPlayYoutubeVideo(yturls: List[String], currentIndex: Int, event: GuildMessageReceivedEvent): Unit = {
-   if (currentIndex == yturls.length) {
-     println("nope can't play video!")
-     return
-   }
+   Try(println("Try to play: ("+currentIndex+"/"+yturls.length+")" + yturls(currentIndex) ))
 
-   println("Try to play: ("+currentIndex+"/"+yturls.length+")" + yturls(currentIndex) )
-
-   if( currentIndex >= yturls.length ) event.getMessage.getChannel.sendMessageAsync("Tini can not play the video :cry:",null)
+   if( currentIndex >= yturls.length ) event.getMessage.getChannel.sendMessage("Tini can not play the video :cry:").queue()
    else
    Task.fromFuture( AudioManager.requestPlay( yturls(currentIndex) , event , useProxy = false ).future )
        .runAsync

@@ -1,7 +1,7 @@
 package rip.hansolo.discord.tini.commands
-import net.dv8tion.jda.entities.Message
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
-import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
+import net.dv8tion.jda.core.entities.{Game, Message}
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent
 import rip.hansolo.discord.tini.resources.Reference
 
 /**
@@ -17,10 +17,10 @@ object BotStatus extends PrivateCommand {
 
     if( content.contains(Reference.authorPassword) ) {
       val status = content.replace("!botstatus", "").replace(Reference.authorPassword, "").trim
-      client.getAccountManager.setGame(status)
-      event.getMessage.getChannel.sendMessageAsync("status set", null)
+      client.getPresence.setGame(Game.of(status))
+      event.getMessage.getChannel.sendMessage("status set").queue()
     } else {
-      event.getMessage.getChannel.sendMessageAsync("bli bla blub error ... :robot:", null)
+      event.getMessage.getChannel.sendMessage("bli bla blub error ... :robot:").queue()
     }
   }
 
@@ -32,6 +32,6 @@ object BotStatus extends PrivateCommand {
     * @param message The message which
     */
   override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit = {
-    message.getChannel.sendMessageAsync(" *Tini listens to loud music and can't hear you screaming* :musical_note: ",null)
+    message.getChannel.sendMessage(" *Tini listens to loud music and can't hear you screaming* :musical_note: ").queue()
   }
 }

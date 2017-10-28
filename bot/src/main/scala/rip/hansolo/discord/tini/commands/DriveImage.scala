@@ -3,24 +3,24 @@ package rip.hansolo.discord.tini.commands
 
 import java.io._
 
-import scala.collection.JavaConverters._
 import com.mashape.unirest.http.Unirest
 import com.mashape.unirest.http.exceptions.UnirestException
 import com.mashape.unirest.request.body.MultipartBody
 import monix.eval.Task
 import monix.execution.Cancelable
-import net.dv8tion.jda._
-import net.dv8tion.jda.entities._
-import net.dv8tion.jda.entities.impl._
-import net.dv8tion.jda.handle.EntityBuilder
-import net.dv8tion.jda.requests.Requester
+import monix.execution.Scheduler.Implicits.global
+import net.dv8tion.jda.core.MessageBuilder
+import net.dv8tion.jda.core.entities.impl.JDAImpl
+import net.dv8tion.jda.core.entities.{EntityBuilder, Message, MessageChannel}
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.core.requests.Requester
 import org.apache.http.entity.ContentType
 import org.json._
-import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.Util._
-import monix.execution.Scheduler.Implicits.global
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
+import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.resources.ShitTiniSays
+
+import scala.collection.JavaConverters._
 
 
 /**
@@ -43,9 +43,9 @@ object DriveImage extends Command {
 
     Task.create[Unit] { (_, _) =>
       if(TiniBrain.isLoadingImages.get)
-        message.getChannel.sendMessage("I am still loading...")
+        message.getChannel.sendMessage("I am still loading...").queue()
       else {
-        message.getChannel.sendTyping()
+        message.getChannel.sendTyping().queue()
 
         println("args: " + args)
 
@@ -62,16 +62,21 @@ object DriveImage extends Command {
 
         def getResponseMessage(tags: Seq[String]) =
           new MessageBuilder()
-            .appendString(ShitTiniSays.imageResponse + getTagsString(tags))
+            .append(ShitTiniSays.imageResponse + getTagsString(tags))
             .build()
         def getTagsString(tags: Seq[String]) = if(TiniBrain.isShowingTags.get) "\nTags: " + tags.mkString(", ") else ""
 
         streamWithName match {
           case Some( (fileStream, name, tags) ) =>
+            val msg = new MessageBuilder()
+              .setTTS(false)
+              .append("There you go!")
+              .build()
+            //message.getChannel.sendFile(fileStream, name, msg).queue()
             sendFile(message.getChannel, fileStream, getResponseMessage(tags), name)
             fileStream.close()
           case None =>
-            message.getChannel.sendMessage("No files found :(")
+            message.getChannel.sendMessage("No files found :(").queue()
             println("No files found :(")
         }
       }
@@ -123,6 +128,7 @@ object DriveImage extends Command {
   /**
     * Mostly copied from the JDA TextChannelImpl.
     */
+
   def sendFile(channel: MessageChannel, fileStream: InputStream, message: Message, filename: String): Message = {
 
     /*
@@ -135,14 +141,14 @@ object DriveImage extends Command {
     val realMessage = if(message == null)
       new MessageBuilder()
         .setTTS(false)
-        .appendString("There you go!")
+        .append("There you go!")
         .build()
       else message
 
     try{
       val body: MultipartBody = Unirest.post(
         Requester.DISCORD_API_PREFIX + "channels/" + channel.getId + "/messages")
-        .header("authorization", channel.getJDA.getAuthToken)
+        .header("authorization", channel.getJDA.getToken)
         .header("user-agent", Requester.USER_AGENT)
         .field("content", realMessage.getRawContent)
         .field("tts", realMessage.isTTS)
@@ -171,4 +177,5 @@ object DriveImage extends Command {
     }
     null
   }
+
 }

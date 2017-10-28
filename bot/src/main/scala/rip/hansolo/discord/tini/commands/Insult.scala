@@ -1,6 +1,6 @@
 package rip.hansolo.discord.tini.commands
-import net.dv8tion.jda.entities.Message
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.resources.ShitTiniSays
 
 /**
@@ -15,5 +15,5 @@ object Insult extends Command {
     * @param message The message which
     */
   override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit =
-    message.getChannel.sendMessageAsync(ShitTiniSays.insult, null)
+    message.getChannel.sendMessage(ShitTiniSays.insult).queue()
 }

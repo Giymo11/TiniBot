@@ -1,6 +1,6 @@
 package rip.hansolo.discord.tini.commands
-import net.dv8tion.jda.entities.Message
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.brain.TextBrainRegion
 
 /**
@@ -26,14 +26,14 @@ object Help extends Command {
       case empty if empty.isEmpty || arguments.head.isEmpty =>
         val helpList = TextBrainRegion.channelCommands.map(_._2.shortHelp).filterNot(emptyOrNil)
         val msg = s"*Available Commands:*\n\n" + helpList.mkString("\n")
-        message.getChannel.sendMessageAsync(msg, null)
+        message.getChannel.sendMessage(msg).queue()
       case "all" :: _ =>
         val helpList = TextBrainRegion.channelCommands.map(_._2.longHelp).filterNot(emptyOrNil)
         val msg = "***Available Commands with details:***\n\n" + helpList.mkString("\n")
-        message.getChannel.sendMessageAsync(msg, null)
+        message.getChannel.sendMessage(msg).queue()
       case _ =>
         val msg = TextBrainRegion.channelCommands.getOrElse(arguments.head, NotACommand).longHelp
-        message.getChannel.sendMessageAsync(msg, null)
+        message.getChannel.sendMessage(msg).queue()
     }
   }
 }

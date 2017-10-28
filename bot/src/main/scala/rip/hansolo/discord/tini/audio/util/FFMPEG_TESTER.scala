@@ -4,7 +4,7 @@ import javax.sound.sampled.AudioFormat
 
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
-import net.dv8tion.jda.audio.AudioConnection
+import net.dv8tion.jda.core.audio.AudioConnection
 
 import scala.io.StdIn
 

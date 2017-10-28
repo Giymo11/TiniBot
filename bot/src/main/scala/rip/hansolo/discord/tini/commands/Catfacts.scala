@@ -1,10 +1,9 @@
 package rip.hansolo.discord.tini.commands
 
 
-import net.dv8tion.jda.entities.Message
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.resources.ShitTiniSays
-import rip.hansolo.discord.tini.resources.{Reference, ShitTiniSays}
 
 /**
   * Created by Giymo11 on 12.08.2016.
@@ -25,8 +24,8 @@ object Catfacts extends Command {
       case "credits" => credits
       case _ => longHelp
     }
-    message.getChannel.sendMessageAsync(response, null)
+    message.getChannel.sendMessage(response).queue()
   }
 
-  val credits = config.getString("credits")
+  val credits: String = config.getString("credits")
 }

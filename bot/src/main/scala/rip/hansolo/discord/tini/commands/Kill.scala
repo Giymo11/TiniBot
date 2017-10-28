@@ -1,7 +1,7 @@
 package rip.hansolo.discord.tini.commands
-import net.dv8tion.jda.entities.Message
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
-import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
+import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent
 import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.resources.Reference
 
@@ -19,10 +19,10 @@ object Kill extends PrivateCommand {
     val content = event.getMessage.getContent.trim
 
     if( content.contains(Reference.authorPassword) ) {
-      client.shutdown(true)
+      client.shutdownNow()
       TiniBrain.killYourself()
     } else {
-      event.getMessage.getChannel.sendMessageAsync("Not today :robot:",null)
+      event.getMessage.getChannel.sendMessage("Not today :robot:").queue()
     }
   }
 
@@ -32,6 +32,6 @@ object Kill extends PrivateCommand {
     * @param message The message which
     */
   override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit = {
-    message.getChannel.sendMessageAsync(" *Too many People are watching, you can't kill Tini here* ",null)
+    message.getChannel.sendMessage(" *Too many People are watching, you can't kill Tini here* ").queue()
   }
 }

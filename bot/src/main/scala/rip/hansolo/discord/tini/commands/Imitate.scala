@@ -1,17 +1,13 @@
 package rip.hansolo.discord.tini.commands
 
 
-import scala.util.Random
-
 import better.files._
-
 import malakov.Markov
+import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
+import rip.hansolo.discord.tini.resources.Reference
 
-import net.dv8tion.jda.entities.Message
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
-import rip.hansolo.discord.tini.resources.{Reference, ShitTiniSays}
-
-import rip.hansolo.discord.tini.resources._
+import scala.util.Random
 
 
 /**
@@ -43,6 +39,6 @@ object Imitate extends Command {
         case _ =>
           longHelp
       }
-    message.getChannel.sendMessageAsync(response, null)
+    message.getChannel.sendMessage(response).queue()
   }
 }

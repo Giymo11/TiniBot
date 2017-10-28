@@ -1,16 +1,13 @@
 package rip.hansolo.discord.tini.commands
 
 
-import com.google.firebase.database.DatabaseReference.CompletionListener
-import com.google.firebase.database._
-
+import com.google.firebase.database.{DataSnapshot, DatabaseError, DatabaseReference, ValueEventListener}
 import com.typesafe.config.Config
-
-import net.dv8tion.jda.entities._
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
-
-import rip.hansolo.discord.tini.Util._
+import net.dv8tion.jda.core.entities.{Message, MessageChannel, User}
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.brain.TiniBrain
+
+import scala.collection.JavaConverters._
 
 
 /**
@@ -30,7 +27,7 @@ object Bio extends Command {
       sendUsage(message.getChannel)
   }
 
-  def sendUsage(channel: MessageChannel): Unit = channel.sendMessageAsync(longHelp, null)
+  def sendUsage(channel: MessageChannel): Unit = channel.sendMessage(longHelp).queue()
 
   def bioOf(user: User): DatabaseReference = TiniBrain.users.child(user.getId + "/bio")
 
@@ -42,16 +39,21 @@ object Bio extends Command {
       val author = message.getAuthor
       val channel = message.getChannel
 
-      val errorCallback: CompletionListener = (dbError: DatabaseError, dbRef: DatabaseReference) =>
-        Option(dbError) match {
-          case Some(error) =>
-            channel.sendMessageAsync(
-              s"""There was an error setting your Bio! :(
-                 |${dbError.getMessage}
-                 |${dbError.getDetails}""".stripMargin, null)
-          case None =>
-            channel.sendMessageAsync("Bio updated successfully!", null)
+      // syntax errors if not referenced the "java" way ?
+      val errorCallback = new DatabaseReference.CompletionListener {
+        override def onComplete(databaseError: DatabaseError, databaseReference: DatabaseReference): Unit = {
+          Option(databaseError) match {
+            case Some(error) =>
+              channel.sendMessage(
+                s"""There was an error setting your Bio! :(
+                   |${databaseError.getMessage}
+                   |${databaseError.getDetails}""".stripMargin).queue()
+
+            case None =>
+              channel.sendMessage("Bio updated successfully!").queue()
+          }
         }
+      }
 
       bioOf(author).setValue(args, errorCallback)
     }
@@ -77,20 +79,19 @@ object Bio extends Command {
       val channel = message.getChannel
 
       val otherMentions: List[User] = {
-        import scala.collection.JavaConverters._
         val mentions = message.getMentionedUsers.asScala.toList
 
-        val isSelf = (user: User) => user.getId == message.getJDA.getSelfInfo.getId
+        val isSelf = (user: User) => user.getId == message.getJDA.getSelfUser.getId
         mentions.filterNot(isSelf)
       }
 
       class BioEventListener(user: User) extends ValueEventListener {
         override def onDataChange(dataSnapshot: DataSnapshot) {
           println(dataSnapshot.getValue)
-          channel.sendMessageAsync(s"Bio of ${user.getAsMention} is:\n" + dataSnapshot.getValue(classOf[String]), null)
+          channel.sendMessage(s"Bio of ${user.getAsMention} is:\n" + dataSnapshot.getValue(classOf[String])).queue()
         }
         override def onCancelled(databaseError: DatabaseError) {
-          channel.sendMessageAsync(s"Bio of ${user.getAsMention} could not be read.", null)
+          channel.sendMessage(s"Bio of ${user.getAsMention} could not be read.").queue()
         }
       }
 

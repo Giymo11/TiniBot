@@ -1,6 +1,6 @@
 package rip.hansolo.discord.tini.commands
-import net.dv8tion.jda.entities.Message
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.resources.ShitTiniSays
 
@@ -20,8 +20,8 @@ object Shutup extends Command {
     */
   override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit = {
     TiniBrain.is8ball.set(false)
-    Repeat.stopRepeat(message.getChannelId)
+    Repeat.stopRepeat(message.getChannel.getId)
 
-    message.getChannel.sendMessageAsync(ShitTiniSays.shutupResponse,null)
+    message.getChannel.sendMessage(ShitTiniSays.shutupResponse).queue()
   }
 }

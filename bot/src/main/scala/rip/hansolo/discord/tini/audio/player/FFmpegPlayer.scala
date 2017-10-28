@@ -5,16 +5,14 @@ import java.io.InputStream
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import monix.execution.atomic.Atomic
-import net.dv8tion.jda.audio.AudioConnection
-import net.dv8tion.jda.entities.Guild
+import net.dv8tion.jda.core.audio.AudioConnection
+import net.dv8tion.jda.core.entities.Guild
 import rip.hansolo.discord.tini.audio.util.FFmpegMediaServer
 import rip.hansolo.discord.tini.audio.util.FFmpegMediaServer.MediaInstance
 
 import scala.concurrent.Promise
-import scala.util.{Failure, Success}
 import scala.concurrent.duration._
-
-
+import scala.util.{Failure, Success}
 
 /**
   * Created by: 
@@ -22,7 +20,7 @@ import scala.concurrent.duration._
   * @author Raphael
   * @version 28.08.2016
   */
-class FFmpegPlayer(g: Guild,useHTTPProxy: Boolean = false) extends BasicPlayer(guild = g) {
+class FFmpegPlayer(g: Guild, useHTTPProxy: Boolean = false) extends BasicPlayer(guild = g) {
 
   val bufferTime = 5000
   val ready = Atomic(false)

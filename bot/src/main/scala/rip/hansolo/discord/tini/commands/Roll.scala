@@ -1,12 +1,11 @@
 package rip.hansolo.discord.tini.commands
 
 
-import scala.util.Random
-
-import net.dv8tion.jda.entities.Message
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
-
+import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.Util._
+
+import scala.util.Random
 
 
 /**
@@ -18,7 +17,7 @@ object Roll extends Command {
 
   override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit = {
     val argList = args.split(" ").toList
-    message.getChannel.sendMessageAsync( format(rollTheDice(argList)), null)
+    message.getChannel.sendMessage(format(rollTheDice(argList))).queue()
   }
 
   /**

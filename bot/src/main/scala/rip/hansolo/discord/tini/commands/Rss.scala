@@ -4,8 +4,8 @@ import java.net.URL
 import cats.data.Xor
 import com.rometools.rome.feed.synd._
 import com.rometools.rome.io.{SyndFeedInput, XmlReader}
-import net.dv8tion.jda.entities.Message
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.brain.TiniBrain
 
 /**
@@ -42,7 +42,7 @@ object Rss extends Command{
         getFirstLine(entry.getTitle) + "\n" + link
       }
       val text = title + "\n" + feed.getLink + "\n\n" + entryStrings.mkString("\n\n")
-      message.getChannel.sendMessageAsync(text.take(2000), null)
+      message.getChannel.sendMessage(text.take(2000)).queue()
 
     }.leftMap(_.printStackTrace())
   }

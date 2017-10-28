@@ -2,8 +2,8 @@ package rip.hansolo.discord.tini.audio.util
 
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
-import net.dv8tion.jda.entities.{Message, VoiceChannel}
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.core.entities.{Message, VoiceChannel}
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import rip.hansolo.discord.tini.audio.player.{BasicPlayer, FFmpegPlayer}
 
 import scala.collection.concurrent.TrieMap
@@ -21,15 +21,15 @@ object AudioManager {
 
   private val onlinePlayers: TrieMap[String,BasicPlayer] = new TrieMap[String,BasicPlayer]()
 
-  def requestPlay(resource: String,event: GuildMessageReceivedEvent,useProxy: Boolean = true): Promise[Boolean] = {
-    val userVoice = event.getGuild.getVoiceStatusOfUser(event.getAuthor)
+  def requestPlay(resource: String, event: GuildMessageReceivedEvent, useProxy: Boolean = true): Promise[Boolean] = {
+    val userVoice = event.getMember.getVoiceState
     val message   = event.getMessage
     val requestPromise = Promise[Boolean]
 
     userVoice.getChannel match {
       /* user not in any voice channel */
       case null =>
-        message.getChannel.sendMessageAsync("Join a Voice Channel so i can speak with you",null)
+        message.getChannel.sendMessage("Join a Voice Channel so i can speak with you").queue()
         requestPromise.success( false )
 
 
@@ -42,11 +42,11 @@ object AudioManager {
       case _ if event.getGuild.getAudioManager.getConnectedChannel == userVoice &&
                 onlinePlayers.get(userVoice.getChannel.getId).isDefined =>
 
-        if( isUserAllowedToStopPlayer(userVoice.getUser.getId,onlinePlayers(userVoice.getChannel.getId)) ) {
+        if( isUserAllowedToStopPlayer(userVoice.getMember.getUser.getId,onlinePlayers(userVoice.getChannel.getId)) ) {
           onlinePlayers(userVoice.getChannel.getId).stop()
           playResource(resource, onlinePlayers(userVoice.getChannel.getId), message, event, userVoice.getChannel,requestPromise)
         } else {
-          message.getChannel.sendMessageAsync("You are not allowed to stop the current stream!",null)
+          message.getChannel.sendMessage("You are not allowed to stop the current stream!").queue()
           requestPromise.success( false )
         }
 
@@ -71,10 +71,10 @@ object AudioManager {
           case Some(p) if p.isStopped => playResource(resource, p, message, event, userVoice.getChannel,requestPromise)
           case Some(p) =>
             p.stop()
-            if (isUserAllowedToStopPlayer(userVoice.getUser.getId, onlinePlayers(userVoice.getChannel.getId)))
+            if (isUserAllowedToStopPlayer(userVoice.getMember.getUser.getId, onlinePlayers(userVoice.getChannel.getId)))
               playResource(resource, p, message, event, userVoice.getChannel,requestPromise)
             else {
-              message.getChannel.sendMessageAsync("*Tini won't stop listen to you*", null)
+              message.getChannel.sendMessage("*Tini won't stop listen to you*").queue()
               requestPromise.success( false )
             }
 
@@ -86,31 +86,33 @@ object AudioManager {
   }
 
   def requestStop(event: GuildMessageReceivedEvent): Unit = {
-    val userVoice = event.getGuild.getVoiceStatusOfUser(event.getAuthor)
+    val userVoice = event.getMember.getVoiceState.getChannel
     val message   = event.getMessage
 
-    if( onlinePlayers.get(userVoice.getChannel.getId).isDefined ) {
-      if( isUserAllowedToStopPlayer(event.getAuthor.getId,onlinePlayers(userVoice.getChannel.getId) ) &&
-          event.getGuild.getAudioManager.getConnectedChannel.getId == userVoice.getChannel.getId ) {
-        onlinePlayers(userVoice.getChannel.getId).stop()
+    if( onlinePlayers.get(userVoice.getId).isDefined ) {
+      if( isUserAllowedToStopPlayer(event.getAuthor.getId,onlinePlayers(userVoice.getId) ) &&
+          event.getGuild.getAudioManager.getConnectedChannel.getId == userVoice.getId ) {
+        onlinePlayers(userVoice.getId).stop()
       } else {
-        if( event.getGuild.getAudioManager.getConnectedChannel.getId != userVoice.getChannel.getId  ) message.getChannel.sendMessageAsync("Please join the voice channel",null)
-        else message.getChannel.sendMessageAsync("You don't have the permission to do that",null)
+        if( event.getGuild.getAudioManager.getConnectedChannel.getId != userVoice.getId  )
+          message.getChannel.sendMessage("Please join the voice channel").queue()
+        else
+          message.getChannel.sendMessage("You don't have the permission to do that").queue()
       }
     } else {
-      message.getChannel.sendMessageAsync("Can't remove stream cuz it's allready removed!",null)
+      message.getChannel.sendMessage("Can't remove stream cuz it's allready removed!").queue()
     }
 
   }
 
 
-  private def playResource(resource: String,player: BasicPlayer,message: Message,event: GuildMessageReceivedEvent,userVoice: VoiceChannel,requestPromise: Promise[Boolean]): Unit = {
+  private def playResource(resource: String, player: BasicPlayer, message: Message, event: GuildMessageReceivedEvent, userVoice: VoiceChannel, requestPromise: Promise[Boolean]): Unit = {
     onlinePlayers.put(userVoice.getId,player)
 
     Task {
       event.getGuild.getAudioManager.closeAudioConnection()
 
-      message.getChannel.sendMessageAsync("Loading Audio Data ... (Buffering please wait a while)",null)
+      message.getChannel.sendMessage("Loading Audio Data ... (Buffering please wait a while)").queue()
       Task.fromFuture( player.load(resource).future )
           .runAsync
           .andThen {
@@ -131,7 +133,7 @@ object AudioManager {
               }
 
             case Failure(ext) => /* shit player shit itself */
-              message.getChannel.sendMessageAsync("There was a problem with this stream, Tini couldn't handle it :/",null)
+              message.getChannel.sendMessage("There was a problem with this stream, Tini couldn't handle it :/").queue()
               player.stop()
               player.destroy()
               event.getGuild.getAudioManager.closeAudioConnection()
@@ -148,7 +150,7 @@ object AudioManager {
     }.runAsync
 
     Task {
-      message.getChannel.sendMessageAsync("Here you go, have fun with it",null)
+      message.getChannel.sendMessage("Here you go, have fun with it").queue()
     }.delayExecution(4.5 seconds)
      .runAsync
 

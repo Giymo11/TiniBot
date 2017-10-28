@@ -1,11 +1,9 @@
 package rip.hansolo.discord.tini.commands
 
 
-import net.dv8tion.jda.entities.Message
-
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent
-import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent
-
+import net.dv8tion.jda.core.entities.Message
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent
 import rip.hansolo.discord.tini.brain.TiniBrain
 import rip.hansolo.discord.tini.resources.Reference
 
@@ -26,7 +24,7 @@ object SetTiniPrefix extends PrivateCommand {
     * @param message The message which
     */
   override def exec(args: String, message: Message, event: GuildMessageReceivedEvent): Unit = {
-    message.getChannel.sendMessageAsync(":rolling_eyes:  *Tini won't change clothes here ...*", null)
+    message.getChannel.sendMessage(":rolling_eyes:  *Tini won't change clothes here ...*").queue()
   }
 
   override def exec(event: PrivateMessageReceivedEvent): Unit = {
@@ -35,10 +33,10 @@ object SetTiniPrefix extends PrivateCommand {
     if( args.length == 3 && args(1) == Reference.authorPassword ) {
       val toBeMention = args(2)
       TiniBrain.tiniPrefix.set(toBeMention)
-      event.getMessage.getChannel.sendMessageAsync("New char: " + toBeMention, null)
+      event.getMessage.getChannel.sendMessage("New char: " + toBeMention).queue()
       println(toBeMention)
     } else {
-      event.getMessage.getChannel.sendMessageAsync("Tini can't set the command prefix :robot:", null)
+      event.getMessage.getChannel.sendMessage("Tini can't set the command prefix :robot:").queue()
     }
   }
 }
