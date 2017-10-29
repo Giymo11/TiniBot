@@ -23,7 +23,7 @@ object FFMPEG_TESTER {
     val line = javax.sound.sampled.AudioSystem.getSourceDataLine(audioFMT)
 try {
 
-  Task.fromFuture(FFmpegMediaServer.addMediaResource("RAW_STREAM_TEST",video, useProxy = true).future)
+  Task.fromFuture(FFmpegMediaServer.addMediaResource("RAW_STREAM_TEST", video, useProxy = true).future)
     .runAsync
     .andThen { case mediaData =>
       println("MediaInstance started ...")

@@ -128,6 +128,15 @@ object FFmpegMediaServer {
     val ffmpegProcess: Process = startFFMPEGSlave(ffmpegResource,Reference.mediaServerPort)
     println("[FFmpegMediaServer] Started Process: " + ffmpegProcess.isAlive)
 
+    Task.fork(Task {
+      val start = System.currentTimeMillis()
+      ffmpegProcess.waitFor()
+
+      if (System.currentTimeMillis() - start < 500)
+        completion.failure(new RuntimeException("FFMPEG Process lived shorter than 500 ms, asumeing dead"))
+
+    }).runAsync
+
     networkTask.onComplete { x =>
       /* notify other instances of release block */
       canConnect.set( true )

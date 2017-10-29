@@ -6,6 +6,7 @@ import javax.script.ScriptEngineManager
 
 import cats.data.Xor
 import org.jsoup.Jsoup
+import rip.hansolo.discord.tini.audio.util.YoutubeUtil.descrableSignature
 
 import scala.io.Source
 
@@ -47,7 +48,9 @@ object YoutubeUtil {
 
 
     println("Audio Formats: ")
-    content.foreach( x => println( x._1 + " -> " + URLDecoder.decode(x._2("type"),"UTF-8")  ))
+    content.foreach(x =>
+      println( x._1 + " -> " + URLDecoder.decode(x._2("type"),"UTF-8") + ", " +
+        URLDecoder.decode(x._2("url"),"UTF-8")))
     println("--END--")
 
     /* mp4 coder does only support 18, 22, 140 */
@@ -60,12 +63,24 @@ object YoutubeUtil {
     Some(URLDecoder.decode(iTag18.getOrElse(iTag22.getOrElse(iTag140.get))("url"),"UTF-8"))
     */
 
-    content.filter( x => URLDecoder.decode(x._2("type"),"UTF-8").contains(codec) )
-           .map( y => URLDecoder.decode(y._2("url"),"UTF-8") ).toList
+    content.filter(x => URLDecoder.decode(x._2("type"),"UTF-8").contains(codec))
+           .map(y => {
+             val url = URLDecoder.decode(y._2("url"),"UTF-8")
+
+             // for new yt6 urls:
+             if (y._2.contains("s")) {
+               println(descrableSignature(y._2("s"), baseJS))
+               url + "&signature=" + descrableSignature(y._2("s"), baseJS)
+             } else {
+               url
+             }
+           }).toList
+
+    //List.empty
   }
 
   /* from JDownloader starts from here: */
-  def descrableSignature(signature: String,baseJS: String): String = {
+  def descrableSignature(signature: String, baseJS: String): String = {
     /* regex magic everything will crash if one thing is not found! */
     val DescrablerRegex = """set\(\"signature\",([\$\w]+)\([\w]+\)""".r
     val desc: Option[String] = for { DescrablerRegex(g1) <- DescrablerRegex findFirstIn baseJS } yield g1
@@ -111,7 +126,7 @@ object YoutubeUtil {
   }
 
   /**
-    * Patches signatures in the urls
+    * Patches signatures in the urls (only for old urls > yt6)
     *
     * @param vidInfo Youtube Video ID
     * @param baseJS String which contains the base.js script from the Youtube Page
@@ -174,7 +189,7 @@ object YoutubeUtil {
 
     streamMap.foreach(x => {
       if( x._1.contains("fmt") ) {
-        //println(x._1)
+        //println(URLDecoder.decode(x._2, "UTF-8"))
         content ++= decodeFMTUrl(URLDecoder.decode(x._2, "UTF-8"))
       }
     })
